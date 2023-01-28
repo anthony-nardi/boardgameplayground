@@ -1,9 +1,4 @@
-import dynamic from "next/dynamic";
-
-const DynamicHeader = dynamic(() => import("../game/component"), {
-  loading: () => "Loading...",
-  ssr: false,
-});
+import { initGame } from "./gameLogic";
 
 function startNewGame() {
   document.documentElement.classList.add("hideOverflow");
@@ -31,10 +26,10 @@ function backToGameMenu() {
 }
 
 function showRules() {
-  var link = document.createElement("a");
-  link.href = "tzaar_rulebook.pdf";
-  link.download = "tzaar_rulebook.pdf";
-  link.dispatchEvent(new MouseEvent("click"));
+  var link = document.createElement('a');
+  link.href = 'tzaar_rulebook.pdf';
+  link.download = 'tzaar_rulebook.pdf';
+  link.dispatchEvent(new MouseEvent('click'));
 }
 
 function startApp() {
@@ -50,7 +45,4 @@ function startApp() {
     .getElementById("backToGameMenuDiv")
     .addEventListener("click", backToGameMenu);
 }
-
-export default function Home() {
-  return <DynamicHeader />;
-}
+window && window.addEventListener("DOMContentLoaded", startApp, false);
