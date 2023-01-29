@@ -1,6 +1,5 @@
 import {
-  TRIANGLE_SIDE_LENGTH,
-  TRIANGLE_HEIGHT,
+
   PLAYABLE_VERTICES,
   GamePieceRecord,
   TZAAR,
@@ -13,35 +12,37 @@ import {
   PLAYER_ONE
 } from "./constants";
 import { List, Map } from "immutable";
+import WindowHelper from "./WindowHelper";
+import GamePieceRenderer from "./GamePieceRenderer";
 
 export function getPixelCoordinatesFromBoardCoordinates(coordinate) {
   const [x, y] = coordinate.split(",");
 
-  const offsetXToCenter = window && window.innerWidth / 2 - 4 * TRIANGLE_SIDE_LENGTH;
-  const offsetYToCenter = window && window.innerHeight / 2 - 4 * TRIANGLE_HEIGHT;
+  const offsetXToCenter = WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+  const offsetYToCenter = WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const offsetX =
-    x * TRIANGLE_SIDE_LENGTH - Math.max(4 - y, 0) * TRIANGLE_SIDE_LENGTH;
+    x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - Math.max(4 - y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
 
   const xPos =
-    (Math.abs(4 - y) * TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
+    (Math.abs(4 - y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
 
-  const yPos = y * TRIANGLE_HEIGHT + offsetYToCenter;
+  const yPos = y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   return `${xPos},${yPos}`;
 }
 
 export function getBoardCoordinatesFromPixelCoordinates(x, y) {
   const offsetXToCenter =
-    (window && window.innerWidth / 2 - 4 * TRIANGLE_SIDE_LENGTH) / TRIANGLE_SIDE_LENGTH;
+    (WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
   const offsetYToCenter =
-    (window && window.innerHeight / 2 - 4 * TRIANGLE_HEIGHT) / TRIANGLE_HEIGHT;
+    (WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) / GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const yPos = y / TRIANGLE_HEIGHT - offsetYToCenter;
+  const yPos = y / GamePieceRenderer.TRIANGLE_HEIGHT - offsetYToCenter;
 
-  const interimX = x / TRIANGLE_SIDE_LENGTH - offsetXToCenter;
+  const interimX = x / GamePieceRenderer.TRIANGLE_SIDE_LENGTH - offsetXToCenter;
 
   const offsetXBecauseY =
-    (Math.abs(4 - yPos) * TRIANGLE_SIDE_LENGTH) / 2 / TRIANGLE_SIDE_LENGTH;
+    (Math.abs(4 - yPos) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 / GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
 
   const offsetXBecauseAnotherY = Math.max(4 - yPos, 0);
 

@@ -1,7 +1,7 @@
 import { Record } from "immutable";
 import WindowHelper from "./WindowHelper";
 
-const extraSpace = 1;
+
 
 export const CACHED_CANVAS = document.createElement("canvas");
 
@@ -24,15 +24,7 @@ export const PIXEL_RATIO = function () {
 }
 
 
-export const DEBUG = false;
-export const NUMBER_OF_ROWS = 8;
-export const NUMBER_OF_COLS = 8;
-export const TRIANGLE_SIDE_LENGTH =
-  (WindowHelper.useWindowHeight
-    ? WindowHelper.width
-    : WindowHelper.height) /
-  (NUMBER_OF_COLS + extraSpace);
-export const TRIANGLE_HEIGHT = TRIANGLE_SIDE_LENGTH * (Math.sqrt(3) / 2);
+
 
 export const NUMBER_OF_TOTTS = 15;
 export const NUMBER_OF_TZARRAS = 9;

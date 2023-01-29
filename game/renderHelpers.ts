@@ -15,18 +15,10 @@ import {
 import { drawCachedBoard } from "./cachedBoard";
 import { gameBoardState, setNewgameBoardState } from "./gameState";
 import { List } from "immutable";
-import {
-  PLAYER_ONE_TOTT,
-  PLAYER_ONE_TZAAR,
-  PLAYER_ONE_TZARRA,
-  PLAYER_TWO_TOTT,
-  PLAYER_TWO_TZAAR,
-  PLAYER_TWO_TZARRA,
-  GAME_PIECE_RADIUS,
-  CANVAS_SIDE_LENGTH
-} from "./gamePieceRenderer";
+import GamePieceRenderer from "./GamePieceRenderer";
 
 function getContext() {
+
   return window.GAME_STATE_BOARD_CANVAS.getContext("2d");
 }
 
@@ -79,56 +71,56 @@ export function drawGamePiece(gamePiece, xPos, yPos) {
   const context = getContext();
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TOTT) {
     context.drawImage(
-      PLAYER_ONE_TOTT,
-      xPos - GAME_PIECE_RADIUS,
-      yPos - GAME_PIECE_RADIUS,
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.PLAYER_ONE_TOTT,
+      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
     );
   }
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZARRA) {
     context.drawImage(
-      PLAYER_ONE_TZARRA,
-      xPos - GAME_PIECE_RADIUS,
-      yPos - GAME_PIECE_RADIUS,
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.PLAYER_ONE_TZARRA,
+      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
     );
   }
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZAAR) {
     context.drawImage(
-      PLAYER_ONE_TZAAR,
-      xPos - GAME_PIECE_RADIUS,
-      yPos - GAME_PIECE_RADIUS,
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.PLAYER_ONE_TZAAR,
+      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
     );
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TOTT) {
     context.drawImage(
-      PLAYER_TWO_TOTT,
-      xPos - GAME_PIECE_RADIUS,
-      yPos - GAME_PIECE_RADIUS,
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.PLAYER_TWO_TOTT,
+      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
     );
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZARRA) {
     context.drawImage(
-      PLAYER_TWO_TZARRA,
-      xPos - GAME_PIECE_RADIUS,
-      yPos - GAME_PIECE_RADIUS,
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.PLAYER_TWO_TZARRA,
+      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
     );
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZAAR) {
     context.drawImage(
-      PLAYER_TWO_TZAAR,
-      xPos - GAME_PIECE_RADIUS,
-      yPos - GAME_PIECE_RADIUS,
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.PLAYER_TWO_TZAAR,
+      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
     );
   }
 

@@ -1,13 +1,10 @@
 import {
-  NUMBER_OF_COLS,
-  NUMBER_OF_ROWS,
-  TRIANGLE_SIDE_LENGTH,
-  TRIANGLE_HEIGHT,
   CACHED_CANVAS,
-
   PIXEL_RATIO
 } from "./constants";
-
+import WindowHelper from "./WindowHelper";
+import GamePieceRenderer, { NUMBER_OF_COLS, NUMBER_OF_ROWS } from "./GamePieceRenderer";
+console.log(GamePieceRenderer)
 const COORDS_TO_NOT_RENDER = [
   "0,0",
   "0,1",
@@ -40,6 +37,10 @@ function initCanvas() {
   CACHED_CANVAS.height = window && window.innerHeight * PIXEL_RATIO();
   CACHED_CANVAS.style.width = `${window && window.innerWidth}px`;
   CACHED_CANVAS.style.height = `${window && window.innerHeight}px`;
+
+  if (!window.GAME_STATE_BOARD_CANVAS) {
+    throw new Error('GAME_STATE_BOARD_CANVAS is not ready')
+  }
 
   window.GAME_STATE_BOARD_CANVAS.width = window && window.innerWidth * PIXEL_RATIO();
   window.GAME_STATE_BOARD_CANVAS.height = window && window.innerHeight * PIXEL_RATIO();
@@ -98,8 +99,8 @@ export function drawCachedBoard() {
 
   context.putImageData(
     imageData,
-    (window && window.innerWidth / 2 - 4 * TRIANGLE_SIDE_LENGTH) * PIXEL_RATIO(),
-    (window && window.innerHeight / 2 - 4 * TRIANGLE_HEIGHT) * PIXEL_RATIO()
+    (window && window.innerWidth / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) * PIXEL_RATIO(),
+    (window && window.innerHeight / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) * PIXEL_RATIO()
   );
 }
 
@@ -119,14 +120,14 @@ function renderTriangleFromVertex(coordinate) {
   }
   const [x, y] = coordinate.split(",");
 
-  const offsetX = (y * TRIANGLE_SIDE_LENGTH) / 2 - TRIANGLE_SIDE_LENGTH * 2;
-  const startX = x * TRIANGLE_SIDE_LENGTH + offsetX;
-  const startY = y * TRIANGLE_HEIGHT;
+  const offsetX = (y * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 - GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 2;
+  const startX = x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + offsetX;
+  const startY = y * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   context.beginPath();
   context.moveTo(startX, startY);
-  context.lineTo(startX + TRIANGLE_SIDE_LENGTH, startY);
-  context.lineTo(startX + TRIANGLE_SIDE_LENGTH / 2, startY + TRIANGLE_HEIGHT);
+  context.lineTo(startX + GamePieceRenderer.TRIANGLE_SIDE_LENGTH, startY);
+  context.lineTo(startX + GamePieceRenderer.TRIANGLE_SIDE_LENGTH / 2, startY + GamePieceRenderer.TRIANGLE_HEIGHT);
   context.lineTo(startX, startY);
   context.closePath();
   context.lineWidth = 1;
@@ -137,22 +138,22 @@ function renderTriangleFromVertex(coordinate) {
 function renderHexagonBorder() {
   const context = getContext();
 
-  const x1 = 2 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const x1 = 2 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
   const y1 = 0;
 
-  const x2 = 0 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
-  const y2 = 4 * TRIANGLE_HEIGHT;
+  const x2 = 0 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const y2 = 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x3 = 2 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
-  const y3 = 8 * TRIANGLE_HEIGHT;
+  const x3 = 2 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const y3 = 8 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x4 = 6 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
-  const y4 = 8 * TRIANGLE_HEIGHT;
+  const x4 = 6 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const y4 = 8 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x5 = 8 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
-  const y5 = 4 * TRIANGLE_HEIGHT;
+  const x5 = 8 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const y5 = 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x6 = 6 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const x6 = 6 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
   const y6 = 0;
 
   context.beginPath();
@@ -172,23 +173,23 @@ function renderHexagonBorder() {
 function renderInnerHexagonBorder() {
   const context = getContext();
 
-  const x1 = 4 * TRIANGLE_SIDE_LENGTH - TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
-  const y1 = 3 * TRIANGLE_HEIGHT;
+  const x1 = 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - GamePieceRenderer.TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
+  const y1 = 3 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x2 = 3 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
-  const y2 = 4 * TRIANGLE_HEIGHT;
+  const x2 = 3 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const y2 = 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x3 = 3 * TRIANGLE_SIDE_LENGTH + TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
-  const y3 = 5 * TRIANGLE_HEIGHT;
+  const x3 = 3 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + GamePieceRenderer.TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
+  const y3 = 5 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x4 = 5 * TRIANGLE_SIDE_LENGTH - TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
-  const y4 = 5 * TRIANGLE_HEIGHT;
+  const x4 = 5 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - GamePieceRenderer.TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
+  const y4 = 5 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x5 = 5 * TRIANGLE_SIDE_LENGTH + OFFSET_X;
-  const y5 = 4 * TRIANGLE_HEIGHT;
+  const x5 = 5 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
+  const y5 = 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
-  const x6 = 5 * TRIANGLE_SIDE_LENGTH - TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
-  const y6 = 3 * TRIANGLE_HEIGHT;
+  const x6 = 5 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - GamePieceRenderer.TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
+  const y6 = 3 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   context.beginPath();
   context.moveTo(x1, y1);
@@ -209,7 +210,7 @@ function renderSquareBorder() {
   context.strokeRect(
     OFFSET_X,
     0,
-    8 * TRIANGLE_SIDE_LENGTH,
-    8 * TRIANGLE_HEIGHT
+    8 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH,
+    8 * GamePieceRenderer.TRIANGLE_HEIGHT
   );
 }

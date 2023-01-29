@@ -28,8 +28,9 @@ import {
   currentTurn,
   turnPhase,
 } from "./gameState";
-import { getGameStatesToAnalyze, minimax, getWinner } from "./ai";
+import { getGameStatesToAnalyze, minimax, getWinner, getGameStateScore } from "./ai";
 import * as minimaxer from "minimaxer";
+import type { NodeType } from 'minimaxer'
 import React from "react";
 
 
@@ -108,7 +109,7 @@ export function handleDropPiece(event) {
   drawGameBoardState();
 
   if (turnPhase === TURN_PHASES.CAPTURE && currentTurn === PLAYER_TWO) {
-    document.getElementById("loadingSpinner").classList.remove("hidden");
+    // document.getElementById("loadingSpinner").classList.remove("hidden");
     setTimeout(() => moveAI2(), 50);
   }
 }
@@ -158,25 +159,35 @@ function moveAI2() {
   if (currentTurn !== PLAYER_TWO) {
     return;
   }
+
+  const opts = new minimaxer.NegamaxOpts();
+  // opts.pruning = minimaxer.PruningType.ALPHA_BETA;
+  // opts.timeout = 10000;
+  opts.depth = 3;
+  opts.method = 'DEPTH'
+  opts.initialDepth = 3
+  let aim = 1
   const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
     gameBoardState,
     PLAYER_TWO
-  )
-    .toKeyedSeq()
-    .toJS();
-  debugger;
+  ).keySeq().toJS()
+
+
   const root = new minimaxer.Node(
-    minimaxer.NodeType.ROOT,
-    gameBoardState,
-    undefined,
     0,
-    minimaxer.NodeAim.MAX,
+    gameBoardState,
+    null,
+    0,
+    -1,
     allPossibleStatesAfterTurn
   );
-  const tree = new minimaxer.Negamax(root);
-
+  const tree = new minimaxer.Negamax(root, opts);
+  debugger
   tree.CreateChildNode = createChildCallback;
-  tree.EvaluateNode = getGameStateScore;
+  tree.EvaluateNode = (node) => {
+    debugger
+    return getGameStateScore(node.gamestate);
+  }
   tree.GetMoves = getBestMove;
 
   const result = tree.evaluate();
@@ -328,7 +339,7 @@ function getBestMove(gameState, turn) {
   const bestMove = minimaxResult[1];
   DEBUG && console.timeEnd("get scores");
 
-  document.getElementById("loadingSpinner").classList.add("hidden");
+  // document.getElementById("loadingSpinner").classList.add("hidden");
   return bestMove;
 }
 
