@@ -152,7 +152,8 @@ function checkGameStateAndStartNextTurn() {
 
 export const createChildCallback = (node, move) => {
   // First create a clone of the gamestate
-  debugger;
+  debugger
+  return applyMoveToGameState(node.gamestate, move)
 };
 
 function moveAI2() {
@@ -177,16 +178,15 @@ function moveAI2() {
     0,
     gameBoardState,
     null,
-    0,
-    -1,
+    - 1,
     allPossibleStatesAfterTurn
   );
-  const tree = new minimaxer.Negamax(root, opts);
-  debugger
+  const tree = new minimaxer.Negamax(root, aim, allPossibleStatesAfterTurn, opts);
+
   tree.CreateChildNode = createChildCallback;
   tree.EvaluateNode = (node) => {
     debugger
-    return getGameStateScore(node.gamestate);
+    return getGameStateScore(node.gamestate.gamestate);
   }
   tree.GetMoves = getBestMove;
 
@@ -197,111 +197,50 @@ function moveAI2() {
   console.log(gameBoardState);
 }
 
-function moveAI() {
-  if (currentTurn !== PLAYER_TWO) {
-    return;
-  }
+function applyMoveToGameState(gamestate: any, move: string) {
 
-  const bestMove = getBestMove(gameBoardState, PLAYER_TWO);
 
   // Single move only
-  if (bestMove.indexOf("=>") === -1) {
-    const [firstFromCoordinate, firstToCoordinate] = bestMove.split("->");
-    const fromPiece = gameBoardState.get(firstFromCoordinate);
-    setNewgameBoardState(gameBoardState.set(firstFromCoordinate, false));
-    const fromFirstPixelCoodinate =
-      getPixelCoordinatesFromBoardCoordinates(firstFromCoordinate);
-    const toFirstPixelCoordinate =
-      getPixelCoordinatesFromBoardCoordinates(firstToCoordinate);
-
-    DEBUG &&
-      console.log(`MOVING FROM ${firstFromCoordinate} TO ${firstToCoordinate}`);
-    renderMovingPiece(
-      fromPiece,
-      fromFirstPixelCoodinate,
-      toFirstPixelCoordinate,
-      2000,
-      Date.now(),
-      () => {
-        setNewgameBoardState(gameBoardState.set(firstToCoordinate, fromPiece));
-
-        checkGameStateAndStartNextTurn();
-        checkGameStateAndStartNextTurn();
-        drawGameBoardState();
-      }
-    );
-    return;
+  if (move.indexOf("=>") === -1) {
+    const [firstFromCoordinate, firstToCoordinate] = move.split("->");
+    const fromPiece = gamestate.get(firstFromCoordinate);
+    return gamestate.set(firstFromCoordinate, false).set(firstToCoordinate, fromPiece)
   }
 
-  const [firstMove, secondMove] = bestMove.split("=>");
+  const [firstMove, secondMove] = move.split("=>");
   const [firstFromCoordinate, firstToCoordinate] = firstMove.split("->");
   const [secondFromCoordinate, secondToCoordinate] = secondMove.split("->");
-  const fromPiece = gameBoardState.get(firstFromCoordinate);
+  const fromPiece = gamestate.get(firstFromCoordinate);
 
   // dont render moving piece in the same spot...
-  setNewgameBoardState(gameBoardState.set(firstFromCoordinate, false));
-  const fromFirstPixelCoodinate =
-    getPixelCoordinatesFromBoardCoordinates(firstFromCoordinate);
-  const toFirstPixelCoordinate =
-    getPixelCoordinatesFromBoardCoordinates(firstToCoordinate);
+  let updatedBoardGameState = gamestate.set(firstFromCoordinate, false)
 
-  const fromSecondPixelCoodinate =
-    getPixelCoordinatesFromBoardCoordinates(secondFromCoordinate);
-  const toSecondPixelCoordinate =
-    getPixelCoordinatesFromBoardCoordinates(secondToCoordinate);
+  updatedBoardGameState = (updatedBoardGameState.set(firstToCoordinate, fromPiece));
 
-  DEBUG &&
-    console.log(`MOVING FROM ${firstFromCoordinate} TO ${firstToCoordinate}`);
 
-  renderMovingPiece(
-    fromPiece,
-    fromFirstPixelCoodinate,
-    toFirstPixelCoordinate,
-    2000,
-    Date.now(),
-    () => {
-      setNewgameBoardState(gameBoardState.set(firstToCoordinate, fromPiece));
+  const secondFromPiece = updatedBoardGameState.get(secondFromCoordinate);
+  updatedBoardGameState = (updatedBoardGameState.set(secondFromCoordinate, false));
 
-      nextPhase();
 
-      const secondFromPiece = gameBoardState.get(secondFromCoordinate);
-      setNewgameBoardState(gameBoardState.set(secondFromCoordinate, false));
+  const toPiece = updatedBoardGameState.get(secondToCoordinate);
 
-      DEBUG &&
-        console.log(
-          `MOVING FROM ${secondFromCoordinate} TO ${secondToCoordinate}`
-        );
+  if (secondFromPiece.ownedBy === toPiece.ownedBy) {
+    updatedBoardGameState = (
+      updatedBoardGameState
+        .set(secondToCoordinate, secondFromPiece)
+        .setIn(
+          [secondToCoordinate, "stackSize"],
+          secondFromPiece.stackSize + toPiece.stackSize
+        )
+    );
+  } else {
+    updatedBoardGameState = (
+      updatedBoardGameState.set(secondToCoordinate, secondFromPiece)
+    );
+  }
 
-      renderMovingPiece(
-        secondFromPiece,
-        fromSecondPixelCoodinate,
-        toSecondPixelCoordinate,
-        2000,
-        Date.now(),
-        () => {
-          const toPiece = gameBoardState.get(secondToCoordinate);
 
-          if (secondFromPiece.ownedBy === toPiece.ownedBy) {
-            setNewgameBoardState(
-              gameBoardState
-                .set(secondToCoordinate, secondFromPiece)
-                .setIn(
-                  [secondToCoordinate, "stackSize"],
-                  secondFromPiece.stackSize + toPiece.stackSize
-                )
-            );
-          } else {
-            setNewgameBoardState(
-              gameBoardState.set(secondToCoordinate, secondFromPiece)
-            );
-          }
-
-          checkGameStateAndStartNextTurn();
-          drawGameBoardState();
-        }
-      );
-    }
-  );
+  return updatedBoardGameState
 }
 
 function getBestMove(gameState, turn) {

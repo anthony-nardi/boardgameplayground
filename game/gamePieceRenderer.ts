@@ -15,6 +15,10 @@ export const NUMBER_OF_COLS = 8;
 
 class GamePieceRenderer {
   init() {
+
+    console.log(WindowHelper.width)
+    console.log(WindowHelper.height
+    )
     const extraSpace = 1;
     this.TRIANGLE_SIDE_LENGTH =
       (WindowHelper.useWindowHeight
@@ -194,7 +198,6 @@ class GamePieceRenderer {
 
 
   drawGamePiece(gamePiece, canvas) {
-    console.log(this.circleRadius)
     const context = canvas.getContext("2d");
     if (gamePiece.ownedBy === PLAYER_ONE) {
       context.fillStyle = this.PLAYER_ONE_COLOR_BG;
