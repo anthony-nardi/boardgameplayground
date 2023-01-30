@@ -153,8 +153,9 @@ function checkGameStateAndStartNextTurn() {
 export const createChildCallback = (node, move) => {
   // First create a clone of the gamestate
   // debugger
-  let gamestateToAnalyze;
 
+  let gamestateToAnalyze;
+  console.log('child node')
 
   if (!node.gamestate.gamestate) {
 
@@ -166,6 +167,7 @@ export const createChildCallback = (node, move) => {
   if (!gamestateToAnalyze) {
     debugger
   }
+
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move)
   const childNode = new minimaxer.Node(1, updatedBoardGameState, move, 0);
   return childNode;
@@ -180,8 +182,13 @@ function moveAI2() {
   // opts.pruning = minimaxer.PruningType.ALPHA_BETA;
   // opts.timeout = 10000;
   opts.depth = 1
-  opts.method = 'DEPTH'
+  opts.method = 0
   opts.pruning = 1
+  opts.sortMethod = 0
+  opts.genBased = false
+  opts.optimal = false
+  // opts.initialDepth = 1
+  // opts.exit = 0
   // opts.initialDepth = 1
   let aim = 1
   const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
@@ -210,13 +217,21 @@ function moveAI2() {
     } else {
       gamestateToAnalyze = node.gamestate.gamestate
     }
+
     const scoreForNode = getGameStateScore(gamestateToAnalyze);
+
+    console.log(scoreForNode)
     return scoreForNode
   }
   tree.GetMoves = (gamestate) => {
+
+    const gamestateToAnalyze = gamestate.gamestate
+
+    // console.log(gamestateToAnalyze)
+
     // Store the turn on the gamestate...
     return getGameStatesToAnalyze(
-      gamestate,
+      gamestateToAnalyze,
       PLAYER_ONE
     ).keySeq().toJS()
   };

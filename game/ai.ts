@@ -301,7 +301,7 @@ export function getWinner(gameState) {
 export function getGameStatesToAnalyze(gameState, turn) {
   const EARLY_GAME = numberOfTurnsIntoGame < 10;
   let allPossibleStatesAfterTurn = List();
-
+  debugger
   if (!EARLY_GAME) {
     allPossibleStatesAfterTurn = getPossibleMoveSequences(gameState, turn);
   } else {
