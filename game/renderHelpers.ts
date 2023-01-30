@@ -4,14 +4,14 @@ import {
   TRIANGLE_SIDE_LENGTH,
   TRIANGLE_HEIGHT,
   PLAYABLE_VERTICES,
-
   TOTT,
   TZAAR,
   TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
-  PIXEL_RATIO
+
 } from "./constants";
+import WindowHelper from "./WindowHelper";
 import { drawCachedBoard } from "./cachedBoard";
 import { gameBoardState, setNewgameBoardState } from "./gameState";
 import { List } from "immutable";
@@ -33,8 +33,8 @@ export function drawCoordinate(coordinate) {
   const context = getContext();
   const [x, y] = coordinate.split(",");
 
-  const offsetXToCenter = window && window.innerWidth / 2 - 4 * TRIANGLE_SIDE_LENGTH;
-  const offsetYToCenter = window && window.innerHeight / 2 - 4 * TRIANGLE_HEIGHT;
+  const offsetXToCenter = WindowHelper.width / 2 - 4 * TRIANGLE_SIDE_LENGTH;
+  const offsetYToCenter = WindowHelper.height / 2 - 4 * TRIANGLE_HEIGHT;
 
   const offsetX =
     x * TRIANGLE_SIDE_LENGTH - Math.max(4 - y, 0) * TRIANGLE_SIDE_LENGTH;
@@ -74,8 +74,8 @@ export function drawGamePiece(gamePiece, xPos, yPos) {
       GamePieceRenderer.PLAYER_ONE_TOTT,
       xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
       yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
     );
   }
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZARRA) {
@@ -83,8 +83,8 @@ export function drawGamePiece(gamePiece, xPos, yPos) {
       GamePieceRenderer.PLAYER_ONE_TZARRA,
       xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
       yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
     );
   }
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZAAR) {
@@ -92,8 +92,8 @@ export function drawGamePiece(gamePiece, xPos, yPos) {
       GamePieceRenderer.PLAYER_ONE_TZAAR,
       xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
       yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
     );
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TOTT) {
@@ -101,8 +101,8 @@ export function drawGamePiece(gamePiece, xPos, yPos) {
       GamePieceRenderer.PLAYER_TWO_TOTT,
       xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
       yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
     );
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZARRA) {
@@ -110,8 +110,8 @@ export function drawGamePiece(gamePiece, xPos, yPos) {
       GamePieceRenderer.PLAYER_TWO_TZARRA,
       xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
       yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
     );
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZAAR) {
@@ -119,8 +119,8 @@ export function drawGamePiece(gamePiece, xPos, yPos) {
       GamePieceRenderer.PLAYER_TWO_TZAAR,
       xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
       yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO(),
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / PIXEL_RATIO()
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
+      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
     );
   }
 
@@ -135,7 +135,7 @@ export function drawGamePieces() {
 
 export function clearCanvas() {
   const context = getContext();
-  context.clearRect(0, 0, window && window.innerWidth, window && window.innerHeight);
+  context.clearRect(0, 0, WindowHelper.width, WindowHelper.height);
 }
 
 function timeFunction(t) {
@@ -147,7 +147,7 @@ export function renderInitializingBoard(piecesToDraw, callback) {
   let piecesToRenderList = List();
   piecesToDraw.forEach((piece, coordinate) => {
     const to = getPixelCoordinatesFromBoardCoordinates(coordinate);
-    const from = `${window && window.innerWidth / 2},${window && window.innerHeight / 2}`;
+    const from = `${WindowHelper.width / 2},${WindowHelper.height / 2}`;
 
     piecesToRenderList = piecesToRenderList.push({
       piece,

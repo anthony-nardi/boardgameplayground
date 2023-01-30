@@ -1,30 +1,6 @@
 import { Record } from "immutable";
-import WindowHelper from "./WindowHelper";
-
-
 
 export const CACHED_CANVAS = document.createElement("canvas");
-
-export const PIXEL_RATIO = function () {
-
-  const ctx: CanvasRenderingContext2D | null = CACHED_CANVAS.getContext("2d");
-  if (!ctx) {
-    throw Error('ctx not available. ')
-  }
-  const dpr = WindowHelper.devicePixelRatio
-  const bsr =
-    ctx.webkitBackingStorePixelRatio ||
-    ctx.mozBackingStorePixelRatio ||
-    ctx.msBackingStorePixelRatio ||
-    ctx.oBackingStorePixelRatio ||
-    ctx.backingStorePixelRatio ||
-    1;
-
-  return dpr / bsr;
-}
-
-
-
 
 export const NUMBER_OF_TOTTS = 15;
 export const NUMBER_OF_TZARRAS = 9;

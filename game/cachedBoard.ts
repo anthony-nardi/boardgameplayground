@@ -1,10 +1,10 @@
 import {
   CACHED_CANVAS,
-  PIXEL_RATIO
+
 } from "./constants";
 import WindowHelper from "./WindowHelper";
 import GamePieceRenderer, { NUMBER_OF_COLS, NUMBER_OF_ROWS } from "./GamePieceRenderer";
-console.log(GamePieceRenderer)
+
 const COORDS_TO_NOT_RENDER = [
   "0,0",
   "0,1",
@@ -33,40 +33,44 @@ const OFFSET_X = 0;
 const grid = getInitialGridState();
 
 function initCanvas() {
-  CACHED_CANVAS.width = window && window.innerWidth * PIXEL_RATIO();
-  CACHED_CANVAS.height = window && window.innerHeight * PIXEL_RATIO();
-  CACHED_CANVAS.style.width = `${window && window.innerWidth}px`;
-  CACHED_CANVAS.style.height = `${window && window.innerHeight}px`;
+  console.log(WindowHelper)
+
+  CACHED_CANVAS.width = WindowHelper.width * WindowHelper.devicePixelRatio
+  CACHED_CANVAS.height = WindowHelper.height * WindowHelper.devicePixelRatio
+  CACHED_CANVAS.style.width = `${WindowHelper.width}px`;
+  CACHED_CANVAS.style.height = `${WindowHelper.height}px`;
 
   if (!window.GAME_STATE_BOARD_CANVAS) {
     throw new Error('GAME_STATE_BOARD_CANVAS is not ready')
   }
 
-  window.GAME_STATE_BOARD_CANVAS.width = window && window.innerWidth * PIXEL_RATIO();
-  window.GAME_STATE_BOARD_CANVAS.height = window && window.innerHeight * PIXEL_RATIO();
-  window.GAME_STATE_BOARD_CANVAS.style.width = `${window && window.innerWidth}px`;
-  window.GAME_STATE_BOARD_CANVAS.style.height = `${window && window.innerHeight}px`;
+  window.GAME_STATE_BOARD_CANVAS.width = WindowHelper.width * WindowHelper.devicePixelRatio
+  window.GAME_STATE_BOARD_CANVAS.height = WindowHelper.height * WindowHelper.devicePixelRatio
+  window.GAME_STATE_BOARD_CANVAS.style.width = `${WindowHelper.width}px`;
+  window.GAME_STATE_BOARD_CANVAS.style.height = `${WindowHelper.height}px`;
+  console.log(WindowHelper.width * WindowHelper.devicePixelRatio)
+  console.log(WindowHelper.width)
 
-  CACHED_CANVAS.getContext("2d").setTransform(
-    PIXEL_RATIO(),
+  CACHED_CANVAS.getContext("2d", { willReadFrequently: true }).setTransform(
+    WindowHelper.devicePixelRatio,
     0,
     0,
-    PIXEL_RATIO(),
+    WindowHelper.devicePixelRatio,
     0,
     0
   );
-  window.GAME_STATE_BOARD_CANVAS.getContext("2d").setTransform(
-    PIXEL_RATIO(),
+  window.GAME_STATE_BOARD_CANVAS.getContext("2d", { willReadFrequently: true }).setTransform(
+    WindowHelper.devicePixelRatio,
     0,
     0,
-    PIXEL_RATIO(),
+    WindowHelper.devicePixelRatio,
     0,
     0
   );
 }
 
 function getContext() {
-  return CACHED_CANVAS.getContext("2d");
+  return CACHED_CANVAS.getContext("2d", { willReadFrequently: true });
 }
 
 function getInitialGridState() {
@@ -84,23 +88,24 @@ function getInitialGridState() {
 function getImageData() {
   const context = getContext();
 
-  console.log(PIXEL_RATIO())
   return context.getImageData(
-    OFFSET_X * PIXEL_RATIO(),
+    OFFSET_X * WindowHelper.devicePixelRatio,
     0,
-    PIXEL_RATIO() * (window && window.innerWidth),
-    PIXEL_RATIO() * (window && window.innerHeight)
+    WindowHelper.devicePixelRatio * (WindowHelper.width),
+    WindowHelper.devicePixelRatio * (WindowHelper.height)
   );
 }
 
 export function drawCachedBoard() {
-  const context = window.GAME_STATE_BOARD_CANVAS.getContext("2d");
+  const context = window.GAME_STATE_BOARD_CANVAS.getContext("2d", { willReadFrequently: true });
   const imageData = getImageData();
+
+  console.log(GamePieceRenderer.TRIANGLE_SIDE_LENGTH)
 
   context.putImageData(
     imageData,
-    (window && window.innerWidth / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) * PIXEL_RATIO(),
-    (window && window.innerHeight / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) * PIXEL_RATIO()
+    (WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) * WindowHelper.devicePixelRatio,
+    (WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) * WindowHelper.devicePixelRatio
   );
 }
 

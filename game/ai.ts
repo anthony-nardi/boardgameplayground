@@ -88,7 +88,7 @@ function getScoreForEdgesAndCorners(edges, corners) {
 }
 
 export function getGameStateScore(gameState) {
-  debugger;
+
   const scoringMap = gameState.reduce((piecesByPlayer, piece, coordinate) => {
     if (!piece) {
       return piecesByPlayer;

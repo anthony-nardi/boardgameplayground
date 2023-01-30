@@ -7,7 +7,7 @@ class WindowHelper {
   width: number = 0;
   height: number = 0;
   useWindowHeight: boolean | undefined
-  devicePixelRatio: number = 1;
+  devicePixelRatio: number = 1
   setWidth() {
     this.width = window.innerWidth
   }

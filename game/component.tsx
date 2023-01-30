@@ -15,7 +15,10 @@ export default function () {
     WindowHelper.setWidth();
     WindowHelper.setUseWindowHeight();
     WindowHelper.setDevicePixelRatio();
-    gamePieceRenderer.init()
+    // Canvas.current.style.width = `${WindowHelper.width}px`;
+    // Canvas.current.style.height = `${WindowHelper.height}px`;
+    debugger;
+    gamePieceRenderer.init();
     initGame();
   }, [Canvas]);
   return (

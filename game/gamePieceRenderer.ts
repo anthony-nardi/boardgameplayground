@@ -15,21 +15,22 @@ export const NUMBER_OF_COLS = 8;
 
 class GamePieceRenderer {
   init() {
-
-    console.log(WindowHelper.width)
-    console.log(WindowHelper.height
-    )
+    console.log(WindowHelper)
+    console.log(WindowHelper.useWindowHeight
+      ? WindowHelper.width
+      : WindowHelper.height)
+    debugger
     const extraSpace = 1;
     this.TRIANGLE_SIDE_LENGTH =
       (WindowHelper.useWindowHeight
-        ? WindowHelper.width
-        : WindowHelper.height) /
+        ? WindowHelper.height
+        : WindowHelper.width) /
       (NUMBER_OF_COLS + extraSpace);
     this.TRIANGLE_HEIGHT = this.TRIANGLE_SIDE_LENGTH * (Math.sqrt(3) / 2);
     const isMobile = "ontouchstart" in document.documentElement;
     this.GAME_PIECE_RADIUS = isMobile ? this.TRIANGLE_HEIGHT / 1.75 : this.TRIANGLE_HEIGHT / 2.5;
 
-    this.CANVAS_SIDE_LENGTH = this.GAME_PIECE_RADIUS * PIXEL_RATIO() * 2;
+    this.CANVAS_SIDE_LENGTH = this.GAME_PIECE_RADIUS * WindowHelper.devicePixelRatio * 2;
     this.CANVAS_STYLE_LENGTH = `${this.GAME_PIECE_RADIUS * 2}px`;
 
     this.PLAYER_ONE_TOTT.width = this.CANVAS_SIDE_LENGTH;
@@ -63,51 +64,51 @@ class GamePieceRenderer {
     this.PLAYER_TWO_TZAAR.style.height = this.CANVAS_STYLE_LENGTH;
 
     this.PLAYER_ONE_TOTT.getContext("2d").setTransform(
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0,
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0
     );
     this.PLAYER_ONE_TZARRA.getContext("2d").setTransform(
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0,
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0
     );
     this.PLAYER_ONE_TZAAR.getContext("2d").setTransform(
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0,
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0
     );
 
     this.PLAYER_TWO_TOTT.getContext("2d").setTransform(
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0,
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0
     );
     this.PLAYER_TWO_TZARRA.getContext("2d").setTransform(
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0,
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0
     );
     this.PLAYER_TWO_TZAAR.getContext("2d").setTransform(
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0,
-      PIXEL_RATIO(),
+      WindowHelper.devicePixelRatio,
       0,
       0
     );
