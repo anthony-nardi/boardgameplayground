@@ -1,18 +1,19 @@
-import { List, Map } from "immutable";
+import { Map } from "immutable";
 import { PLAYER_ONE, PLAYER_TWO, TURN_PHASES } from "./constants";
+import { ValidCoordinate } from "./types/types";
 
-export let movingPiece = null;
+export let movingPiece: null | ValidCoordinate = null;
 export let gameBoardState = Map();
 export let isVeryFirstTurn = true;
 export let currentTurn = PLAYER_ONE;
 export let turnPhase = TURN_PHASES.CAPTURE;
 export let numberOfTurnsIntoGame = 0;
 
-export function setNewgameBoardState(newState) {
+export function setNewgameBoardState(newState: typeof gameBoardState) {
   gameBoardState = newState;
 }
 
-export function setMovingPiece(coordinate) {
+export function setMovingPiece(coordinate: ValidCoordinate) {
   movingPiece = coordinate;
 }
 

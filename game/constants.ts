@@ -1,8 +1,6 @@
 import { Record } from "immutable";
 import { ValidCoordinate } from "./types/types";
 
-export const CACHED_CANVAS = document.createElement("canvas");
-
 export const NUMBER_OF_TOTTS = 15;
 export const NUMBER_OF_TZARRAS = 9;
 export const NUMBER_OF_TZAARS = 6;

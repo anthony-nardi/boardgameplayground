@@ -7,6 +7,7 @@ import {
 } from "./gameLogic";
 import WindowHelper from "./WindowHelper";
 import gamePieceRenderer from "./GamePieceRenderer";
+
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
   useEffect(() => {
@@ -15,9 +16,6 @@ export default function () {
     WindowHelper.setWidth();
     WindowHelper.setUseWindowHeight();
     WindowHelper.setDevicePixelRatio();
-    // Canvas.current.style.width = `${WindowHelper.width}px`;
-    // Canvas.current.style.height = `${WindowHelper.height}px`;
-
     gamePieceRenderer.init();
     initGame();
   }, [Canvas]);

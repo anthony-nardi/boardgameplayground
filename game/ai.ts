@@ -15,6 +15,7 @@ import {
   getValidStacks,
   getInvertedValidCaptures,
 } from "./gameBoardHelpers";
+import { ValidCoordinate } from "./types/types";
 
 const scoringMapRecord = Map({
   [PLAYER_ONE]: Map({
@@ -83,34 +84,34 @@ function getScoreForHighestStack(currentStack, stackToBeat) {
   return 0;
 }
 
-function getScoreForEdgesAndCorners(edges, corners) {
+function getScoreForEdgesAndCorners(edges: number, corners: number) {
   return edges * 5 + corners * 10;
 }
 
 export function getGameStateScore(gameState) {
 
-  const scoringMap = gameState.reduce((piecesByPlayer, piece, coordinate) => {
+  const scoringMap = gameState.reduce((piecesByPlayer, piece, coordinate: ValidCoordinate) => {
     if (!piece) {
       return piecesByPlayer;
     }
 
     const { ownedBy, type, stackSize } = piece;
     return piecesByPlayer
-      .updateIn([ownedBy, type, "count"], (count) => count + 1)
+      .updateIn([ownedBy, type, "count"], (count: number) => count + 1)
       .updateIn(
         [ownedBy, type, "stacksGreaterThanOne"],
-        (stacks) => stacks + Number(stackSize)
+        (stacks: number) => stacks + Number(stackSize)
       )
-      .updateIn([ownedBy, type, "largestStackSize"], (largestStackSize) =>
+      .updateIn([ownedBy, type, "largestStackSize"], (largestStackSize: number) =>
         Math.max(largestStackSize, Number(stackSize))
       )
-      .updateIn([ownedBy, type, "stacksOnEdge"], (stacksOnEdge) => {
+      .updateIn([ownedBy, type, "stacksOnEdge"], (stacksOnEdge: number) => {
         if (stackSize > 1 && EDGE_COORDINATES.includes(coordinate)) {
           return stacksOnEdge + 1;
         }
         return stacksOnEdge;
       })
-      .updateIn([ownedBy, type, "stacksOnCorner"], (stacksOnCorner) => {
+      .updateIn([ownedBy, type, "stacksOnCorner"], (stacksOnCorner: number) => {
         if (stackSize > 1 && CORNER_COORDINATES.includes(coordinate)) {
           return stacksOnCorner + 1;
         }
@@ -121,7 +122,7 @@ export function getGameStateScore(gameState) {
 
   let score = 0;
 
-  scoringMap.get(PLAYER_ONE).forEach((data, pieceType) => {
+  scoringMap.get(PLAYER_ONE).forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
     score =
       score -
       getScoreForStacks(data.get("count"), data.get("stacksGreaterThanOne")) -
@@ -135,7 +136,7 @@ export function getGameStateScore(gameState) {
       );
   });
 
-  scoringMap.get(PLAYER_TWO).forEach((data, pieceType) => {
+  scoringMap.get(PLAYER_TWO).forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
     score =
       score +
       getScoreForStacks(data.get("count"), data.get("stacksGreaterThanOne")) +
@@ -153,7 +154,7 @@ export function getGameStateScore(gameState) {
 }
 
 // we value stacks depending on how many of that type are on the board
-function getScoreForStacks(numberOfPieces, stackSize) {
+function getScoreForStacks(numberOfPieces: number, stackSize: number) {
   const MULTIPLIER = 15;
 
   return (MULTIPLIER - numberOfPieces) * stackSize;
@@ -374,98 +375,6 @@ function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
     },
     Map()
   );
-}
-
-export function generateMoves(gameState, turn) {
-  const allPlayerPieces = getAllPlayerPieceCoordinates(gameState, turn);
-
-  return allPlayerPieces.reduce((allGameStatesAfterMoveSeq, fromCoordinate) => {
-    const validCaptures = getValidCaptures(fromCoordinate, gameState);
-
-    // For every piece, get all possible captures
-    // for each and put the resulting game state into a list.
-    const allCaptureStates = validCaptures.reduce(
-      (statesAfterCapture, toCoordinate) => {
-        const fromPiece = gameState.get(fromCoordinate);
-        const nextGameState = gameState
-          .set(fromCoordinate, null)
-          .set(toCoordinate, fromPiece);
-        return statesAfterCapture.set(
-          `${fromCoordinate}->${toCoordinate}`,
-          nextGameState
-        );
-      },
-      Map()
-    );
-
-    // For every game state resulting from the above process,
-    // get all player pieces and return all game states
-    // for every valid stack you can make
-    allCaptureStates.forEach((stateAfterCapture, fromToKey) => {
-      const allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinates(
-        stateAfterCapture,
-        turn
-      );
-
-      allPlayerPiecesAfterCapture.forEach(
-        (playerPieceCoordinateAfterCapture) => {
-          const validStacks = getValidStacks(
-            playerPieceCoordinateAfterCapture,
-            stateAfterCapture
-          );
-
-          const fromPiece = stateAfterCapture.get(
-            playerPieceCoordinateAfterCapture
-          );
-
-          if (validStacks && validStacks.size) {
-            validStacks.forEach((toCoordinate) => {
-              const toPiece = stateAfterCapture.get(toCoordinate);
-
-              const gameStateAfterMoveSeq = stateAfterCapture
-                .set(playerPieceCoordinateAfterCapture, null)
-                .set(toCoordinate, fromPiece)
-                .setIn(
-                  [toCoordinate, "stackSize"],
-                  fromPiece.stackSize + toPiece.stackSize
-                );
-
-              const sequenceKey = `${fromToKey}=>${playerPieceCoordinateAfterCapture}->${toCoordinate}`;
-
-              allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
-                sequenceKey,
-                gameStateAfterMoveSeq
-              );
-            });
-          }
-          const validSecondTurnCaptures = getValidCaptures(
-            playerPieceCoordinateAfterCapture,
-            stateAfterCapture
-          );
-          if (validSecondTurnCaptures && validSecondTurnCaptures.size) {
-            validSecondTurnCaptures.forEach((toCoordinate) => {
-              const nextGameState = stateAfterCapture
-                .set(playerPieceCoordinateAfterCapture, null)
-                .set(toCoordinate, fromPiece);
-              const sequenceKey = `${fromToKey}=>${playerPieceCoordinateAfterCapture}->${toCoordinate}`;
-
-              allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
-                sequenceKey,
-                nextGameState
-              );
-            });
-          }
-          // We can just capture, then pass
-          allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
-            fromToKey,
-            stateAfterCapture
-          );
-        }
-      );
-    });
-
-    return allGameStatesAfterMoveSeq;
-  }, Map());
 }
 
 export function getPossibleMoveSequences(gameState, turn) {
