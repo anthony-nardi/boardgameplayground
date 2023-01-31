@@ -17,7 +17,7 @@ export default function () {
     WindowHelper.setDevicePixelRatio();
     // Canvas.current.style.width = `${WindowHelper.width}px`;
     // Canvas.current.style.height = `${WindowHelper.height}px`;
-    debugger;
+
     gamePieceRenderer.init();
     initGame();
   }, [Canvas]);

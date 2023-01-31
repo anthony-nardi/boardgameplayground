@@ -31,7 +31,6 @@ import {
 } from "./gameState";
 import { getGameStatesToAnalyze, minimax, getWinner, getGameStateScore } from "./ai";
 import * as minimaxer from "minimaxer";
-import type { NodeType } from 'minimaxer'
 import React from "react";
 
 function getPixelCoordinatesFromUserInteraction(event: React.MouseEvent<HTMLCanvasElement>) {
@@ -153,9 +152,11 @@ function checkGameStateAndStartNextTurn() {
 export const createChildCallback = (node, move) => {
   // First create a clone of the gamestate
   // debugger
-
+  debugger
   let gamestateToAnalyze;
   console.log('child node')
+
+  const aim = node.aim * -1
 
   if (!node.gamestate.gamestate) {
 
@@ -169,7 +170,7 @@ export const createChildCallback = (node, move) => {
   }
 
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move)
-  const childNode = new minimaxer.Node(1, updatedBoardGameState, move, 0);
+  const childNode = new minimaxer.Node(1, updatedBoardGameState, move, 0, aim);
   return childNode;
 };
 
@@ -181,30 +182,37 @@ function moveAI2() {
   const opts = new minimaxer.NegamaxOpts();
   // opts.pruning = minimaxer.PruningType.ALPHA_BETA;
   // opts.timeout = 10000;
-  opts.depth = 1
-  opts.method = 0
-  opts.pruning = 1
-  opts.sortMethod = 0
-  opts.genBased = false
-  opts.optimal = false
   // opts.initialDepth = 1
   // opts.exit = 0
   // opts.initialDepth = 1
-  let aim = 1
+
   const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
     gameBoardState,
     PLAYER_TWO
   ).keySeq().toJS()
 
 
+  opts.depth = allPossibleStatesAfterTurn.length < 500 ? 2 : 1
+  opts.method = 0
+  opts.pruning = 1
+  opts.sortMethod = 0
+  opts.genBased = false
+  opts.optimal = false
+  console.log('DEPTH is ' + opts.depth)
+
+  let aim = 1
+  let data = 1
+  let move = null
+  const nodeType = 0
   const root = new minimaxer.Node(
-    0,
+    nodeType,
     gameBoardState,
-    null,
-    - 1,
+    move,
+    data,
+    aim,
     allPossibleStatesAfterTurn
   );
-  const tree = new minimaxer.Negamax(root, aim, allPossibleStatesAfterTurn, opts);
+  const tree = new minimaxer.Negamax(root, opts);
 
   tree.CreateChildNode = createChildCallback;
   tree.EvaluateNode = (node) => {
@@ -220,7 +228,6 @@ function moveAI2() {
 
     const scoreForNode = getGameStateScore(gamestateToAnalyze);
 
-    console.log(scoreForNode)
     return scoreForNode
   }
   tree.GetMoves = (gamestate) => {
@@ -444,7 +451,7 @@ function getBestMove(gameState, turn) {
   return bestMove;
 }
 
-export function initGame(SETUP_STYLE) {
+export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   const piecesToSetup =
     SETUP_STYLE !== "RANDOM"
       ? setupBoardWithPiecesNotRandom()

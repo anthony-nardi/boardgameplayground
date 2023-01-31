@@ -19,7 +19,7 @@ class GamePieceRenderer {
     console.log(WindowHelper.useWindowHeight
       ? WindowHelper.width
       : WindowHelper.height)
-    debugger
+
     const extraSpace = 1;
     this.TRIANGLE_SIDE_LENGTH =
       (WindowHelper.useWindowHeight

@@ -159,86 +159,6 @@ function getScoreForStacks(numberOfPieces, stackSize) {
   return (MULTIPLIER - numberOfPieces) * stackSize;
 }
 
-export function minimax(
-  gameState,
-  turn,
-  depth,
-  alpha = -Infinity,
-  beta = Infinity
-) {
-  const winner = getWinner(gameState);
-  if (winner === PLAYER_ONE) {
-    return [-Infinity];
-  }
-  if (winner === PLAYER_TWO) {
-    return [Infinity];
-  }
-
-  if (depth === 0) {
-    return [getGameStateScore(gameState)];
-  }
-
-  // maximizing player
-  if (turn === PLAYER_TWO) {
-    let bestValue = -Infinity;
-    let moveSeq = null;
-
-    // choose max score after player one makes his move
-    const gameStatesToAnalyze = getGameStatesToAnalyze(gameState, PLAYER_TWO);
-    gameStatesToAnalyze.forEach((nextGameState, nextMoveSeq) => {
-      const [maybeBetterValue] = minimax(
-        nextGameState,
-        PLAYER_ONE,
-        depth - 1,
-        alpha,
-        beta
-      );
-      if (maybeBetterValue >= bestValue) {
-        bestValue = maybeBetterValue;
-        moveSeq = nextMoveSeq;
-      }
-
-      alpha = Math.max(bestValue, alpha);
-
-      if (alpha >= beta) {
-        return false;
-      }
-    });
-
-    return [bestValue, moveSeq];
-  }
-
-  // minimizing player
-  if (turn === PLAYER_ONE) {
-    let bestValue = Infinity;
-    let moveSeq = null;
-    // choose lowest score after player two makes move
-    const gameStatesToAnalyze = getGameStatesToAnalyze(gameState, PLAYER_ONE);
-
-    gameStatesToAnalyze.forEach((nextGameState, nextMoveSeq) => {
-      const [maybeWorseValue] = minimax(
-        nextGameState,
-        PLAYER_TWO,
-        depth - 1,
-        alpha,
-        beta
-      );
-
-      if (maybeWorseValue <= bestValue) {
-        bestValue = maybeWorseValue;
-        moveSeq = nextMoveSeq;
-      }
-
-      beta = Math.min(beta, bestValue);
-
-      if (alpha >= beta) {
-        return false;
-      }
-    });
-
-    return [bestValue, moveSeq];
-  }
-}
 
 function getPieces(gameState) {
   return gameState.reduce(
@@ -301,7 +221,7 @@ export function getWinner(gameState) {
 export function getGameStatesToAnalyze(gameState, turn) {
   const EARLY_GAME = numberOfTurnsIntoGame < 10;
   let allPossibleStatesAfterTurn = List();
-  debugger
+
   if (!EARLY_GAME) {
     allPossibleStatesAfterTurn = getPossibleMoveSequences(gameState, turn);
   } else {
