@@ -2,6 +2,7 @@ import {
 
   PLAYABLE_VERTICES,
   GamePieceRecord,
+  GamePieceRecordProps,
   TZAAR,
   TOTT,
   TZARRA,
@@ -11,12 +12,14 @@ import {
   PLAYER_TWO,
   PLAYER_ONE
 } from "./constants";
-import { List, Map } from "immutable";
+import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
 import GamePieceRenderer from "./GamePieceRenderer";
+import { ValidCoordinate } from "./types/types";
 
-export function getPixelCoordinatesFromBoardCoordinates(coordinate) {
+export function getPixelCoordinatesFromBoardCoordinates(coordinate: ValidCoordinate) {
   const [x, y] = coordinate.split(",");
+
 
   const offsetXToCenter = WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
   const offsetYToCenter = WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
@@ -109,69 +112,68 @@ export function isPlayableSpace(coordinate) {
 }
 
 export function setupBoardWithPiecesNotRandom() {
-  let piecesToDraw = Map({
+  let piecesToDraw: { [key in ValidCoordinate]: RecordOf<GamePieceRecordProps> } = {
+    "0,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "0,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "0,6": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "0,7": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "0,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "1,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "1,4": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "1,5": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "1,6": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "1,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "1,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "2,2": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "2,3": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "2,4": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
+    "2,5": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
+    "2,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
+    "2,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "2,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "3,1": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "3,2": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "3,3": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
+    "3,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "3,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "3,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
+    "3,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "3,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "4,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "4,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "4,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
+    "4,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "4,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "4,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
+    "4,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "4,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "5,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "5,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "5,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
+    "5,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
+    "5,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "5,5": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
+    "5,6": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "5,7": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
     "6,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "6,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "6,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
+    "6,3": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
+    "6,4": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
+    "6,5": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "6,6": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
     "7,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "7,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "7,2": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "7,3": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
+    "7,4": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
+    "7,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
     "8,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "8,1": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "8,2": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "8,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "8,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "7,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "6,6": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "5,7": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "4,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "3,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "2,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "1,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "0,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "0,7": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "0,6": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "0,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "0,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "1,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "2,2": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "3,1": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "4,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "5,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "6,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "7,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "7,2": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "7,3": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "7,4": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "6,5": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "5,6": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "4,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "3,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "2,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "1,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "1,6": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "1,5": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "1,4": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "2,3": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "3,2": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "4,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "5,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "6,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "6,3": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "6,4": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "5,5": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "4,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "3,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "2,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "2,5": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "2,4": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "3,3": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "4,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "5,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "5,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "4,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "3,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "3,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO })
-  }).sortBy(Math.random);
-
+  }
   return piecesToDraw;
 }
 

@@ -1,11 +1,12 @@
 import { Record } from "immutable";
+import { ValidCoordinate } from "./types/types";
 
 export const CACHED_CANVAS = document.createElement("canvas");
 
 export const NUMBER_OF_TOTTS = 15;
 export const NUMBER_OF_TZARRAS = 9;
 export const NUMBER_OF_TZAARS = 6;
-export const PLAYABLE_VERTICES = [
+export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "4,0",
   "5,0",
   "6,0",
@@ -68,7 +69,7 @@ export const PLAYABLE_VERTICES = [
   "4,8"
 ];
 
-export const CORNER_COORDINATES = ["4,0", "8,0", "8,4", "4,8", "0,8", "0,4"];
+export const CORNER_COORDINATES = ["4,0", "8,0", "8,4", "4,8", "0,8", "0,4"] as const
 export const EDGE_COORDINATES = [
   "5,0",
   "6,0",
@@ -88,22 +89,29 @@ export const EDGE_COORDINATES = [
   "1,3",
   "2,2",
   "3,1"
-];
+] as const
 
 export const TZAAR = "TZAAR";
 export const TOTT = "TOTT";
 export const TZARRA = "TZARRA";
 
-export const GamePieceRecord = Record({
-  ownedBy: "",
-  type: "",
+export type GamePieceRecordProps = {
+  ownedBy: typeof PLAYER_ONE | typeof PLAYER_TWO | null;
+  type: typeof TZAAR | typeof TOTT | typeof TZARRA | null;
+  stackSize: number;
+  isDragging: boolean
+}
+
+export const GamePieceRecord = Record<GamePieceRecordProps>({
+  ownedBy: null,
+  type: null,
   stackSize: 1,
   isDragging: false
 });
 
-export const PLAYER_ONE = "PLAYER_ONE";
+export const PLAYER_ONE = "PLAYER_ONE"
 export const PLAYER_TWO = "PLAYER_TWO";
 export const TURN_PHASES = {
   CAPTURE: "CAPTURE",
-  STACK_OR_CAPTURE: "STACK_OR_CAPTURE"
+  STACK_OR_CAPTURE_OR_PASS: "STACK_OR_CAPTURE_OR_PASS"
 };

@@ -26,14 +26,14 @@ const COORDS_TO_NOT_RENDER = [
   "3,4",
   "4,4",
   "7,7"
-];
+] as const
 
 const OFFSET_X = 0;
 
 const grid = getInitialGridState();
 
 function initCanvas() {
-  console.log(WindowHelper)
+
 
   CACHED_CANVAS.width = WindowHelper.width * WindowHelper.devicePixelRatio
   CACHED_CANVAS.height = WindowHelper.height * WindowHelper.devicePixelRatio
@@ -48,10 +48,15 @@ function initCanvas() {
   window.GAME_STATE_BOARD_CANVAS.height = WindowHelper.height * WindowHelper.devicePixelRatio
   window.GAME_STATE_BOARD_CANVAS.style.width = `${WindowHelper.width}px`;
   window.GAME_STATE_BOARD_CANVAS.style.height = `${WindowHelper.height}px`;
-  console.log(WindowHelper.width * WindowHelper.devicePixelRatio)
-  console.log(WindowHelper.width)
 
-  CACHED_CANVAS.getContext("2d", { willReadFrequently: true }).setTransform(
+  const cachedCanvasContext = CACHED_CANVAS.getContext("2d", { willReadFrequently: true })
+  const gameStateCanvasContext = window.GAME_STATE_BOARD_CANVAS.getContext("2d", { willReadFrequently: true })
+
+  if (!cachedCanvasContext || !gameStateCanvasContext) {
+    throw new Error('context isnt ready')
+  }
+
+  cachedCanvasContext.setTransform(
     WindowHelper.devicePixelRatio,
     0,
     0,
@@ -59,7 +64,7 @@ function initCanvas() {
     0,
     0
   );
-  window.GAME_STATE_BOARD_CANVAS.getContext("2d", { willReadFrequently: true }).setTransform(
+  gameStateCanvasContext.setTransform(
     WindowHelper.devicePixelRatio,
     0,
     0,
@@ -87,6 +92,9 @@ function getInitialGridState() {
 
 function getImageData() {
   const context = getContext();
+  if (!context) {
+    throw new Error('context isnt ready')
+  }
 
   return context.getImageData(
     OFFSET_X * WindowHelper.devicePixelRatio,
@@ -100,8 +108,9 @@ export function drawCachedBoard() {
   const context = window.GAME_STATE_BOARD_CANVAS.getContext("2d", { willReadFrequently: true });
   const imageData = getImageData();
 
-  console.log(GamePieceRenderer.TRIANGLE_SIDE_LENGTH)
-
+  if (!context) {
+    throw new Error('context isnt ready')
+  }
   context.putImageData(
     imageData,
     (WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) * WindowHelper.devicePixelRatio,
@@ -119,7 +128,9 @@ export function drawInitialGrid() {
 
 function renderTriangleFromVertex(coordinate) {
   const context = getContext();
-
+  if (!context) {
+    throw new Error('context isnt ready')
+  }
   if (COORDS_TO_NOT_RENDER.includes(coordinate)) {
     return;
   }
@@ -142,7 +153,9 @@ function renderTriangleFromVertex(coordinate) {
 
 function renderHexagonBorder() {
   const context = getContext();
-
+  if (!context) {
+    throw new Error('context isnt ready')
+  }
   const x1 = 2 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + OFFSET_X;
   const y1 = 0;
 
@@ -177,7 +190,9 @@ function renderHexagonBorder() {
 
 function renderInnerHexagonBorder() {
   const context = getContext();
-
+  if (!context) {
+    throw new Error('context isnt ready')
+  }
   const x1 = 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - GamePieceRenderer.TRIANGLE_SIDE_LENGTH / 2 + OFFSET_X;
   const y1 = 3 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
@@ -212,6 +227,9 @@ function renderInnerHexagonBorder() {
 
 function renderSquareBorder() {
   const context = getContext();
+  if (!context) {
+    throw new Error('context isnt ready')
+  }
   context.strokeRect(
     OFFSET_X,
     0,

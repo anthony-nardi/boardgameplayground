@@ -1,8 +1,8 @@
 import {
-  DEBUG,
   PLAYER_TWO,
   PLAYER_ONE,
   TURN_PHASES,
+
 } from "./constants";
 import { drawInitialGrid } from "./cachedBoard";
 import {
@@ -32,7 +32,7 @@ import {
 import { getGameStatesToAnalyze, minimax, getWinner, getGameStateScore } from "./ai";
 import * as minimaxer from "minimaxer";
 import React from "react";
-
+const DEBUG = false
 function getPixelCoordinatesFromUserInteraction(event: React.MouseEvent<HTMLCanvasElement>) {
   const x = event.clientX;
   const y = event.clientY;
@@ -96,7 +96,7 @@ export function handleDropPiece(event) {
 
   if (turnPhase === TURN_PHASES.CAPTURE && isValidCapture) {
     capturePiece(movingPiece, toCoordinates);
-  } else if (turnPhase === TURN_PHASES.STACK_OR_CAPTURE) {
+  } else if (turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS) {
     if (isValidCapture) {
       capturePiece(movingPiece, toCoordinates);
     } else if (isValidStack) {
@@ -109,7 +109,7 @@ export function handleDropPiece(event) {
 
   if (turnPhase === TURN_PHASES.CAPTURE && currentTurn === PLAYER_TWO) {
     // document.getElementById("loadingSpinner").classList.remove("hidden");
-    setTimeout(() => moveAI2(), 50);
+    setTimeout(() => moveAI(), 50);
   }
 }
 
@@ -152,7 +152,6 @@ function checkGameStateAndStartNextTurn() {
 export const createChildCallback = (node, move) => {
   // First create a clone of the gamestate
   // debugger
-  debugger
   let gamestateToAnalyze;
   console.log('child node')
 
@@ -165,26 +164,20 @@ export const createChildCallback = (node, move) => {
     gamestateToAnalyze = node.gamestate.gamestate
   }
 
-  if (!gamestateToAnalyze) {
-    debugger
-  }
+
 
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move)
   const childNode = new minimaxer.Node(1, updatedBoardGameState, move, 0, aim);
   return childNode;
 };
 
-function moveAI2() {
+function moveAI() {
   if (currentTurn !== PLAYER_TWO) {
     return;
   }
   const now = Date.now();
   const opts = new minimaxer.NegamaxOpts();
-  // opts.pruning = minimaxer.PruningType.ALPHA_BETA;
-  // opts.timeout = 10000;
-  // opts.initialDepth = 1
-  // opts.exit = 0
-  // opts.initialDepth = 1
+
 
   const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
     gameBoardState,

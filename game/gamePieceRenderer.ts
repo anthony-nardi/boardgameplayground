@@ -4,7 +4,6 @@ import {
   PLAYER_TWO,
   TZAAR,
   TZARRA,
-  PIXEL_RATIO,
   GamePieceRecord
 } from "./constants";
 import WindowHelper from "./WindowHelper";

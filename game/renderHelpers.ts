@@ -9,13 +9,15 @@ import {
   TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
+  GamePieceRecordProps,
 
 } from "./constants";
 import WindowHelper from "./WindowHelper";
 import { drawCachedBoard } from "./cachedBoard";
 import { gameBoardState, setNewgameBoardState } from "./gameState";
-import { List } from "immutable";
+import { List, RecordOf } from "immutable";
 import GamePieceRenderer from "./GamePieceRenderer";
+import { ValidCoordinate } from "./types/types";
 
 function getContext() {
 
@@ -29,20 +31,30 @@ export function drawCoordinates() {
   PLAYABLE_VERTICES.map(drawCoordinate);
 }
 
-export function drawCoordinate(coordinate) {
+export function drawCoordinate(coordinate: ValidCoordinate) {
   const context = getContext();
   const [x, y] = coordinate.split(",");
 
-  const offsetXToCenter = WindowHelper.width / 2 - 4 * TRIANGLE_SIDE_LENGTH;
-  const offsetYToCenter = WindowHelper.height / 2 - 4 * TRIANGLE_HEIGHT;
+
+  if (!GamePieceRenderer.TRIANGLE_HEIGHT || !GamePieceRenderer.TRIANGLE_SIDE_LENGTH) {
+    throw new Error('GamePieceRenderer not ready')
+  }
+
+  if (!context) {
+    throw new Error('context not ready')
+  }
+
+
+  const offsetXToCenter = WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+  const offsetYToCenter = WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const offsetX =
-    x * TRIANGLE_SIDE_LENGTH - Math.max(4 - y, 0) * TRIANGLE_SIDE_LENGTH;
+    +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
 
   const xPos =
-    (Math.abs(4 - y) * TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
+    (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
 
-  const yPos = y * TRIANGLE_HEIGHT + offsetYToCenter;
+  const yPos = y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   context.font = ".5rem Helvetica";
   context.fillStyle = "#39ff14";
   context.fillText(coordinate, xPos + 10, yPos + 10);
@@ -55,78 +67,59 @@ export function drawGameBoardState() {
   drawCoordinates();
 }
 
-export function drawStaticGamePiece(gamePiece, coordinate) {
-  const [xPos, yPos] = getPixelCoordinatesFromBoardCoordinates(
-    coordinate
-  ).split(",");
-
+export function drawStaticGamePiece(gamePiece: RecordOf<GamePieceRecordProps>, coordinate: ValidCoordinate) {
   if (gamePiece.isDragging || !gamePiece) {
     return;
   }
 
-  drawGamePiece(gamePiece, xPos, yPos);
+  const [xPos, yPos] = getPixelCoordinatesFromBoardCoordinates(
+    coordinate
+  ).split(",");
+
+  drawGamePiece(gamePiece, Number(xPos), Number(yPos));
 }
 
-export function drawGamePiece(gamePiece, xPos, yPos) {
+export function drawGamePiece(gamePiece: RecordOf<GamePieceRecordProps>, xPos: number, yPos: number) {
   const context = getContext();
+
+  if (!context) {
+    throw new Error('context not available.')
+  }
+
+  if (!GamePieceRenderer.GAME_PIECE_RADIUS || !GamePieceRenderer.CANVAS_SIDE_LENGTH) {
+    throw new Error('GamePieceRenderer not ready.')
+  }
+
+  const dx = Math.floor(xPos - GamePieceRenderer.GAME_PIECE_RADIUS)
+  const dy = Math.floor(yPos - GamePieceRenderer.GAME_PIECE_RADIUS)
+  const dw = Math.floor(GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio)
+  const dh = Math.floor(GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio)
+
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TOTT) {
-    context.drawImage(
-      GamePieceRenderer.PLAYER_ONE_TOTT,
-      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
-    );
+    context.drawImage(GamePieceRenderer.PLAYER_ONE_TOTT, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZARRA) {
-    context.drawImage(
-      GamePieceRenderer.PLAYER_ONE_TZARRA,
-      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
-    );
+    context.drawImage(GamePieceRenderer.PLAYER_ONE_TZARRA, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZAAR) {
-    context.drawImage(
-      GamePieceRenderer.PLAYER_ONE_TZAAR,
-      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
-    );
+    context.drawImage(GamePieceRenderer.PLAYER_ONE_TZAAR, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TOTT) {
-    context.drawImage(
-      GamePieceRenderer.PLAYER_TWO_TOTT,
-      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
-    );
+    context.drawImage(GamePieceRenderer.PLAYER_TWO_TOTT, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZARRA) {
-    context.drawImage(
-      GamePieceRenderer.PLAYER_TWO_TZARRA,
-      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
-    );
+    context.drawImage(GamePieceRenderer.PLAYER_TWO_TZARRA, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZAAR) {
-    context.drawImage(
-      GamePieceRenderer.PLAYER_TWO_TZAAR,
-      xPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      yPos - GamePieceRenderer.GAME_PIECE_RADIUS,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio,
-      GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
-    );
+    context.drawImage(GamePieceRenderer.PLAYER_TWO_TZAAR, dx, dy, dw, dh);
   }
+
+  const textPositionX = Math.floor(+xPos - 6)
+  const textPositionY = Math.floor(+yPos + 6)
 
   context.font = "1.15rem Helvetica";
   context.fillStyle = gamePiece.type === TZAAR ? "#000" : "#fff";
-  context.fillText(gamePiece.stackSize, +xPos - 6, +yPos + 6);
+  context.fillText(String(gamePiece.stackSize), textPositionX, textPositionY);
 }
 
 export function drawGamePieces() {
@@ -135,17 +128,21 @@ export function drawGamePieces() {
 
 export function clearCanvas() {
   const context = getContext();
+  if (!context) {
+    throw new Error('context not available')
+  }
   context.clearRect(0, 0, WindowHelper.width, WindowHelper.height);
 }
 
-function timeFunction(t) {
+function timeFunction(t: number) {
   return --t * t * t + 1;
 }
 
-export function renderInitializingBoard(piecesToDraw, callback) {
+export function renderInitializingBoard(piecesToDraw, callback: Function) {
   let index = 0;
   let piecesToRenderList = List();
-  piecesToDraw.forEach((piece, coordinate) => {
+  for (const coordinate in piecesToDraw) {
+    const piece = piecesToDraw[coordinate]
     const to = getPixelCoordinatesFromBoardCoordinates(coordinate);
     const from = `${WindowHelper.width / 2},${WindowHelper.height / 2}`;
 
@@ -157,14 +154,19 @@ export function renderInitializingBoard(piecesToDraw, callback) {
     });
 
     index = index + 1;
-  });
+  }
+
+
 
   renderMovingPieces(piecesToRenderList, 500, Date.now(), () => {
     let index = 0;
-    piecesToDraw.forEach((piece, coordinate) => {
+    for (const coordinate in piecesToDraw) {
+      const piece = piecesToDraw[coordinate]
       setNewgameBoardState(gameBoardState.set(coordinate, piece));
       index = index + 1;
-    });
+    }
+
+
     callback();
   });
 }
