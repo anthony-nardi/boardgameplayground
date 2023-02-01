@@ -1,5 +1,5 @@
 import { Record } from "immutable";
-import { ValidCoordinate } from "./types/types";
+import { PieceType, ValidCoordinate } from "./types/types";
 
 export const NUMBER_OF_TOTTS = 15;
 export const NUMBER_OF_TZARRAS = 9;
@@ -95,7 +95,7 @@ export const TZARRA = "TZARRA";
 
 export type GamePieceRecordProps = {
   ownedBy: typeof PLAYER_ONE | typeof PLAYER_TWO | null;
-  type: typeof TZAAR | typeof TOTT | typeof TZARRA | null;
+  type: PieceType | null;
   stackSize: number;
   isDragging: boolean
 }

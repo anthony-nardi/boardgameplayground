@@ -1,7 +1,10 @@
+import { TZAAR, TOTT, TZARRA } from "../constants";
 declare global {
     interface Window { GAME_STATE_BOARD_CANVAS: HTMLCanvasElement | null; }
 }
 
+export type Player = "PLAYER_ONE" | "PLAYER_TWO"
+export type PieceType = typeof TZAAR | typeof TOTT | typeof TZARRA | null
 export type AllCoordinates =
     "0,0" |
     "0,1" |

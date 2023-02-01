@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 const DynamicHeader = dynamic(() => import("../game/component"), {
-  loading: () => "Loading...",
+  loading: () => null,
   ssr: false,
 });
 

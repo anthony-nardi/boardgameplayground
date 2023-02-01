@@ -1,4 +1,4 @@
-import { List, Map } from "immutable";
+import { List, Map, RecordOf } from "immutable";
 import {
   TZAAR,
   TOTT,
@@ -7,15 +7,16 @@ import {
   PLAYER_TWO,
   CORNER_COORDINATES,
   EDGE_COORDINATES,
+  GamePieceRecordProps,
 } from "./constants";
 
-import { currentTurn, numberOfTurnsIntoGame } from "./gameState";
+import { currentTurn, gameBoardState, numberOfTurnsIntoGame } from "./gameState";
 import {
   getValidCaptures,
   getValidStacks,
   getInvertedValidCaptures,
 } from "./gameBoardHelpers";
-import { ValidCoordinate } from "./types/types";
+import { Player, ValidCoordinate } from "./types/types";
 
 const scoringMapRecord = Map({
   [PLAYER_ONE]: Map({
@@ -72,7 +73,7 @@ const scoringMapRecord = Map({
   }),
 });
 
-function getScoreForHighestStack(currentStack, stackToBeat) {
+function getScoreForHighestStack(currentStack: number, stackToBeat: number) {
   if (currentStack > stackToBeat) {
     return 20;
   }
@@ -88,7 +89,7 @@ function getScoreForEdgesAndCorners(edges: number, corners: number) {
   return edges * 5 + corners * 10;
 }
 
-export function getGameStateScore(gameState) {
+export function getGameStateScore(gameState: typeof gameBoardState) {
 
   const scoringMap = gameState.reduce((piecesByPlayer, piece, coordinate: ValidCoordinate) => {
     if (!piece) {
@@ -97,21 +98,28 @@ export function getGameStateScore(gameState) {
 
     const { ownedBy, type, stackSize } = piece;
     return piecesByPlayer
+      // @ts-expect-error fix
       .updateIn([ownedBy, type, "count"], (count: number) => count + 1)
       .updateIn(
-        [ownedBy, type, "stacksGreaterThanOne"],
+        [ownedBy, type, "stacksGreaterThanOne"],// @ts-expect-error fix
+
         (stacks: number) => stacks + Number(stackSize)
       )
+      // @ts-expect-error fix
       .updateIn([ownedBy, type, "largestStackSize"], (largestStackSize: number) =>
         Math.max(largestStackSize, Number(stackSize))
       )
+      // @ts-expect-error fix
       .updateIn([ownedBy, type, "stacksOnEdge"], (stacksOnEdge: number) => {
+        // @ts-expect-error fix
         if (stackSize > 1 && EDGE_COORDINATES.includes(coordinate)) {
           return stacksOnEdge + 1;
         }
         return stacksOnEdge;
       })
+      // @ts-expect-error fix
       .updateIn([ownedBy, type, "stacksOnCorner"], (stacksOnCorner: number) => {
+        // @ts-expect-error fix
         if (stackSize > 1 && CORNER_COORDINATES.includes(coordinate)) {
           return stacksOnCorner + 1;
         }
@@ -121,30 +129,35 @@ export function getGameStateScore(gameState) {
   }, scoringMapRecord);
 
   let score = 0;
-
+  // @ts-expect-error fix
   scoringMap.get(PLAYER_ONE).forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
     score =
       score -
+      // @ts-expect-error fix
       getScoreForStacks(data.get("count"), data.get("stacksGreaterThanOne")) -
       getScoreForHighestStack(
+        // @ts-expect-error fix
         data.get("largestStackSize"),
         scoringMap.getIn([PLAYER_TWO, pieceType, "largestStackSize"])
       ) +
       getScoreForEdgesAndCorners(
+        // @ts-expect-error fix
         data.get("stacksOnEdge"),
         data.get("stacksOnCorner")
       );
   });
-
+  // @ts-expect-error fix
   scoringMap.get(PLAYER_TWO).forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
     score =
       score +
+      // @ts-expect-error fix
       getScoreForStacks(data.get("count"), data.get("stacksGreaterThanOne")) +
-      getScoreForHighestStack(
+      getScoreForHighestStack(// @ts-expect-error fix
         data.get("largestStackSize"),
         scoringMap.getIn([PLAYER_ONE, pieceType, "largestStackSize"])
       ) -
       getScoreForEdgesAndCorners(
+        // @ts-expect-error fix
         data.get("stacksOnEdge"),
         data.get("stacksOnCorner")
       );
@@ -161,43 +174,50 @@ function getScoreForStacks(numberOfPieces: number, stackSize: number) {
 }
 
 
-function getPieces(gameState) {
+function getPieces(gameState: typeof gameBoardState) {
   return gameState.reduce(
     (piecesByPlayer, piece) => {
       if (!piece) {
         return piecesByPlayer;
       }
       const { ownedBy, type } = piece;
-      return piecesByPlayer.updateIn([ownedBy, type], (pieces) =>
+      return piecesByPlayer.updateIn([ownedBy, type], (pieces: any) =>
         pieces.push(piece)
       );
     },
     Map({
       [PLAYER_ONE]: Map({
-        [TOTT]: List(),
-        [TZARRA]: List(),
-        [TZAAR]: List(),
+        [TOTT]: List<RecordOf<GamePieceRecordProps>>(),
+        [TZARRA]: List<RecordOf<GamePieceRecordProps>>(),
+        [TZAAR]: List<RecordOf<GamePieceRecordProps>>(),
       }),
       [PLAYER_TWO]: Map({
-        [TOTT]: List(),
-        [TZARRA]: List(),
-        [TZAAR]: List(),
+        [TOTT]: List<RecordOf<GamePieceRecordProps>>(),
+        [TZARRA]: List<RecordOf<GamePieceRecordProps>>(),
+        [TZAAR]: List<RecordOf<GamePieceRecordProps>>(),
       }),
     })
   );
 }
 
-export function getWinner(gameState) {
+export function getWinner(gameState: typeof gameBoardState) {
   const pieceCountsByPlayer = getPieces(gameState);
 
+
   const playerOneLost =
+    // @ts-expect-error fix
     !pieceCountsByPlayer.getIn([PLAYER_ONE, TOTT]).size ||
+    // @ts-expect-error fix
     !pieceCountsByPlayer.getIn([PLAYER_ONE, TZARRA]).size ||
+    // @ts-expect-error fix
     !pieceCountsByPlayer.getIn([PLAYER_ONE, TZAAR]).size;
 
   const playerTwoLost =
+    // @ts-expect-error fix
     !pieceCountsByPlayer.getIn([PLAYER_TWO, TOTT]).size ||
+    // @ts-expect-error fix
     !pieceCountsByPlayer.getIn([PLAYER_TWO, TZARRA]).size ||
+    // @ts-expect-error fix
     !pieceCountsByPlayer.getIn([PLAYER_TWO, TZAAR]).size;
 
   if (playerOneLost) {
@@ -208,24 +228,24 @@ export function getWinner(gameState) {
   }
 
   const possibleCaptures = getAllPlayerPieceCoordinates(
-    gameState,
+    gameState,// @ts-expect-error fix
     currentTurn
   ).map((fromCoordinate) => {
     return getValidCaptures(fromCoordinate, gameState);
   });
-
+  // @ts-expect-error fix
   if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
     return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
   }
 }
 
-export function getGameStatesToAnalyze(gameState, turn) {
+export function getGameStatesToAnalyze(gameState: typeof gameBoardState, turn: Player) {
   const EARLY_GAME = numberOfTurnsIntoGame < 10;
   let allPossibleStatesAfterTurn = List();
 
-  if (!EARLY_GAME) {
+  if (!EARLY_GAME) {// @ts-expect-error fix
     allPossibleStatesAfterTurn = getPossibleMoveSequences(gameState, turn);
-  } else {
+  } else {// @ts-expect-error fix
     allPossibleStatesAfterTurn = getEarlyGamePossibleMoveSequences(
       gameState,
       TZAAR,
@@ -238,19 +258,19 @@ export function getGameStatesToAnalyze(gameState, turn) {
   return allPossibleStatesAfterTurn;
 }
 
-export function getAllPlayerPieceCoordinates(gameState, player) {
+export function getAllPlayerPieceCoordinates(gameState: typeof gameBoardState, player: Player) {
   return gameState
     .filter((piece) => piece && piece.ownedBy === player)
     .keySeq();
 }
-
-export function getAllPlayerPieceCoordinatesByType(gameState, player, type) {
+// @ts-expect-error fix
+export function getAllPlayerPieceCoordinatesByType(gameState: typeof gameBoardState, player: Player, type) {
   return gameState
     .filter((piece) => piece && piece.ownedBy === player && piece.type === type)
     .keySeq();
 }
-
-function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
+// @ts-expect-error fix
+function getEarlyGamePossibleMoveSequences(gameState: typeof gameBoardState, PIECE_TYPE, turn: Player) {
   const playerPiecesToCapture = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
   let trySecondCapture = false;
 
@@ -260,7 +280,7 @@ function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
     playerPiecesToCapture,
     PIECE_TYPE
   );
-
+  // @ts-expect-error fix
   if (allOpponentPlayerPieces.size <= 2) {
     trySecondCapture = true;
   }
@@ -272,10 +292,10 @@ function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
       // For every piece, get all possible captures
       // for each and put the resulting game state into a list.
       const allCaptureStates = validCaptures.reduce(
-        (statesAfterCapture, fromCoordinate) => {
+        (statesAfterCapture, fromCoordinate) => {// @ts-expect-error fix
           const fromPiece = gameState.get(fromCoordinate);
-          const nextGameState = gameState
-            .set(fromCoordinate, null)
+          const nextGameState = gameState// @ts-expect-error fix
+            .set(fromCoordinate, null)// @ts-expect-error fix
             .set(toCoordinate, fromPiece);
           return statesAfterCapture.set(
             `${fromCoordinate}->${toCoordinate}`,
@@ -290,20 +310,20 @@ function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
       // for every valid stack you can make
       allCaptureStates.forEach((stateAfterCapture, fromToKey) => {
         if (trySecondCapture) {
-          const allOpponentPlayerPieces = getAllPlayerPieceCoordinatesByType(
+          const allOpponentPlayerPieces = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
             stateAfterCapture,
             playerPiecesToCapture,
             PIECE_TYPE
           );
           allOpponentPlayerPieces.forEach((toCoordinate) => {
             const validCaptures = getInvertedValidCaptures(
-              toCoordinate,
+              toCoordinate,// @ts-expect-error fix
               stateAfterCapture
             );
 
-            validCaptures.forEach((fromCoordinate) => {
+            validCaptures.forEach((fromCoordinate) => {// @ts-expect-error fix
               const fromPiece = stateAfterCapture.get(fromCoordinate);
-              const sequenceKey = `${fromToKey}=>${fromCoordinate}->${toCoordinate}`;
+              const sequenceKey = `${fromToKey}=>${fromCoordinate}->${toCoordinate}`;// @ts-expect-error fix
               const gameStateAfterSecondCapture = stateAfterCapture
                 .set(fromCoordinate, null)
                 .set(toCoordinate, fromPiece);
@@ -315,21 +335,21 @@ function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
           });
         }
 
-        let allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(
+        let allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
           stateAfterCapture,
           turn,
           TZAAR
         );
 
         if (!allPlayerPiecesAfterCapture.size) {
-          allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(
+          allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
             stateAfterCapture,
             turn,
             TZARRA
           );
         }
         if (!allPlayerPiecesAfterCapture.size) {
-          allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(
+          allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
             stateAfterCapture,
             turn,
             TOTT
@@ -342,16 +362,16 @@ function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
         allPlayerPiecesAfterCapture.forEach(
           (playerPieceCoordinateAfterCapture) => {
             const validStacks = getValidStacks(
-              playerPieceCoordinateAfterCapture,
+              playerPieceCoordinateAfterCapture,// @ts-expect-error fix
               stateAfterCapture
             );
-
+            // @ts-expect-error fix
             const fromPiece = stateAfterCapture.get(
               playerPieceCoordinateAfterCapture
             );
-            validStacks.forEach((toCoordinate) => {
+            validStacks.forEach((toCoordinate) => {// @ts-expect-error fix
               const toPiece = stateAfterCapture.get(toCoordinate);
-
+              // @ts-expect-error fix
               const gameStateAfterMoveSeq = stateAfterCapture
                 .set(playerPieceCoordinateAfterCapture, null)
                 .set(toCoordinate, fromPiece)
@@ -377,7 +397,7 @@ function getEarlyGamePossibleMoveSequences(gameState, PIECE_TYPE, turn) {
   );
 }
 
-export function getPossibleMoveSequences(gameState, turn) {
+export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn: Player) {
   const allPlayerPieces = getAllPlayerPieceCoordinates(gameState, turn);
 
   return allPlayerPieces.reduce((allGameStatesAfterMoveSeq, fromCoordinate) => {
@@ -388,8 +408,8 @@ export function getPossibleMoveSequences(gameState, turn) {
     const allCaptureStates = validCaptures.reduce(
       (statesAfterCapture, toCoordinate) => {
         const fromPiece = gameState.get(fromCoordinate);
-        const nextGameState = gameState
-          .set(fromCoordinate, null)
+        const nextGameState = gameState// @ts-expect-error fix
+          .set(fromCoordinate, null)// @ts-expect-error fix
           .set(toCoordinate, fromPiece);
         return statesAfterCapture.set(
           `${fromCoordinate}->${toCoordinate}`,
@@ -402,8 +422,9 @@ export function getPossibleMoveSequences(gameState, turn) {
     // For every game state resulting from the above process,
     // get all player pieces and return all game states
     // for every valid stack you can make
-    allCaptureStates.forEach((stateAfterCapture, fromToKey) => {
-      const allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinates(
+    // @ts-expect-error fix
+    allCaptureStates.forEach((stateAfterCapture, fromToKey: string) => {
+      const allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinates(// @ts-expect-error fix
         stateAfterCapture,
         turn
       );
@@ -411,18 +432,18 @@ export function getPossibleMoveSequences(gameState, turn) {
       allPlayerPiecesAfterCapture.forEach(
         (playerPieceCoordinateAfterCapture) => {
           const validStacks = getValidStacks(
-            playerPieceCoordinateAfterCapture,
+            playerPieceCoordinateAfterCapture,// @ts-expect-error fix
             stateAfterCapture
           );
-
+          // @ts-expect-error fix
           const fromPiece = stateAfterCapture.get(
             playerPieceCoordinateAfterCapture
           );
 
           if (validStacks && validStacks.size) {
-            validStacks.forEach((toCoordinate) => {
+            validStacks.forEach((toCoordinate) => {// @ts-expect-error fix
               const toPiece = stateAfterCapture.get(toCoordinate);
-
+              // @ts-expect-error fix
               const gameStateAfterMoveSeq = stateAfterCapture
                 .set(playerPieceCoordinateAfterCapture, null)
                 .set(toCoordinate, fromPiece)
@@ -440,11 +461,11 @@ export function getPossibleMoveSequences(gameState, turn) {
             });
           }
           const validSecondTurnCaptures = getValidCaptures(
-            playerPieceCoordinateAfterCapture,
+            playerPieceCoordinateAfterCapture,// @ts-expect-error fix
             stateAfterCapture
           );
           if (validSecondTurnCaptures && validSecondTurnCaptures.size) {
-            validSecondTurnCaptures.forEach((toCoordinate) => {
+            validSecondTurnCaptures.forEach((toCoordinate) => {// @ts-expect-error fix
               const nextGameState = stateAfterCapture
                 .set(playerPieceCoordinateAfterCapture, null)
                 .set(toCoordinate, fromPiece);
