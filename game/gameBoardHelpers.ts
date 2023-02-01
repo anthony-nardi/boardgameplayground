@@ -14,7 +14,7 @@ import {
 import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
 import { AllCoordinates, ValidCoordinate } from "./types/types";
-import GamePieceRenderer from "./GamePieceRenderer";
+import GamePieceRenderer from "./gamePieceRenderer";
 import { gameBoardState } from "./gameState";
 
 export function getPixelCoordinatesFromBoardCoordinates(coordinate: ValidCoordinate) {

@@ -6,7 +6,7 @@ import {
   handleMovePiece,
 } from "./gameLogic";
 import WindowHelper from "./WindowHelper";
-import gamePieceRenderer from "./GamePieceRenderer";
+import gamePieceRenderer from "./gamePieceRenderer";
 
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
