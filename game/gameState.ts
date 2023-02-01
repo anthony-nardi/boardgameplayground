@@ -1,9 +1,9 @@
-import { Map } from "immutable";
-import { PLAYER_ONE, PLAYER_TWO, TURN_PHASES } from "./constants";
+import { Map, RecordOf } from "immutable";
+import { GamePieceRecordProps, PLAYER_ONE, PLAYER_TWO, TURN_PHASES } from "./constants";
 import { ValidCoordinate } from "./types/types";
 
 export let movingPiece: null | ValidCoordinate = null;
-export let gameBoardState = Map();
+export let gameBoardState = Map<ValidCoordinate, RecordOf<GamePieceRecordProps> | false>();
 export let isVeryFirstTurn = true;
 export let currentTurn = PLAYER_ONE;
 export let turnPhase = TURN_PHASES.CAPTURE;
@@ -13,7 +13,7 @@ export function setNewgameBoardState(newState: typeof gameBoardState) {
   gameBoardState = newState;
 }
 
-export function setMovingPiece(coordinate: ValidCoordinate) {
+export function setMovingPiece(coordinate: ValidCoordinate | null) {
   movingPiece = coordinate;
 }
 

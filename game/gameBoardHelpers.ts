@@ -13,7 +13,7 @@ import {
 } from "./constants";
 import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
-import { ValidCoordinate } from "./types/types";
+import { AllCoordinates, ValidCoordinate } from "./types/types";
 import GamePieceRenderer from "./GamePieceRenderer";
 import { gameBoardState } from "./gameState";
 
@@ -28,16 +28,16 @@ export function getPixelCoordinatesFromBoardCoordinates(coordinate: ValidCoordin
   const offsetYToCenter = WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const offsetX =
-    x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+    +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
 
   const xPos =
     (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
 
-  const yPos = y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
+  const yPos = +y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   return `${xPos},${yPos}`;
 }
 
-export function getBoardCoordinatesFromPixelCoordinates(x: number, y: number) {
+export function getBoardCoordinatesFromPixelCoordinates(x: number, y: number): ValidCoordinate {
   if (!GamePieceRenderer.TRIANGLE_SIDE_LENGTH || !GamePieceRenderer.TRIANGLE_HEIGHT) {
     throw new Error('GamePieceRenderer not ready.')
   }
@@ -59,7 +59,8 @@ export function getBoardCoordinatesFromPixelCoordinates(x: number, y: number) {
 
   const xCoord = Math.round(xPos);
   const yCoord = Math.round(yPos);
-  return `${xCoord},${yCoord}`;
+
+  return `${xCoord},${yCoord}` as ValidCoordinate;
 }
 
 export function goWest(coordinate: ValidCoordinate) {
@@ -205,8 +206,12 @@ export function setupBoardWithPieces() {
 }
 
 export function canCapture(fromCoordinate: ValidCoordinate, toCoordinate: ValidCoordinate, gameState: typeof gameBoardState) {
-  const fromPiece = gameState.get(fromCoordinate);
-  const toPiece = gameState.get(toCoordinate);
+  const fromPiece = gameState.get(fromCoordinate)
+  const toPiece = gameState.get(toCoordinate)
+
+  if (!fromPiece || !toPiece) {
+    return false
+  }
 
   return (
     fromPiece.ownedBy !== toPiece.ownedBy &&
@@ -215,13 +220,17 @@ export function canCapture(fromCoordinate: ValidCoordinate, toCoordinate: ValidC
 }
 
 export function canStack(fromCoordinate: ValidCoordinate, toCoordinate: ValidCoordinate, gameState: typeof gameBoardState) {
-  const fromPiece = gameState.get(fromCoordinate);
-  const toPiece = gameState.get(toCoordinate);
+  const fromPiece = gameState.get(fromCoordinate)
+  const toPiece = gameState.get(toCoordinate)
+
+  if (!fromPiece || !toPiece) {
+    return false
+  }
 
   return fromPiece.ownedBy === toPiece.ownedBy;
 }
 
-export function isValidEmptyCoordinate(coordinate: ValidCoordinate, gameState) {
+export function isValidEmptyCoordinate(coordinate: ValidCoordinate, gameState: typeof gameBoardState) {
   return Boolean(
     PLAYABLE_VERTICES.includes(coordinate) && !gameState.get(coordinate)
   );

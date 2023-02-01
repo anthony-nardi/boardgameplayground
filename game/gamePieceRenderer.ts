@@ -4,9 +4,11 @@ import {
   PLAYER_TWO,
   TZAAR,
   TZARRA,
-  GamePieceRecord
+  GamePieceRecord,
+  GamePieceRecordProps
 } from "./constants";
 import WindowHelper from "./WindowHelper";
+import { RecordOf } from 'immutable'
 
 export const DEBUG = false;
 export const NUMBER_OF_ROWS = 8;
@@ -62,7 +64,8 @@ class GamePieceRenderer {
     this.PLAYER_TWO_TZAAR.style.width = this.CANVAS_STYLE_LENGTH;
     this.PLAYER_TWO_TZAAR.style.height = this.CANVAS_STYLE_LENGTH;
 
-    this.PLAYER_ONE_TOTT.getContext("2d").setTransform(
+
+    this.PLAYER_ONE_TOTT.getContext("2d")?.setTransform(
       WindowHelper.devicePixelRatio,
       0,
       0,
@@ -70,7 +73,7 @@ class GamePieceRenderer {
       0,
       0
     );
-    this.PLAYER_ONE_TZARRA.getContext("2d").setTransform(
+    this.PLAYER_ONE_TZARRA.getContext("2d")?.setTransform(
       WindowHelper.devicePixelRatio,
       0,
       0,
@@ -78,7 +81,7 @@ class GamePieceRenderer {
       0,
       0
     );
-    this.PLAYER_ONE_TZAAR.getContext("2d").setTransform(
+    this.PLAYER_ONE_TZAAR.getContext("2d")?.setTransform(
       WindowHelper.devicePixelRatio,
       0,
       0,
@@ -87,7 +90,7 @@ class GamePieceRenderer {
       0
     );
 
-    this.PLAYER_TWO_TOTT.getContext("2d").setTransform(
+    this.PLAYER_TWO_TOTT.getContext("2d")?.setTransform(
       WindowHelper.devicePixelRatio,
       0,
       0,
@@ -95,7 +98,7 @@ class GamePieceRenderer {
       0,
       0
     );
-    this.PLAYER_TWO_TZARRA.getContext("2d").setTransform(
+    this.PLAYER_TWO_TZARRA.getContext("2d")?.setTransform(
       WindowHelper.devicePixelRatio,
       0,
       0,
@@ -103,7 +106,7 @@ class GamePieceRenderer {
       0,
       0
     );
-    this.PLAYER_TWO_TZAAR.getContext("2d").setTransform(
+    this.PLAYER_TWO_TZAAR.getContext("2d")?.setTransform(
       WindowHelper.devicePixelRatio,
       0,
       0,
@@ -168,7 +171,7 @@ class GamePieceRenderer {
   PLAYER_ONE_COLOR_BG = "#1E88E5";
   PLAYER_TWO_COLOR_BG = "#212121";
 
-  drawStar(cx, cy, spikes, outerRadius, innerRadius, ctx, centerColor) {
+  drawStar(cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number, ctx: CanvasRenderingContext2D, centerColor: string) {
     var rot = Math.PI / 2 * 3;
     var x = cx;
     var y = cy;
@@ -197,8 +200,17 @@ class GamePieceRenderer {
   }
 
 
-  drawGamePiece(gamePiece, canvas) {
+  drawGamePiece(gamePiece: RecordOf<GamePieceRecordProps>, canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error('context not ready.')
+    }
+
+    if (!this.circleRadius || !this.smallerCircleRadius) {
+      throw new Error('circle radius isnt ready')
+    }
+
     if (gamePiece.ownedBy === PLAYER_ONE) {
       context.fillStyle = this.PLAYER_ONE_COLOR_BG;
       context.beginPath();

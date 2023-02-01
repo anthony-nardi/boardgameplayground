@@ -29,21 +29,24 @@ import {
   currentTurn,
   turnPhase,
 } from "./gameState";
-import { getGameStatesToAnalyze, minimax, getWinner, getGameStateScore } from "./ai";
+import { getGameStatesToAnalyze, getWinner, getGameStateScore } from "./ai";
 import * as minimaxer from "minimaxer";
 import React from "react";
+import { ValidCoordinate } from "./types/types";
+
 const DEBUG = false
+
 function getPixelCoordinatesFromUserInteraction(event: React.MouseEvent<HTMLCanvasElement>) {
   const x = event.clientX;
   const y = event.clientY;
   return [x, y];
 }
 
-function isCurrentPlayerPiece(boardCoordinate) {
+function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   return gameBoardState.getIn([boardCoordinate, "ownedBy"]) === currentTurn;
 }
 
-export function handleClickPiece(event) {
+export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   const [x, y] = getPixelCoordinatesFromUserInteraction(event);
   const boardCoordinate = getBoardCoordinatesFromPixelCoordinates(x, y);
 
@@ -61,17 +64,21 @@ export function handleClickPiece(event) {
   setMovingPiece(boardCoordinate);
 }
 
-export function handleMovePiece(event) {
+export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
   if (!movingPiece) {
     return;
   }
 
   const [x, y] = getPixelCoordinatesFromUserInteraction(event);
   drawGameBoardState();
-  drawGamePiece(gameBoardState.get(movingPiece), x, y);
+  const gamePiece = gameBoardState.get(movingPiece)
+  if (!gamePiece) {
+    throw new Error('gamepiece not here')
+  }
+  drawGamePiece(gamePiece, x, y);
 }
 
-export function handleDropPiece(event) {
+export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   if (!movingPiece) {
     return;
   }
@@ -113,17 +120,26 @@ export function handleDropPiece(event) {
   }
 }
 
-function capturePiece(fromCoordinates, toCoordinates) {
+function capturePiece(fromCoordinates: ValidCoordinate, toCoordinates: ValidCoordinate) {
   const fromPiece = gameBoardState.get(fromCoordinates);
+
+  if (!fromPiece) {
+    throw new Error('fromPiece not there.')
+  }
+
   setNewgameBoardState(
     gameBoardState.set(fromCoordinates, false).set(toCoordinates, fromPiece)
   );
   checkGameStateAndStartNextTurn();
 }
 
-function stackPiece(fromCoordinates, toCoordinates) {
+function stackPiece(fromCoordinates: ValidCoordinate, toCoordinates: ValidCoordinate) {
   const fromPiece = gameBoardState.get(fromCoordinates);
   const toPiece = gameBoardState.get(toCoordinates);
+
+  if (!fromPiece || !toPiece) {
+    throw new Error('Stacking broken')
+  }
 
   setNewgameBoardState(
     gameBoardState
@@ -149,22 +165,17 @@ function checkGameStateAndStartNextTurn() {
   }
 }
 
-export const createChildCallback = (node, move) => {
-  // First create a clone of the gamestate
-  // debugger
+export const createChildCallback = (node: any, move: string) => {
   let gamestateToAnalyze;
-  console.log('child node')
 
   const aim = node.aim * -1
 
+  // TODO: Check if this logic is necessary.
   if (!node.gamestate.gamestate) {
-
     gamestateToAnalyze = node.gamestate
   } else {
     gamestateToAnalyze = node.gamestate.gamestate
   }
-
-
 
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move)
   const childNode = new minimaxer.Node(1, updatedBoardGameState, move, 0, aim);
@@ -207,15 +218,17 @@ function moveAI() {
   );
   const tree = new minimaxer.Negamax(root, opts);
 
+  // @ts-expect-error Figure out. TODO
   tree.CreateChildNode = createChildCallback;
   tree.EvaluateNode = (node) => {
     let gamestateToAnalyze;
 
-
+    // @ts-expect-error TODO
     if (!node.gamestate.gamestate) {
 
       gamestateToAnalyze = node.gamestate
     } else {
+      // @ts-expect-error TODO
       gamestateToAnalyze = node.gamestate.gamestate
     }
 
@@ -227,9 +240,6 @@ function moveAI() {
 
     const gamestateToAnalyze = gamestate.gamestate
 
-    // console.log(gamestateToAnalyze)
-
-    // Store the turn on the gamestate...
     return getGameStatesToAnalyze(
       gamestateToAnalyze,
       PLAYER_ONE
@@ -241,6 +251,7 @@ function moveAI() {
   console.log(`outcomes: ${result.outcomes}`)
   const elapsed = Date.now() - now;
   console.log("Took %d ms", elapsed);
+  // @ts-expect-error fix TODO
   playMove(result.move);
 }
 
@@ -293,27 +304,34 @@ function applyMoveToGameState(gamestate: any, move: string) {
 }
 
 
-function playMove(move) {
+function playMove(move: string) {
   if (currentTurn !== PLAYER_TWO) {
     return;
   }
 
-  // const bestMove = getBestMove(gameBoardState, PLAYER_TWO);
-
   // Single move only
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
-    const fromPiece = gameBoardState.get(firstFromCoordinate);
-    setNewgameBoardState(gameBoardState.set(firstFromCoordinate, false));
+
+    const fromCoordinate = firstFromCoordinate as ValidCoordinate
+    const toCoordinate = firstToCoordinate as ValidCoordinate
+
+    const fromPiece = gameBoardState.get(fromCoordinate);
+    setNewgameBoardState(gameBoardState.set(fromCoordinate, false));
     const fromFirstPixelCoodinate = getPixelCoordinatesFromBoardCoordinates(
-      firstFromCoordinate
+      fromCoordinate
     );
     const toFirstPixelCoordinate = getPixelCoordinatesFromBoardCoordinates(
-      firstToCoordinate
+      toCoordinate
     );
 
     DEBUG &&
       console.log(`MOVING FROM ${firstFromCoordinate} TO ${firstToCoordinate}`);
+
+    if (!fromPiece) {
+      throw new Error('No from piece')
+    }
+
     renderMovingPiece(
       fromPiece,
       fromFirstPixelCoodinate,
@@ -321,8 +339,7 @@ function playMove(move) {
       2000,
       Date.now(),
       () => {
-        setNewgameBoardState(gameBoardState.set(firstToCoordinate, fromPiece));
-
+        setNewgameBoardState(gameBoardState.set(toCoordinate, fromPiece));
         checkGameStateAndStartNextTurn();
         checkGameStateAndStartNextTurn();
         drawGameBoardState();
@@ -334,26 +351,37 @@ function playMove(move) {
   const [firstMove, secondMove] = move.split("=>");
   const [firstFromCoordinate, firstToCoordinate] = firstMove.split("->");
   const [secondFromCoordinate, secondToCoordinate] = secondMove.split("->");
-  const fromPiece = gameBoardState.get(firstFromCoordinate);
+
+  const fromCoordinate = firstFromCoordinate as ValidCoordinate
+  const toCoordinate = firstToCoordinate as ValidCoordinate
+  const fromCoordinate2 = secondFromCoordinate as ValidCoordinate
+  const toCoordinate2 = secondToCoordinate as ValidCoordinate
+
+
+  const fromPiece = gameBoardState.get(fromCoordinate);
 
   // dont render moving piece in the same spot...
-  setNewgameBoardState(gameBoardState.set(firstFromCoordinate, false));
+  setNewgameBoardState(gameBoardState.set(fromCoordinate, false));
   const fromFirstPixelCoodinate = getPixelCoordinatesFromBoardCoordinates(
-    firstFromCoordinate
+    fromCoordinate
   );
   const toFirstPixelCoordinate = getPixelCoordinatesFromBoardCoordinates(
-    firstToCoordinate
+    toCoordinate
   );
 
   const fromSecondPixelCoodinate = getPixelCoordinatesFromBoardCoordinates(
-    secondFromCoordinate
+    fromCoordinate
   );
   const toSecondPixelCoordinate = getPixelCoordinatesFromBoardCoordinates(
-    secondToCoordinate
+    toCoordinate
   );
 
   DEBUG &&
     console.log(`MOVING FROM ${firstFromCoordinate} TO ${firstToCoordinate}`);
+
+  if (!fromPiece) {
+    throw new Error('No from Piece')
+  }
 
   renderMovingPiece(
     fromPiece,
@@ -362,12 +390,17 @@ function playMove(move) {
     2000,
     Date.now(),
     () => {
-      setNewgameBoardState(gameBoardState.set(firstToCoordinate, fromPiece));
+      setNewgameBoardState(gameBoardState.set(toCoordinate, fromPiece));
 
       nextPhase();
 
-      const secondFromPiece = gameBoardState.get(secondFromCoordinate);
-      setNewgameBoardState(gameBoardState.set(secondFromCoordinate, false));
+      const secondFromPiece = gameBoardState.get(fromCoordinate2);
+
+      if (!secondFromPiece) {
+        throw new Error('no secondFromPiece')
+      }
+
+      setNewgameBoardState(gameBoardState.set(fromCoordinate2, false));
 
       DEBUG &&
         console.log(
@@ -381,12 +414,14 @@ function playMove(move) {
         2000,
         Date.now(),
         () => {
-          const toPiece = gameBoardState.get(secondToCoordinate);
-
+          const toPiece = gameBoardState.get(toCoordinate2);
+          if (!toPiece) {
+            throw new Error('no toPiece')
+          }
           if (secondFromPiece.ownedBy === toPiece.ownedBy) {
             setNewgameBoardState(
               gameBoardState
-                .set(secondToCoordinate, secondFromPiece)
+                .set(toCoordinate2, secondFromPiece)
                 .setIn(
                   [secondToCoordinate, "stackSize"],
                   secondFromPiece.stackSize + toPiece.stackSize
@@ -394,7 +429,7 @@ function playMove(move) {
             );
           } else {
             setNewgameBoardState(
-              gameBoardState.set(secondToCoordinate, secondFromPiece)
+              gameBoardState.set(toCoordinate2, secondFromPiece)
             );
           }
 
@@ -404,44 +439,6 @@ function playMove(move) {
       );
     }
   );
-}
-
-function getBestMove(gameState, turn) {
-  DEBUG && console.time("all game states");
-  debugger;
-
-  const allPossibleStatesAfterTurn = getGameStatesToAnalyze(gameState, turn);
-  // console.log(allPossibleStatesAfterTurn.toJS());
-
-  let depth = 1;
-
-  if (allPossibleStatesAfterTurn.size < 500) {
-    depth = 2;
-  }
-
-  if (allPossibleStatesAfterTurn.size < 150) {
-    depth = 3;
-  }
-
-  if (allPossibleStatesAfterTurn.size < 20) {
-    depth = 4;
-  }
-
-  DEBUG && console.timeEnd("all game states");
-  DEBUG &&
-    console.log(
-      `ALL POSSIBLE GAME STATES AT DEPTH ${depth}: ${allPossibleStatesAfterTurn.size}`
-    );
-
-  DEBUG && console.time("get scores");
-
-  const minimaxResult = minimax(gameState, PLAYER_TWO, depth);
-
-  const bestMove = minimaxResult[1];
-  DEBUG && console.timeEnd("get scores");
-
-  // document.getElementById("loadingSpinner").classList.add("hidden");
-  return bestMove;
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {

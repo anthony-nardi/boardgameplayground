@@ -1,8 +1,5 @@
 import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
 import {
-  DEBUG,
-  TRIANGLE_SIDE_LENGTH,
-  TRIANGLE_HEIGHT,
   PLAYABLE_VERTICES,
   TOTT,
   TZAAR,
@@ -10,7 +7,6 @@ import {
   PLAYER_ONE,
   PLAYER_TWO,
   GamePieceRecordProps,
-
 } from "./constants";
 import WindowHelper from "./WindowHelper";
 import { drawCachedBoard } from "./cachedBoard";
@@ -19,7 +15,13 @@ import { List, RecordOf } from "immutable";
 import GamePieceRenderer from "./GamePieceRenderer";
 import { ValidCoordinate } from "./types/types";
 
+const DEBUG = false
+
 function getContext() {
+
+  if (!window.GAME_STATE_BOARD_CANVAS) {
+    throw new Error('GAME_STATE_BOARD_CANVAS not ready')
+  }
 
   return window.GAME_STATE_BOARD_CANVAS.getContext("2d");
 }
@@ -54,7 +56,7 @@ export function drawCoordinate(coordinate: ValidCoordinate) {
   const xPos =
     (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
 
-  const yPos = y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
+  const yPos = +y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   context.font = ".5rem Helvetica";
   context.fillStyle = "#39ff14";
   context.fillText(coordinate, xPos + 10, yPos + 10);
@@ -67,8 +69,8 @@ export function drawGameBoardState() {
   drawCoordinates();
 }
 
-export function drawStaticGamePiece(gamePiece: RecordOf<GamePieceRecordProps>, coordinate: ValidCoordinate) {
-  if (gamePiece.isDragging || !gamePiece) {
+export function drawStaticGamePiece(gamePiece: RecordOf<GamePieceRecordProps> | false, coordinate: ValidCoordinate) {
+  if (!gamePiece || gamePiece.isDragging) {
     return;
   }
 
@@ -138,12 +140,12 @@ function timeFunction(t: number) {
   return --t * t * t + 1;
 }
 
-export function renderInitializingBoard(piecesToDraw, callback: Function) {
+export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
   let index = 0;
   let piecesToRenderList = List();
   for (const coordinate in piecesToDraw) {
     const piece = piecesToDraw[coordinate]
-    const to = getPixelCoordinatesFromBoardCoordinates(coordinate);
+    const to = getPixelCoordinatesFromBoardCoordinates(coordinate as ValidCoordinate);
     const from = `${WindowHelper.width / 2},${WindowHelper.height / 2}`;
 
     piecesToRenderList = piecesToRenderList.push({
@@ -162,7 +164,7 @@ export function renderInitializingBoard(piecesToDraw, callback: Function) {
     let index = 0;
     for (const coordinate in piecesToDraw) {
       const piece = piecesToDraw[coordinate]
-      setNewgameBoardState(gameBoardState.set(coordinate, piece));
+      setNewgameBoardState(gameBoardState.set(coordinate as ValidCoordinate, piece));
       index = index + 1;
     }
 
@@ -171,7 +173,7 @@ export function renderInitializingBoard(piecesToDraw, callback: Function) {
   });
 }
 
-function renderMovingPieces(piecesToRenderList, duration, startTime, callback) {
+function renderMovingPieces(piecesToRenderList: List<any>, duration: number, startTime: number, callback: Function) {
   const now = Date.now();
 
   const timePassedInMilliSec = now - startTime;
@@ -184,7 +186,7 @@ function renderMovingPieces(piecesToRenderList, duration, startTime, callback) {
   clearCanvas();
   drawCachedBoard();
 
-  piecesToRenderList.forEach(({ piece, from, to, delay }) => {
+  piecesToRenderList.forEach(({ piece, from, to, delay }: { piece: RecordOf<GamePieceRecordProps>, from: string, to: string, delay: number }) => {
     const timePassed = Math.min(
       Math.max((now - startTime - delay) / duration, 0),
       1
@@ -194,13 +196,13 @@ function renderMovingPieces(piecesToRenderList, duration, startTime, callback) {
     const [toX, toY] = to.split(",");
 
     const distance = Math.sqrt(
-      Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2)
+      Math.pow(+fromX - +toX, 2) + Math.pow(+fromY - +toY, 2)
     );
 
     const currentDistance = (timeFunction(timePassed) * distance) / distance;
 
-    const renderX = (1 - currentDistance) * fromX + currentDistance * toX;
-    const renderY = (1 - currentDistance) * fromY + currentDistance * toY;
+    const renderX = (1 - currentDistance) * +fromX + currentDistance * +toX;
+    const renderY = (1 - currentDistance) * +fromY + currentDistance * +toY;
 
     drawGamePiece(piece, renderX, renderY);
   });
@@ -211,12 +213,12 @@ function renderMovingPieces(piecesToRenderList, duration, startTime, callback) {
 }
 
 export function renderMovingPiece(
-  piece,
-  from,
-  to,
-  duration,
-  startTime,
-  callback
+  piece: RecordOf<GamePieceRecordProps>,
+  from: string,
+  to: string,
+  duration: number,
+  startTime: number,
+  callback: Function
 ) {
   const now = Date.now();
 
@@ -233,13 +235,13 @@ export function renderMovingPiece(
   const [toX, toY] = to.split(",");
 
   const distance = Math.sqrt(
-    Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2)
+    Math.pow(+fromX - +toX, 2) + Math.pow(+fromY - +toY, 2)
   );
 
   const currentDistance = (timeFunction(timePassed) * distance) / distance;
 
-  const renderX = (1 - currentDistance) * fromX + currentDistance * toX;
-  const renderY = (1 - currentDistance) * fromY + currentDistance * toY;
+  const renderX = (1 - currentDistance) * +fromX + currentDistance * +toX;
+  const renderY = (1 - currentDistance) * +fromY + currentDistance * +toY;
 
   clearCanvas();
   drawCachedBoard();
