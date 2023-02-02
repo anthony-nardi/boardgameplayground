@@ -200,7 +200,6 @@ export function setupBoardWithPieces() {
 
   shuffledPieces.forEach((piece, index) => {
     piecesToDraw = piecesToDraw.set(PLAYABLE_VERTICES[index], piece);
-    // setNewgameBoardState(gameBoardState.set(PLAYABLE_VERTICES[index], piece));
   });
   return piecesToDraw.sortBy(Math.random);
 }

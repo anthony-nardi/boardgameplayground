@@ -29,7 +29,8 @@ import {
   currentTurn,
   turnPhase,
 } from "./gameState";
-import { getGameStatesToAnalyze, getWinner, getGameStateScore } from "./ai";
+import { getGameStatesToAnalyze } from "./moves";
+import * as evaluation from './evaluation'
 import * as minimaxer from "minimaxer";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
@@ -115,7 +116,10 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   drawGameBoardState();
 
   if (turnPhase === TURN_PHASES.CAPTURE && currentTurn === PLAYER_TWO) {
-    // document.getElementById("loadingSpinner").classList.remove("hidden");
+    const loadingSpinnerComponent = document.getElementById("loadingSpinner")
+    if (loadingSpinnerComponent) {
+      loadingSpinnerComponent.classList.remove("hidden");
+    }
     setTimeout(() => moveAI(), 50);
   }
 }
@@ -157,7 +161,7 @@ function stackPiece(fromCoordinates: ValidCoordinate, toCoordinates: ValidCoordi
 function checkGameStateAndStartNextTurn() {
   nextPhase();
 
-  const winner = getWinner(gameBoardState);
+  const winner = evaluation.getWinner(gameBoardState);
   let message = winner === PLAYER_TWO ? "You lost." : "You won!";
   if (winner) {
     alert(`${message}`);
@@ -189,13 +193,14 @@ function moveAI() {
   const now = Date.now();
   const opts = new minimaxer.NegamaxOpts();
 
+  const loadingSpinnerComponent = document.getElementById("loadingSpinner")
 
   const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
     gameBoardState,
     PLAYER_TWO
   ).keySeq().toJS()
 
-
+  console.log(`All possible starting moves: ${allPossibleStatesAfterTurn.length}`)
   opts.depth = allPossibleStatesAfterTurn.length < 500 ? 2 : 1
   opts.method = 0
   opts.pruning = 1
@@ -232,7 +237,7 @@ function moveAI() {
       gamestateToAnalyze = node.gamestate.gamestate
     }
 
-    const scoreForNode = getGameStateScore(gamestateToAnalyze);
+    const scoreForNode = evaluation.getGameStateScore(gamestateToAnalyze);
 
     return scoreForNode
   }
@@ -253,6 +258,9 @@ function moveAI() {
   console.log("Took %d ms", elapsed);
   // @ts-expect-error fix TODO
   playMove(result.move);
+  if (loadingSpinnerComponent) {
+    loadingSpinnerComponent.classList.add("hidden");
+  }
 }
 
 function applyMoveToGameState(gamestate: any, move: string) {
@@ -370,10 +378,10 @@ function playMove(move: string) {
   );
 
   const fromSecondPixelCoodinate = getPixelCoordinatesFromBoardCoordinates(
-    fromCoordinate
+    fromCoordinate2
   );
   const toSecondPixelCoordinate = getPixelCoordinatesFromBoardCoordinates(
-    toCoordinate
+    toCoordinate2
   );
 
   DEBUG &&

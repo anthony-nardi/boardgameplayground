@@ -86,3 +86,151 @@ a {
     color-scheme: dark;
   }
 }
+
+
+.hidden {
+  display: none
+}
+
+#gameStateDiv {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  user-select: none;
+}
+
+.flex {
+  display: flex;
+  width: 140px;
+  justify-content: space-between
+}
+
+.wrapper {
+  position: absolute;
+  top: calc(50vh - 120px);
+  bottom: 0;
+  left: calc(50vw - 100px);
+  right: 0;
+  width: 100px;
+  height: 50px;
+  z-index: 999;
+}
+
+.ajaxSpinner {
+  position: relative;
+  float: left;
+  height: 200px;
+  width: 200px;
+}
+
+.ajaxSpinner:after {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 0;
+  height: 200px;
+  width: 200px;
+  line-height: 200px;
+  color: #546E7A;
+  font-style: italic;
+  font-size: 20px;
+  text-align: center;
+}
+
+.ajaxSpinner .dot {
+  background: #CFD8DC;
+  position: absolute;
+  left: 0;
+  border: 1px solid #263238;
+  animation: fade 2s linear infinite;
+}
+
+.circles .dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+
+.ajaxSpinner .dotWrapper {
+  position: absolute;
+  width: 100px;
+  height: 20px;
+  right: 50%;
+  margin-right: -50px;
+  top: 50%;
+}
+
+.dotWrapper:nth-child(2) {
+  transform: rotate(45deg);
+}
+
+.dotWrapper:nth-child(2) .dot {
+  animation-delay: -1.75s;
+}
+
+.dotWrapper:nth-child(3) {
+  transform: rotate(90deg);
+}
+
+.dotWrapper:nth-child(3) .dot {
+  animation-delay: -1.5s;
+}
+
+.dotWrapper:nth-child(4) {
+  transform: rotate(135deg);
+}
+
+.dotWrapper:nth-child(4) .dot {
+  animation-delay: -1.25s;
+}
+
+.dotWrapper:nth-child(5) {
+  transform: rotate(180deg);
+}
+
+.dotWrapper:nth-child(5) .dot {
+  animation-delay: -1s;
+}
+
+.dotWrapper:nth-child(6) {
+  transform: rotate(225deg);
+}
+
+.dotWrapper:nth-child(6) .dot {
+  animation-delay: -0.75s;
+}
+
+.dotWrapper:nth-child(7) {
+  transform: rotate(270deg);
+}
+
+.dotWrapper:nth-child(7) .dot {
+  animation-delay: -0.5s;
+}
+
+.dotWrapper:nth-child(8) {
+  transform: rotate(315deg);
+}
+
+.dotWrapper:nth-child(8) .dot {
+  animation-delay: -0.25s;
+}
+
+@keyframes fade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.1;
+  }
+  95% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
