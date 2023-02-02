@@ -2,7 +2,7 @@
 import WindowHelper from "./WindowHelper";
 import GamePieceRenderer, { NUMBER_OF_COLS, NUMBER_OF_ROWS } from "./gamePieceRenderer";
 import { AllCoordinates } from "./types/types";
-
+import { useMemo } from "react";
 const CACHED_CANVAS = document.createElement("canvas");
 
 const COORDS_TO_NOT_RENDER = [
@@ -90,22 +90,32 @@ function getInitialGridState(): AllCoordinates[] {
 
   return vertices;
 }
+let cachedBoardImageData: null | ImageData = null
 
 function getImageData() {
+  if (cachedBoardImageData) {
+    return cachedBoardImageData
+  }
+
   const context = getContext();
   if (!context) {
     throw new Error('context isnt ready')
   }
 
-  return context.getImageData(
+  cachedBoardImageData = context.getImageData(
     OFFSET_X * WindowHelper.devicePixelRatio,
     0,
     Math.floor(WindowHelper.devicePixelRatio * (WindowHelper.width)),
     Math.floor(WindowHelper.devicePixelRatio * (WindowHelper.height))
   );
+
+  return cachedBoardImageData
 }
 
+
 export function drawCachedBoard() {
+
+
   const context = window.GAME_STATE_BOARD_CANVAS && window.GAME_STATE_BOARD_CANVAS.getContext("2d", { willReadFrequently: true });
   const imageData = getImageData();
 

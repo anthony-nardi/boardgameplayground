@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-const DynamicHeader = dynamic(() => import("../game/component"), {
+const DynamicHeader = dynamic(() => import("../game/gameIndex"), {
   loading: () => null,
   ssr: false,
 });

@@ -16,11 +16,6 @@ export const NUMBER_OF_COLS = 8;
 
 class GamePieceRenderer {
   init() {
-    console.log(WindowHelper)
-    console.log(WindowHelper.useWindowHeight
-      ? WindowHelper.width
-      : WindowHelper.height)
-
     const extraSpace = 1;
     this.TRIANGLE_SIDE_LENGTH =
       (WindowHelper.useWindowHeight

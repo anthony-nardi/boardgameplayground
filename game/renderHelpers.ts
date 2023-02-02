@@ -143,7 +143,22 @@ function timeFunction(t: number) {
 export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
   let index = 0;
   let piecesToRenderList = List();
-  for (const coordinate in piecesToDraw) {
+
+  const shuffleArray = (array: string[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+  }
+
+  const coordinates = Object.keys(piecesToDraw)
+
+  shuffleArray(coordinates)
+
+  for (let index in coordinates) {
+    const coordinate = coordinates[index]
     const piece = piecesToDraw[coordinate]
     const to = getPixelCoordinatesFromBoardCoordinates(coordinate as ValidCoordinate);
     const from = `${WindowHelper.width / 2},${WindowHelper.height / 2}`;
@@ -152,13 +167,13 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
       piece,
       from,
       to,
+      // @ts-expect-error fix
       delay: index * 25
     });
-
-    index = index + 1;
   }
 
 
+  // piecesToRenderList = piecesToRenderList.sortBy(Math.random)
 
   renderMovingPieces(piecesToRenderList, 500, Date.now(), () => {
     let index = 0;
