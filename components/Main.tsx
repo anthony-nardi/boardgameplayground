@@ -71,14 +71,12 @@ const useStyles = createStyles((theme) => ({
 export function FeaturesCards() {
   const { classes, theme } = useStyles();
   const features = mockdata.map((feature) => (
-    <Link href={feature.link} style={{ textDecoration: "none" }}>
-      <Card
-        key={feature.title}
-        shadow="md"
-        radius="md"
-        className={classes.card}
-        p="xl"
-      >
+    <Link
+      href={feature.link}
+      style={{ textDecoration: "none" }}
+      key={feature.title}
+    >
+      <Card shadow="md" radius="md" className={classes.card} p="xl">
         <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
           {feature.title}
         </Text>
