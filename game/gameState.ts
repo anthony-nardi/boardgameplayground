@@ -24,8 +24,8 @@ export function nextPhase() {
     turnPhase = TURN_PHASES.CAPTURE;
     currentTurn = PLAYER_TWO;
     numberOfTurnsIntoGame = numberOfTurnsIntoGame + 1;
-    // document.getElementById("phaseDiv").innerHTML = "CAPTURE";
-    // document.getElementById("turnDiv").innerHTML = "AI";
+    document.getElementById("phaseDiv").innerHTML = "CAPTURE";
+    document.getElementById("turnDiv").innerHTML = "AI";
 
     return;
   }
@@ -33,12 +33,12 @@ export function nextPhase() {
   // players turns aren't over yet
   if (currentTurn === PLAYER_ONE && turnPhase === TURN_PHASES.CAPTURE) {
     turnPhase = TURN_PHASES.STACK_OR_CAPTURE_OR_PASS;
-    // document.getElementById("phaseDiv").innerHTML = "STACK OR CAPTURE";
+    document.getElementById("phaseDiv").innerHTML = "STACK OR CAPTURE";
     return;
   }
   if (currentTurn === PLAYER_TWO && turnPhase === TURN_PHASES.CAPTURE) {
     turnPhase = TURN_PHASES.STACK_OR_CAPTURE_OR_PASS;
-    // document.getElementById("phaseDiv").innerHTML = "STACK OR CAPTURE";
+    document.getElementById("phaseDiv").innerHTML = "STACK OR CAPTURE";
     return;
   }
 
@@ -50,8 +50,8 @@ export function nextPhase() {
     turnPhase = TURN_PHASES.CAPTURE;
     currentTurn = PLAYER_TWO;
     numberOfTurnsIntoGame = numberOfTurnsIntoGame + 1;
-    // document.getElementById("phaseDiv").innerHTML = "CAPTURE";
-    // document.getElementById("turnDiv").innerHTML = "AI";
+    document.getElementById("phaseDiv").innerHTML = "CAPTURE";
+    document.getElementById("turnDiv").innerHTML = "AI";
     return;
   }
   if (
@@ -61,8 +61,8 @@ export function nextPhase() {
     turnPhase = TURN_PHASES.CAPTURE;
     currentTurn = PLAYER_ONE;
     numberOfTurnsIntoGame = numberOfTurnsIntoGame + 1;
-    // document.getElementById("phaseDiv").innerHTML = "CAPTURE";
-    // document.getElementById("turnDiv").innerHTML = "PLAYER";
+    document.getElementById("phaseDiv").innerHTML = "CAPTURE";
+    document.getElementById("turnDiv").innerHTML = "PLAYER";
     return;
   }
 }

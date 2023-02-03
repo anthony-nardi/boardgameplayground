@@ -51,6 +51,8 @@ export default function () {
           </div>
         </div>
       </div>
+      <div id="phaseDiv"></div>
+      <div id="turnDiv"></div>
       <canvas
         ref={Canvas}
         onMouseDown={handleClickPiece}
