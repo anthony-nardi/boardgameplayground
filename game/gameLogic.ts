@@ -62,7 +62,6 @@ function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
 }
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
-  debugger
   const [x, y] = getPixelCoordinatesFromUserInteraction(event);
   const boardCoordinate = getBoardCoordinatesFromPixelCoordinates(x, y);
 
@@ -187,8 +186,8 @@ function checkGameStateAndStartNextTurn() {
 export const createChildCallback = (node: any, move: string) => {
   let gamestateToAnalyze;
 
-  const aim = node.aim * -1
-
+  const aim = node.aim
+  // console.log(`aim : ${aim}`)
   // TODO: Check if this logic is necessary.
   if (!node.gamestate.gamestate) {
     gamestateToAnalyze = node.gamestate
@@ -253,7 +252,7 @@ function moveAI() {
     }
 
     const scoreForNode = evaluation.getGameStateScore(gamestateToAnalyze);
-
+    // console.log(scoreForNode)
     return scoreForNode
   }
   tree.GetMoves = (gamestate) => {
@@ -267,6 +266,7 @@ function moveAI() {
   };
 
   const result = tree.evaluate();
+  debugger
   console.log(`nodes: ${result.nodes}`)
   console.log(`outcomes: ${result.outcomes}`)
   const elapsed = Date.now() - now;
