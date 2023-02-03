@@ -51,6 +51,11 @@ export default function () {
           </div>
         </div>
       </div>
+      <div className="stateContainer">
+        <div id="turnDiv"></div>
+
+        <div id="phaseDiv"></div>
+      </div>
       <canvas
         ref={Canvas}
         onMouseDown={handleClickPiece}
