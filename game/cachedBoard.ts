@@ -114,8 +114,6 @@ function getImageData() {
 
 
 export function drawCachedBoard() {
-
-
   const context = window.GAME_STATE_BOARD_CANVAS && window.GAME_STATE_BOARD_CANVAS.getContext("2d", { willReadFrequently: true });
   const imageData = getImageData();
 

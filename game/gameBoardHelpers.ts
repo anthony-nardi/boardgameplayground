@@ -13,7 +13,7 @@ import {
 } from "./constants";
 import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
-import { AllCoordinates, ValidCoordinate } from "./types/types";
+import { ValidCoordinate } from "./types/types";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { gameBoardState } from "./gameState";
 

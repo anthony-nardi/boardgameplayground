@@ -27,9 +27,7 @@ function getContext() {
 }
 
 export function drawCoordinates() {
-  if (!DEBUG) {
-    return;
-  }
+
   PLAYABLE_VERTICES.map(drawCoordinate);
 }
 
@@ -57,8 +55,8 @@ export function drawCoordinate(coordinate: ValidCoordinate) {
     (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
 
   const yPos = +y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
-  context.font = ".5rem Helvetica";
-  context.fillStyle = "#39ff14";
+  context.font = "1rem Helvetica";
+  context.fillStyle = "#d92121";
   context.fillText(coordinate, xPos + 10, yPos + 10);
 }
 
@@ -66,7 +64,7 @@ export function drawGameBoardState() {
   clearCanvas();
   drawCachedBoard();
   drawGamePieces();
-  drawCoordinates();
+  // drawCoordinates();
 }
 
 export function drawStaticGamePiece(gamePiece: RecordOf<GamePieceRecordProps> | false, coordinate: ValidCoordinate) {

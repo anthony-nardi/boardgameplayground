@@ -2,7 +2,6 @@ import {
   PLAYER_TWO,
   PLAYER_ONE,
   TURN_PHASES,
-
 } from "./constants";
 import { drawInitialGrid } from "./cachedBoard";
 import {
@@ -34,9 +33,8 @@ import * as evaluation from './evaluation'
 import * as minimaxer from "minimaxer";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
-
-const DEBUG = false
-
+import depth2GameState from "./tests/depth2GameState";
+import MovesState34 from './tests/34MovesState'
 function getPixelCoordinatesFromTouchInteraction(event: React.TouchEvent<HTMLCanvasElement>) {
   const x = event.changedTouches[0].clientX
   const y = event.changedTouches[0].clientY
@@ -186,7 +184,7 @@ function checkGameStateAndStartNextTurn() {
 export const createChildCallback = (node: any, move: string) => {
   let gamestateToAnalyze;
 
-  const aim = node.aim
+  // const aim = node.aim
   // console.log(`aim : ${aim}`)
   // TODO: Check if this logic is necessary.
   if (!node.gamestate.gamestate) {
@@ -195,8 +193,16 @@ export const createChildCallback = (node: any, move: string) => {
     gamestateToAnalyze = node.gamestate.gamestate
   }
 
+  const data = node.parent ? node.parent.data + 1 : 1
+  const aim = data === 0 ? 1 : -1
+
+  if (data === 0 && aim === -1) {
+    throw new Error('Hmm no? Right??')
+  }
+
+  // console.log(data)
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move)
-  const childNode = new minimaxer.Node(1, updatedBoardGameState, move, 0, aim);
+  const childNode = new minimaxer.Node(1, updatedBoardGameState, move, data, aim);
   return childNode;
 };
 
@@ -204,6 +210,9 @@ function moveAI() {
   if (currentTurn !== PLAYER_TWO) {
     return;
   }
+
+  console.log(window.gameBoardState.toJS())
+
   const now = Date.now();
   const opts = new minimaxer.NegamaxOpts();
 
@@ -224,7 +233,7 @@ function moveAI() {
   console.log('DEPTH is ' + opts.depth)
 
   let aim = 1
-  let data = 1
+  let data = 0
   let move = null
   const nodeType = 0
   const root = new minimaxer.Node(
@@ -240,6 +249,7 @@ function moveAI() {
   // @ts-expect-error Figure out. TODO
   tree.CreateChildNode = createChildCallback;
   tree.EvaluateNode = (node) => {
+
     let gamestateToAnalyze;
 
     // @ts-expect-error TODO
@@ -259,30 +269,31 @@ function moveAI() {
 
     const gamestateToAnalyze = gamestate.gamestate
 
+    const player = gamestate.data % 2 === 1 ? PLAYER_ONE : PLAYER_TWO
+
     return getGameStatesToAnalyze(
       gamestateToAnalyze,
-      PLAYER_ONE
+      player
     ).keySeq().toJS()
   };
 
   const result = tree.evaluate();
-  debugger
+
+  console.log(result)
   console.log(`nodes: ${result.nodes}`)
   console.log(`outcomes: ${result.outcomes}`)
   const elapsed = Date.now() - now;
   console.log("Took %d ms", elapsed);
   // @ts-expect-error fix TODO
+
   playMove(result.move);
+
   if (loadingSpinnerComponent) {
     loadingSpinnerComponent.classList.add("hidden");
   }
 }
 
 function applyMoveToGameState(gamestate: any, move: string) {
-
-  if (!gamestate) {
-    debugger
-  }
   // Single move only
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
@@ -348,9 +359,6 @@ function playMove(move: string) {
       toCoordinate
     );
 
-    DEBUG &&
-      console.log(`MOVING FROM ${firstFromCoordinate} TO ${firstToCoordinate}`);
-
     if (!fromPiece) {
       throw new Error('No from piece')
     }
@@ -399,8 +407,6 @@ function playMove(move: string) {
     toCoordinate2
   );
 
-  DEBUG &&
-    console.log(`MOVING FROM ${firstFromCoordinate} TO ${firstToCoordinate}`);
 
   if (!fromPiece) {
     throw new Error('No from Piece')
@@ -424,11 +430,6 @@ function playMove(move: string) {
       }
 
       setNewgameBoardState(gameBoardState.set(fromCoordinate2, false));
-
-      DEBUG &&
-        console.log(
-          `MOVING FROM ${secondFromCoordinate} TO ${secondToCoordinate}`
-        );
 
       renderMovingPiece(
         secondFromPiece,
@@ -469,15 +470,11 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
     SETUP_STYLE !== "RANDOM"
       ? setupBoardWithPiecesNotRandom()
       : setupBoardWithPieces();
+  // const piecesToSetup = depth2GameState()
+  // const piecesToSetup = MovesState34()
   drawInitialGrid();
   renderInitializingBoard(piecesToSetup, () => {
     drawGameBoardState();
-    drawCoordinates();
+    // drawCoordinates();
   });
 }
-
-const isMobile = "ontouchstart" in document.documentElement;
-const mouseUpEvent = isMobile ? "touchend" : "mouseup";
-const mouseDownEvent = isMobile ? "touchstart" : "mousedown";
-const mouseMoveEvent = isMobile ? "touchmove" : "mousemove";
-

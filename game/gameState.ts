@@ -9,8 +9,11 @@ export let currentTurn = PLAYER_ONE;
 export let turnPhase = TURN_PHASES.CAPTURE;
 export let numberOfTurnsIntoGame = 0;
 
+
+
 export function setNewgameBoardState(newState: typeof gameBoardState) {
   gameBoardState = newState;
+  window.gameBoardState = gameBoardState
 }
 
 export function setMovingPiece(coordinate: ValidCoordinate | null) {

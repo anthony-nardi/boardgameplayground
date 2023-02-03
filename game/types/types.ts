@@ -1,6 +1,9 @@
 import { TZAAR, TOTT, TZARRA } from "../constants";
 declare global {
-    interface Window { GAME_STATE_BOARD_CANVAS: HTMLCanvasElement | null; }
+    interface Window {
+        GAME_STATE_BOARD_CANVAS: HTMLCanvasElement | null;
+        gameBoardState: any
+    }
 }
 
 export type Player = "PLAYER_ONE" | "PLAYER_TWO"

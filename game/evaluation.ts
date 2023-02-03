@@ -88,6 +88,17 @@ function getScoreForEdgesAndCorners(edges: number, corners: number) {
 
 export function getGameStateScore(gameState: typeof gameBoardState) {
 
+  const winner = getWinner(gameState)
+
+  if (winner === PLAYER_ONE) {
+    return -Infinity
+  }
+
+  if (winner === PLAYER_TWO) {
+    return Infinity
+  }
+
+
   const scoringMap = gameState.reduce((piecesByPlayer, piece, coordinate: ValidCoordinate) => {
     if (!piece) {
       return piecesByPlayer;
@@ -224,16 +235,18 @@ export function getWinner(gameState: typeof gameBoardState) {
     return PLAYER_ONE;
   }
 
-  const possibleCaptures = getAllPlayerPieceCoordinates(
-    gameState,// @ts-expect-error fix
-    currentTurn
-  ).map((fromCoordinate) => {
-    return getValidCaptures(fromCoordinate, gameState);
-  });
-  // @ts-expect-error fix
-  if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
-    return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-  }
+
+
+  // const possibleCaptures = getAllPlayerPieceCoordinates(
+  //   gameState,// @ts-expect-error fix
+  //   currentTurn
+  // ).map((fromCoordinate) => {
+  //   return getValidCaptures(fromCoordinate, gameState);
+  // });
+  // // @ts-expect-error fix
+  // if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
+  //   return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+  // }
 }
 
 

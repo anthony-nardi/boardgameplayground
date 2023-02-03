@@ -15,7 +15,8 @@ import {
 import { Player, ValidCoordinate } from "./types/types";
 
 export function getGameStatesToAnalyze(gameState: typeof gameBoardState, turn: Player) {
-  const EARLY_GAME = numberOfTurnsIntoGame < 10;
+  // const EARLY_GAME = numberOfTurnsIntoGame < 10;
+  const EARLY_GAME = false
   let allPossibleStatesAfterTurn = List();
 
   if (!EARLY_GAME) {// @ts-expect-error fix
@@ -239,6 +240,7 @@ export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn:
             playerPieceCoordinateAfterCapture,// @ts-expect-error fix
             stateAfterCapture
           );
+          // console.log(validSecondTurnCaptures.toJS())
           if (validSecondTurnCaptures && validSecondTurnCaptures.size) {
             validSecondTurnCaptures.forEach((toCoordinate) => {// @ts-expect-error fix
               const nextGameState = stateAfterCapture
@@ -250,6 +252,8 @@ export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn:
                 sequenceKey,
                 nextGameState
               );
+
+              console.log(sequenceKey)
             });
           }
           // We can just capture, then pass
