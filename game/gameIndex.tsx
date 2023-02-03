@@ -58,9 +58,15 @@ export default function () {
       </div>
       <canvas
         ref={Canvas}
-        onMouseDown={handleClickPiece}
-        onMouseMove={handleMovePiece}
-        onMouseUp={handleDropPiece}
+        // @ts-expect-error fix
+        onTouchStart={'ontouchstart' in document ? handleClickPiece : () => { }}
+        // @ts-expect-error fix
+        onTouchMove={'ontouchstart' in document ? handleMovePiece : () => { }}
+        // @ts-expect-error fix
+        onTouchEnd={'ontouchstart' in document ? handleDropPiece : () => { }}
+        onMouseDown={'ontouchstart' in document ? () => { } : handleClickPiece}
+        onMouseMove={'ontouchstart' in document ? () => { } : handleMovePiece}
+        onMouseUp={'ontouchstart' in document ? () => { } : handleDropPiece}
       />
     </>
   );

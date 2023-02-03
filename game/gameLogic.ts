@@ -37,10 +37,24 @@ import { ValidCoordinate } from "./types/types";
 
 const DEBUG = false
 
-function getPixelCoordinatesFromUserInteraction(event: React.MouseEvent<HTMLCanvasElement>) {
-  const x = event.clientX;
-  const y = event.clientY;
+function getPixelCoordinatesFromTouchInteraction(event: React.TouchEvent<HTMLCanvasElement>) {
+  const x = event.changedTouches[0].clientX
+  const y = event.changedTouches[0].clientY
   return [x, y];
+}
+
+function getPixelCoordinatesFromMouseInteraction(event: React.MouseEvent<HTMLCanvasElement>) {
+  const x = event.clientX;
+  const y = event.clientY
+  return [x, y];
+}
+
+function getPixelCoordinatesFromUserInteraction(event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
+  if (event.type === 'touchstart' || event.type === 'touchmove' || event.type === 'touchend') {
+    return getPixelCoordinatesFromTouchInteraction(event as React.TouchEvent<HTMLCanvasElement>)
+  }
+
+  return getPixelCoordinatesFromMouseInteraction(event as React.MouseEvent<HTMLCanvasElement>)
 }
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
@@ -48,6 +62,7 @@ function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
 }
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
+  debugger
   const [x, y] = getPixelCoordinatesFromUserInteraction(event);
   const boardCoordinate = getBoardCoordinatesFromPixelCoordinates(x, y);
 
