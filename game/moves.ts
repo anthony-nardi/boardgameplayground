@@ -216,6 +216,7 @@ export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn:
             playerPieceCoordinateAfterCapture
           );
 
+          // 2nd phase - stack
           if (validStacks && validStacks.size) {
             validStacks.forEach((toCoordinate) => {// @ts-expect-error fix
               const toPiece = stateAfterCapture.get(toCoordinate);
@@ -240,7 +241,8 @@ export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn:
             playerPieceCoordinateAfterCapture,// @ts-expect-error fix
             stateAfterCapture
           );
-          // console.log(validSecondTurnCaptures.toJS())
+
+          // 2nd phase - capture
           if (validSecondTurnCaptures && validSecondTurnCaptures.size) {
             validSecondTurnCaptures.forEach((toCoordinate) => {// @ts-expect-error fix
               const nextGameState = stateAfterCapture
@@ -257,6 +259,7 @@ export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn:
             });
           }
           // We can just capture, then pass
+          debugger
           allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
             fromToKey,
             stateAfterCapture
