@@ -12,11 +12,11 @@ import {
   getValidStacks,
   getInvertedValidCaptures,
 } from "./gameBoardHelpers";
-import { Player, ValidCoordinate } from "./types/types";
+import { Player } from "./types/types";
 
 export function getGameStatesToAnalyze(gameState: typeof gameBoardState, turn: Player) {
-  // const EARLY_GAME = numberOfTurnsIntoGame < 10;
-  const EARLY_GAME = false
+  const EARLY_GAME = numberOfTurnsIntoGame < 10;
+
   let allPossibleStatesAfterTurn = List();
 
   if (!EARLY_GAME) {// @ts-expect-error fix
@@ -259,7 +259,6 @@ export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn:
             });
           }
           // We can just capture, then pass
-          debugger
           allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
             fromToKey,
             stateAfterCapture
