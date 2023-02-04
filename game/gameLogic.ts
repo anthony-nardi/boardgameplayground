@@ -33,8 +33,7 @@ import * as evaluation from './evaluation'
 import * as minimaxer from "minimaxer";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
-import depth2GameState from "./tests/depth2GameState";
-import MovesState34 from './tests/34MovesState'
+
 function getPixelCoordinatesFromTouchInteraction(event: React.TouchEvent<HTMLCanvasElement>) {
   const x = event.changedTouches[0].clientX
   const y = event.changedTouches[0].clientY
@@ -57,6 +56,19 @@ function getPixelCoordinatesFromUserInteraction(event: React.MouseEvent<HTMLCanv
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   return gameBoardState.getIn([boardCoordinate, "ownedBy"]) === currentTurn;
+}
+
+export function passTurn() {
+  if (currentTurn === PLAYER_ONE && turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS) {
+    nextPhase()
+    // @ts-expect-error todo
+    document.getElementById('skipTurnButton').classList.add('hidden')
+    const loadingSpinnerComponent = document.getElementById("loadingSpinner")
+    if (loadingSpinnerComponent) {
+      loadingSpinnerComponent.classList.remove("hidden");
+    }
+    setTimeout(moveAI)
+  }
 }
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
@@ -475,6 +487,8 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   drawInitialGrid();
   renderInitializingBoard(piecesToSetup, () => {
     drawGameBoardState();
-    // drawCoordinates();
+    if (window.localStorage && window.localStorage.getItem('DEBUG_TZAAR') === 'true') {
+      drawCoordinates();
+    }
   });
 }

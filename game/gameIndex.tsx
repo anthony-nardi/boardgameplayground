@@ -4,9 +4,11 @@ import {
   handleDropPiece,
   handleClickPiece,
   handleMovePiece,
+  passTurn,
 } from "./gameLogic";
 import WindowHelper from "./WindowHelper";
 import gamePieceRenderer from "./gamePieceRenderer";
+import { Button } from '@mantine/core';
 
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
@@ -53,9 +55,9 @@ export default function () {
       </div>
       <div className="stateContainer">
         <div id="turnDiv"></div>
-
         <div id="phaseDiv"></div>
       </div>
+      <Button color="gray" className="skip-turn-button hidden" id='skipTurnButton' onClick={passTurn}>Pass</Button>
       <canvas
         ref={Canvas}
         // @ts-expect-error fix

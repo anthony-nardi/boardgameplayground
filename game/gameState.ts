@@ -40,6 +40,8 @@ export function nextPhase() {
     turnPhase = TURN_PHASES.STACK_OR_CAPTURE_OR_PASS;
     // @ts-expect-error todo
     document.getElementById("phaseDiv").innerHTML = "Phase: STACK OR CAPTURE";
+    // @ts-expect-error todo
+    document.getElementById('skipTurnButton').classList.remove('hidden')
     return;
   }
   if (currentTurn === PLAYER_TWO && turnPhase === TURN_PHASES.CAPTURE) {
