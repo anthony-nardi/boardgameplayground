@@ -127,8 +127,8 @@ a {
 .ajaxSpinner {
   position: relative;
   float: left;
-  height: 200px;
-  width: 200px;
+  height: 100px;
+  width: 100px;
 }
 
 .ajaxSpinner:after {
@@ -136,9 +136,9 @@ a {
   content: "";
   left: 0;
   top: 0;
-  height: 200px;
-  width: 200px;
-  line-height: 200px;
+  height: 100px;
+  width: 100px;
+  line-height: 100px;
   color: #546E7A;
   font-style: italic;
   font-size: 20px;
@@ -146,10 +146,10 @@ a {
 }
 
 .ajaxSpinner .dot {
-  background: #CFD8DC;
+  background: #a56504;
   position: absolute;
   left: 0;
-  border: 1px solid #263238;
+  border: 1px solid #f3f861;
   animation: fade 2s linear infinite;
 }
 
@@ -165,8 +165,9 @@ a {
   width: 100px;
   height: 20px;
   right: 50%;
-  margin-right: -50px;
-  top: 50%;
+  margin-right: -100px;
+  top: calc(50% + 55px);
+  margin-bottom: -200px 
 }
 
 .dotWrapper:nth-child(2) {

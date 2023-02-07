@@ -196,9 +196,6 @@ function checkGameStateAndStartNextTurn() {
 export const createChildCallback = (node: any, move: string) => {
   let gamestateToAnalyze;
 
-  // const aim = node.aim
-  // console.log(`aim : ${aim}`)
-  // TODO: Check if this logic is necessary.
   if (!node.gamestate.gamestate) {
     gamestateToAnalyze = node.gamestate
   } else {
@@ -212,7 +209,6 @@ export const createChildCallback = (node: any, move: string) => {
     throw new Error('Hmm no? Right??')
   }
 
-  // console.log(data)
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move)
   const childNode = new minimaxer.Node(1, updatedBoardGameState, move, data, aim);
   return childNode;
