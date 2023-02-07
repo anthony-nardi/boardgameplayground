@@ -1,4 +1,4 @@
-import { GamePieceRecord } from "../../constants"
+import { GamePieceRecord } from "../constants"
 
 export default function depth2GameState() {
 

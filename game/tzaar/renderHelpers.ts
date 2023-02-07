@@ -13,7 +13,7 @@ import { drawCachedBoard } from "./cachedBoard";
 import { gameBoardState, setNewgameBoardState } from "./gameState";
 import { List, RecordOf } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
-import { ValidCoordinate } from "./tzaar/types/types";
+import { ValidCoordinate } from "./types/types";
 
 const DEBUG = false
 

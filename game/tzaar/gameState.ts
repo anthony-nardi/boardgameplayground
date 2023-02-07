@@ -1,6 +1,6 @@
 import { Map, RecordOf } from "immutable";
 import { GamePieceRecordProps, PLAYER_ONE, PLAYER_TWO, TURN_PHASES } from "./constants";
-import { ValidCoordinate } from "./tzaar/types/types";
+import { ValidCoordinate } from "./types/types";
 
 export let movingPiece: null | ValidCoordinate = null;
 export let gameBoardState = Map<ValidCoordinate, RecordOf<GamePieceRecordProps> | false>();
