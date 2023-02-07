@@ -1,7 +1,5 @@
 import {
   createStyles,
-  Badge,
-  Group,
   Title,
   Text,
   Card,
@@ -9,21 +7,6 @@ import {
   Container,
 } from "@mantine/core";
 import Link from "next/link";
-
-const mockdata = [
-  {
-    title: "TZAAR",
-    description:
-      "A 2 player abstract strategy game. Part of the GIPF series designed by Kris Burm.",
-    link: "/tzaar",
-  },
-  {
-    title: "Family Inc.",
-    description:
-      "A push your luck game for 2-7 players designed by Reiner Knizia.",
-    link: "https://familyinc-client.vercel.app/",
-  },
-];
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -51,9 +34,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   card: {
-    border: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-    }`,
+    border: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
+      }`,
   },
 
   cardTitle: {
@@ -69,27 +51,12 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export function FeaturesCards() {
-  const { classes, theme } = useStyles();
-  const features = mockdata.map((feature) => (
-    <Link
-      href={feature.link}
-      style={{ textDecoration: "none" }}
-      key={feature.title}
-    >
-      <Card shadow="md" radius="md" className={classes.card} p="xl">
-        <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
-          {feature.title}
-        </Text>
-        <Text size="sm" color="dimmed" mt="sm">
-          {feature.description}
-        </Text>
-      </Card>
-    </Link>
-  ));
+  const { classes } = useStyles();
+
   return (
     <Container size="lg" py="xl">
       <Title order={2} className={classes.title} align="center" mt="sm">
-        A collection of board game implementations.
+        A collection of board games with AI opponents.
       </Title>
 
       <Text
@@ -98,16 +65,48 @@ export function FeaturesCards() {
         align="center"
         mt="md"
       >
-        Most (or all) of these are works in progress.
+        Practice against the computer.
       </Text>
-
+      <Text
+        color="dimmed"
+        className={classes.description}
+        align="center"
+        mt="md"
+      >
+        {`Some games may allow for human opponents, but I'm not paying for a server to support real time communication. (Therefore it may be slow!)`}
+      </Text>
       <SimpleGrid
         cols={3}
         spacing="xl"
         mt={50}
         breakpoints={[{ maxWidth: "md", cols: 1 }]}
       >
-        {features}
+        <Link
+          href="/tzaar"
+          style={{ textDecoration: "none" }}
+        >
+          <Card shadow="md" radius="md" className={classes.card} p="xl">
+            <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
+              TZAAR
+            </Text>
+            <Text size="sm" color="dimmed" mt="sm">
+              A 2 player abstract strategy game. Part of the GIPF series designed by Kris Burm.
+            </Text>
+          </Card>
+        </Link>
+        <Link
+          href="https://familyinc-client.vercel.app/"
+          style={{ textDecoration: "none" }}
+        >
+          <Card shadow="md" radius="md" className={classes.card} p="xl">
+            <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
+              Family Inc.
+            </Text>
+            <Text size="sm" color="dimmed" mt="sm">
+              A push your luck game for 2-7 players designed by Reiner Knizia.
+            </Text>
+          </Card>
+        </Link>
       </SimpleGrid>
     </Container>
   );
