@@ -14,9 +14,7 @@ import { gameBoardState, setNewgameBoardState } from "./gameState";
 import { List, RecordOf } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { ValidCoordinate } from "./types/types";
-
-const DEBUG = false
-
+import { circlePatternInsideOut } from './initialSetupOptions'
 function getContext() {
 
   if (!window.GAME_STATE_BOARD_CANVAS) {
@@ -27,7 +25,6 @@ function getContext() {
 }
 
 export function drawCoordinates() {
-
   PLAYABLE_VERTICES.map(drawCoordinate);
 }
 
@@ -56,7 +53,10 @@ export function drawCoordinate(coordinate: ValidCoordinate) {
 
   const yPos = +y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   context.font = "1rem Helvetica";
+  context.fillStyle = "#ccc";
+  context.fillRect(xPos + 5, yPos - 5, 30, 20)
   context.fillStyle = "#d92121";
+
   context.fillText(coordinate, xPos + 10, yPos + 10);
 }
 
@@ -139,7 +139,6 @@ function timeFunction(t: number) {
 }
 
 export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
-  let index = 0;
   let piecesToRenderList = List();
 
   const shuffleArray = (array: string[]) => {
@@ -151,9 +150,17 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
     }
   }
 
-  const coordinates = Object.keys(piecesToDraw)
-
+  let coordinates = Object.keys(piecesToDraw)
   shuffleArray(coordinates)
+  let reversed = [...circlePatternInsideOut]
+  reversed.reverse()
+  if (Math.random() < .5) {
+    coordinates = circlePatternInsideOut
+
+  }
+  if (Math.random() < .2) {
+    coordinates = reversed
+  }
 
   for (let index in coordinates) {
     const coordinate = coordinates[index]
