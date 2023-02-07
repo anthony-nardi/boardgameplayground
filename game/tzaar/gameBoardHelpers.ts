@@ -13,7 +13,7 @@ import {
 } from "./constants";
 import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
-import { ValidCoordinate } from "./types/types";
+import { Direction, ValidCoordinate } from "./types/types";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { gameBoardState } from "./gameState";
 
@@ -97,7 +97,7 @@ export function isPlayableSpace(coordinate: ValidCoordinate) {
   return PLAYABLE_VERTICES.includes(coordinate);
 }
 
-export function setupBoardWithPiecesNotRandom() {
+export function setupSymmetricalBoard() {
   let piecesToDraw: { [key in ValidCoordinate]: RecordOf<GamePieceRecordProps> } = {
     "0,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "0,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
@@ -163,7 +163,7 @@ export function setupBoardWithPiecesNotRandom() {
   return piecesToDraw;
 }
 
-export function setupBoardWithPieces() {
+export function setupRandomBoard() {
   let piecesToDraw = Map();
   let PLAYER_ONE_PIECES = List();
   let PLAYER_TWO_PIECES = List();
@@ -196,11 +196,13 @@ export function setupBoardWithPieces() {
   }
 
   const allGamePieces = PLAYER_ONE_PIECES.concat(PLAYER_TWO_PIECES);
+
   const shuffledPieces = allGamePieces.sortBy(Math.random);
 
   shuffledPieces.forEach((piece, index) => {
     piecesToDraw = piecesToDraw.set(PLAYABLE_VERTICES[index], piece);
   });
+
   return piecesToDraw.sortBy(Math.random);
 }
 
@@ -235,9 +237,11 @@ export function isValidEmptyCoordinate(coordinate: ValidCoordinate, gameState: t
   );
 }
 
-function getNextValidCapture(fromCoordinate: ValidCoordinate, direction: 'w' | 'e' | 'sw' | 'se' | 'nw' | 'ne', gameState: typeof gameBoardState) {
-  let nextMove;
+function getNextValidCapture(fromCoordinate: ValidCoordinate, direction: Direction, gameState: typeof gameBoardState) {
+
+  let nextMove = undefined;
   let coordinateToCheck = fromCoordinate;
+
   while (nextMove === undefined) {
     coordinateToCheck = nextPiece[direction](coordinateToCheck);
 
@@ -263,9 +267,11 @@ function getNextValidCapture(fromCoordinate: ValidCoordinate, direction: 'w' | '
   return nextMove;
 }
 
-function getNextValidStack(fromCoordinate: ValidCoordinate, direction: 'w' | 'e' | 'sw' | 'se' | 'nw' | 'ne', gameState: typeof gameBoardState) {
-  let nextMove;
+function getNextValidStack(fromCoordinate: ValidCoordinate, direction: Direction, gameState: typeof gameBoardState) {
+
+  let nextMove = undefined
   let coordinateToCheck = fromCoordinate;
+
   while (nextMove === undefined) {
     coordinateToCheck = nextPiece[direction](coordinateToCheck);
 
@@ -279,11 +285,11 @@ function getNextValidStack(fromCoordinate: ValidCoordinate, direction: 'w' | 'e'
       nextMove = undefined;
     }
 
-    // First piece we encounter can't be captured
+    // First piece we encounter can't be stacked
     else if (!canStack(fromCoordinate, coordinateToCheck, gameState)) {
       nextMove = false;
     }
-    // Finally a piece we can capture
+    // Finally a piece we can stack on top of
     else {
       nextMove = coordinateToCheck;
     }
@@ -323,9 +329,11 @@ export function getInvertedValidCaptures(toCoordinate: ValidCoordinate, gameStat
   ]).filter(isValidMove => isValidMove);
 }
 
-function getNextInvertedValidCapture(toCoordinate: ValidCoordinate, direction: 'w' | 'e' | 'sw' | 'se' | 'nw' | 'ne', gameState: typeof gameBoardState) {
-  let nextMove;
+function getNextInvertedValidCapture(toCoordinate: ValidCoordinate, direction: Direction, gameState: typeof gameBoardState) {
+
+  let nextMove = undefined;
   let coordinateToCheck = toCoordinate;
+
   while (nextMove === undefined) {
     coordinateToCheck = nextPiece[direction](coordinateToCheck);
 

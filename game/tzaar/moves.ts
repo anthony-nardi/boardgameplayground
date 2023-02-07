@@ -12,7 +12,7 @@ import {
   getValidStacks,
   getInvertedValidCaptures,
 } from "./gameBoardHelpers";
-import { Player } from "./types/types";
+import { Player } from "./tzaar/types/types";
 
 export function getGameStatesToAnalyze(gameState: typeof gameBoardState, turn: Player) {
   const EARLY_GAME = numberOfTurnsIntoGame < 10;

@@ -14,8 +14,8 @@ import {
 import {
   getBoardCoordinatesFromPixelCoordinates,
   getPixelCoordinatesFromBoardCoordinates,
-  setupBoardWithPieces,
-  setupBoardWithPiecesNotRandom,
+  setupSymmetricalBoard,
+  setupRandomBoard,
   getValidCaptures,
   getValidStacks,
 } from "./gameBoardHelpers";
@@ -480,8 +480,8 @@ function playMove(move: string) {
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   const piecesToSetup =
     SETUP_STYLE !== "RANDOM"
-      ? setupBoardWithPiecesNotRandom()
-      : setupBoardWithPieces();
+      ? setupSymmetricalBoard()
+      : setupRandomBoard();
   // const piecesToSetup = depth2GameState()
   // const piecesToSetup = MovesState34()
   drawInitialGrid();

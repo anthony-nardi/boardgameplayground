@@ -2,7 +2,7 @@
 import WindowHelper from "./WindowHelper";
 import GamePieceRenderer, { NUMBER_OF_COLS, NUMBER_OF_ROWS } from "./gamePieceRenderer";
 import { AllCoordinates } from "./types/types";
-import { useMemo } from "react";
+
 const CACHED_CANVAS = document.createElement("canvas");
 
 const COORDS_TO_NOT_RENDER = [

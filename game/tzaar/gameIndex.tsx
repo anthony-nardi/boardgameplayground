@@ -8,7 +8,7 @@ import {
 } from "./gameLogic";
 import WindowHelper from "./WindowHelper";
 import gamePieceRenderer from "./gamePieceRenderer";
-import { Button } from '@mantine/core';
+import { Button } from "@mantine/core";
 
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
@@ -56,19 +56,26 @@ export default function () {
       <div className="stateContainer">
         <div id="turnDiv"></div>
         <div id="phaseDiv"></div>
+        <Button
+          color="gray"
+          className="hidden"
+          id="skipTurnButton"
+          onClick={passTurn}
+        >
+          Pass
+        </Button>
       </div>
-      <Button color="gray" className="skip-turn-button hidden" id='skipTurnButton' onClick={passTurn}>Pass</Button>
       <canvas
         ref={Canvas}
         // @ts-expect-error fix
-        onTouchStart={'ontouchstart' in document ? handleClickPiece : () => { }}
+        onTouchStart={"ontouchstart" in document ? handleClickPiece : () => {}}
         // @ts-expect-error fix
-        onTouchMove={'ontouchstart' in document ? handleMovePiece : () => { }}
+        onTouchMove={"ontouchstart" in document ? handleMovePiece : () => {}}
         // @ts-expect-error fix
-        onTouchEnd={'ontouchstart' in document ? handleDropPiece : () => { }}
-        onMouseDown={'ontouchstart' in document ? () => { } : handleClickPiece}
-        onMouseMove={'ontouchstart' in document ? () => { } : handleMovePiece}
-        onMouseUp={'ontouchstart' in document ? () => { } : handleDropPiece}
+        onTouchEnd={"ontouchstart" in document ? handleDropPiece : () => {}}
+        onMouseDown={"ontouchstart" in document ? () => {} : handleClickPiece}
+        onMouseMove={"ontouchstart" in document ? () => {} : handleMovePiece}
+        onMouseUp={"ontouchstart" in document ? () => {} : handleDropPiece}
       />
     </>
   );

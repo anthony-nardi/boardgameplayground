@@ -5,7 +5,7 @@ declare global {
         gameBoardState: any
     }
 }
-
+export type Direction = 'w' | 'e' | 'sw' | 'se' | 'nw' | 'ne'
 export type Player = "PLAYER_ONE" | "PLAYER_TWO"
 export type PieceType = typeof TZAAR | typeof TOTT | typeof TZARRA | null
 export type AllCoordinates =

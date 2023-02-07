@@ -1,6 +1,6 @@
 import { Map, RecordOf } from "immutable";
 import { GamePieceRecordProps, PLAYER_ONE, PLAYER_TWO, TURN_PHASES } from "./constants";
-import { ValidCoordinate } from "./types/types";
+import { ValidCoordinate } from "./tzaar/types/types";
 
 export let movingPiece: null | ValidCoordinate = null;
 export let gameBoardState = Map<ValidCoordinate, RecordOf<GamePieceRecordProps> | false>();
@@ -21,6 +21,12 @@ export function setMovingPiece(coordinate: ValidCoordinate | null) {
 }
 
 export function nextPhase() {
+  const skipTurnButton = document.getElementById('skipTurnButton')
+
+  if (skipTurnButton) {
+    skipTurnButton.classList.add('hidden')
+  }
+
   // first turn of the game is special
   if (isVeryFirstTurn) {
     isVeryFirstTurn = false;
@@ -41,7 +47,7 @@ export function nextPhase() {
     // @ts-expect-error todo
     document.getElementById("phaseDiv").innerHTML = "Phase: STACK OR CAPTURE";
     // @ts-expect-error todo
-    document.getElementById('skipTurnButton').classList.remove('hidden')
+    skipTurnButton.classList.remove('hidden')
     return;
   }
   if (currentTurn === PLAYER_TWO && turnPhase === TURN_PHASES.CAPTURE) {

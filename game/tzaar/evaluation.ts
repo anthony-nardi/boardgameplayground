@@ -9,8 +9,8 @@ import {
   EDGE_COORDINATES,
   GamePieceRecordProps,
 } from "./constants";
-import { currentTurn, gameBoardState } from "./gameState";
-import { Player, ValidCoordinate } from "./types/types";
+import { gameBoardState, currentTurn } from "./gameState";
+import { PieceType, Player, ValidCoordinate } from "./types/types";
 import {
   getValidCaptures,
 } from "./gameBoardHelpers";
@@ -235,18 +235,16 @@ export function getWinner(gameState: typeof gameBoardState) {
     return PLAYER_ONE;
   }
 
-
-
-  // const possibleCaptures = getAllPlayerPieceCoordinates(
-  //   gameState,// @ts-expect-error fix
-  //   currentTurn
-  // ).map((fromCoordinate) => {
-  //   return getValidCaptures(fromCoordinate, gameState);
-  // });
-  // // @ts-expect-error fix
-  // if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
-  //   return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-  // }
+  const possibleCaptures = getAllPlayerPieceCoordinates(
+    gameState,// @ts-expect-error fix
+    currentTurn
+  ).map((fromCoordinate) => {
+    return getValidCaptures(fromCoordinate, gameState);
+  });
+  // @ts-expect-error fix
+  if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
+    return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+  }
 }
 
 
@@ -255,8 +253,8 @@ export function getAllPlayerPieceCoordinates(gameState: typeof gameBoardState, p
     .filter((piece) => piece && piece.ownedBy === player)
     .keySeq();
 }
-// @ts-expect-error fix
-export function getAllPlayerPieceCoordinatesByType(gameState: typeof gameBoardState, player: Player, type) {
+
+export function getAllPlayerPieceCoordinatesByType(gameState: typeof gameBoardState, player: Player, type: PieceType) {
   return gameState
     .filter((piece) => piece && piece.ownedBy === player && piece.type === type)
     .keySeq();
