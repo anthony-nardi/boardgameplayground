@@ -254,8 +254,6 @@ export function getPossibleMoveSequences(gameState: typeof gameBoardState, turn:
                 sequenceKey,
                 nextGameState
               );
-
-              console.log(sequenceKey)
             });
           }
           // We can just capture, then pass

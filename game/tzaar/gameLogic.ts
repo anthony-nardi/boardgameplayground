@@ -270,7 +270,7 @@ function moveAI() {
     }
 
     const scoreForNode = evaluation.getGameStateScore(gamestateToAnalyze);
-    // console.log(scoreForNode)
+
     return scoreForNode
   }
   tree.GetMoves = (gamestate) => {
