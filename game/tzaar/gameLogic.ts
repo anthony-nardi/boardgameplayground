@@ -31,7 +31,7 @@ import * as minimaxer from "minimaxer";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
 import { secondQuestionableMoveByAI } from "./tests/QuestionableMoves";
-import { AIWinner } from "./tests/Winners";
+import { AIWinner, HumanWinner } from "./tests/Winners";
 
 function getPixelCoordinatesFromTouchInteraction(
   event: React.TouchEvent<HTMLCanvasElement>
@@ -207,8 +207,12 @@ function stackPiece(
 
 function checkGameStateAndStartNextTurn() {
   nextPhase();
+  let winner;
 
-  const winner = evaluation.getWinner(gameBoardState);
+  if (turnPhase === TURN_PHASES.CAPTURE) {
+    winner = evaluation.getWinner(gameBoardState, true);
+  }
+
   let message = winner === PLAYER_TWO ? "You lost." : "You won!";
   if (winner) {
     alert(`${message}`);
@@ -391,7 +395,7 @@ function playMove(move: string) {
   if (currentTurn !== PLAYER_TWO) {
     return;
   }
-
+  console.log(gameBoardState.toJS());
   // Single move only
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
@@ -506,23 +510,24 @@ function playMove(move: string) {
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  // const piecesToSetup =
-  //   SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
+  const piecesToSetup =
+    SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
   // const piecesToSetup = depth2GameState()
   // const piecesToSetup = MovesState34()
 
   // setInitialGameState(piecesToSetup);
-  const piecesToSetup = AIWinner();
+  // const piecesToSetup = AIWinner();
+  // const piecesToSetup = AIWinner();
   drawInitialGrid();
   renderInitializingBoard(piecesToSetup, () => {
-    setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
+    // setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
 
-    drawCoordinates();
-
+    // drawCoordinates();
+    // checkGameStateAndStartNextTurn();
     drawGameBoardState();
     //"4,3->7,0=>8,2->8,3"
     // setTimeout(moveAI, 1000);
-    moveAI();
+    // moveAI();
     if (
       window.localStorage &&
       window.localStorage.getItem("DEBUG_TZAAR") === "true"

@@ -218,7 +218,11 @@ function getPieces(gameState: typeof gameBoardState) {
   );
 }
 
-export function getWinner(gameState: typeof gameBoardState) {
+export function getWinner(
+  gameState: typeof gameBoardState,
+  beforeTurnStart = false
+) {
+  debugger;
   const pieceCountsByPlayer = getPieces(gameState);
 
   const playerOneLost =
@@ -244,29 +248,31 @@ export function getWinner(gameState: typeof gameBoardState) {
     return PLAYER_ONE;
   }
 
-  // TODO: Dont think we need this as it was incorrect all along!
-  // const possibleCaptures = getAllPlayerPieceCoordinates(
-  //   gameState, // @ts-expect-error fix
-  //   currentTurn
-  // ).map((fromCoordinate) => {
-  //   return getValidCaptures(fromCoordinate, gameState);
-  // });
-  // // @ts-expect-error fix
-  // if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
-  //   return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-  // }
+  if (beforeTurnStart) {
+    // TODO: Dont think we need this as it was incorrect all along!
+    const possibleCaptures = getAllPlayerPieceCoordinates(
+      gameState, // @ts-expect-error fix
+      currentTurn
+    ).map((fromCoordinate) => {
+      return getValidCaptures(fromCoordinate, gameState);
+    });
+    // @ts-expect-error fix
+    if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
+      return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+    }
+  } else {
+    const invertedCaptures = getAllPlayerPieceCoordinates(
+      gameState, // @ts-expect-error fix
+      currentTurn
+    ).map((fromCoordinate) => {
+      return getInvertedValidCaptures(fromCoordinate, gameState);
+    });
 
-  const invertedCaptures = getAllPlayerPieceCoordinates(
-    gameState, // @ts-expect-error fix
-    currentTurn
-  ).map((fromCoordinate) => {
-    return getInvertedValidCaptures(fromCoordinate, gameState);
-  });
-
-  if (
-    !invertedCaptures.find((possibleCapture) => Boolean(possibleCapture.size))
-  ) {
-    return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
+    if (
+      !invertedCaptures.find((possibleCapture) => Boolean(possibleCapture.size))
+    ) {
+      return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
+    }
   }
 }
 

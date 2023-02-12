@@ -69,7 +69,12 @@ export function drawGameBoardState() {
   clearCanvas();
   drawCachedBoard();
   drawGamePieces();
-  drawCoordinates();
+  if (
+    window.localStorage &&
+    window.localStorage.getItem("DEBUG_TZAAR") === "true"
+  ) {
+    drawCoordinates();
+  }
 }
 
 export function drawStaticGamePiece(

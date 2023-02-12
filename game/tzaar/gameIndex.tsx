@@ -17,6 +17,13 @@ export default function () {
 
   useEffect(() => {
     if (Canvas.current && !isGameInitializedRef.current) {
+
+      if (window.localStorage.getItem("DEBUG_TZAAR") === "true") {
+        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "true"`)
+      } else {
+        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "false"`)
+      }
+
       isGameInitializedRef.current = true
       window.GAME_STATE_BOARD_CANVAS = Canvas.current;
       WindowHelper.setHeight();

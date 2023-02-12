@@ -40,6 +40,7 @@ export function setInitialGameState(
   currentTurn = turn;
   turnPhase = phase;
   numberOfTurnsIntoGame = numberOfTurns;
+  isVeryFirstTurn = numberOfTurns === 0;
 }
 
 export function setNewgameBoardState(newState: typeof gameBoardState) {
