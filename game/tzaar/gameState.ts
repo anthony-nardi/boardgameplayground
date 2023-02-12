@@ -26,15 +26,17 @@ export function logGameState() {
   );
 }
 
-export function setGameState(
+export function setInitialGameState(
   board: typeof gameBoardState,
-  turn: typeof PLAYER_ONE | typeof PLAYER_TWO,
+  turn: typeof PLAYER_ONE | typeof PLAYER_TWO = PLAYER_ONE,
   phase:
     | typeof TURN_PHASES.CAPTURE
-    | typeof TURN_PHASES.STACK_OR_CAPTURE_OR_PASS,
-  numberOfTurns: number
+    | typeof TURN_PHASES.STACK_OR_CAPTURE_OR_PASS = TURN_PHASES.CAPTURE,
+  numberOfTurns: number = 0
 ) {
-  setNewgameBoardState(board);
+  if (board) {
+    setNewgameBoardState(board);
+  }
   currentTurn = turn;
   turnPhase = phase;
   numberOfTurnsIntoGame = numberOfTurns;

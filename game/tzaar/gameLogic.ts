@@ -1,8 +1,4 @@
-import {
-  PLAYER_TWO,
-  PLAYER_ONE,
-  TURN_PHASES,
-} from "./constants";
+import { PLAYER_TWO, PLAYER_ONE, TURN_PHASES } from "./constants";
 import { drawInitialGrid } from "./cachedBoard";
 import {
   drawCoordinates,
@@ -23,35 +19,54 @@ import {
   movingPiece,
   gameBoardState,
   setNewgameBoardState,
+  setInitialGameState,
   setMovingPiece,
   nextPhase,
   currentTurn,
   turnPhase,
 } from "./gameState";
 import { getGameStatesToAnalyze } from "./moves";
-import * as evaluation from './evaluation'
+import * as evaluation from "./evaluation";
 import * as minimaxer from "minimaxer";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
+import { secondQuestionableMoveByAI } from "./tests/QuestionableMoves";
+import { AIWinner } from "./tests/Winners";
 
-function getPixelCoordinatesFromTouchInteraction(event: React.TouchEvent<HTMLCanvasElement>) {
-  const x = event.changedTouches[0].clientX
-  const y = event.changedTouches[0].clientY
+function getPixelCoordinatesFromTouchInteraction(
+  event: React.TouchEvent<HTMLCanvasElement>
+) {
+  const x = event.changedTouches[0].clientX;
+  const y = event.changedTouches[0].clientY;
   return [x, y];
 }
 
-function getPixelCoordinatesFromMouseInteraction(event: React.MouseEvent<HTMLCanvasElement>) {
+function getPixelCoordinatesFromMouseInteraction(
+  event: React.MouseEvent<HTMLCanvasElement>
+) {
   const x = event.clientX;
-  const y = event.clientY
+  const y = event.clientY;
   return [x, y];
 }
 
-function getPixelCoordinatesFromUserInteraction(event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
-  if (event.type === 'touchstart' || event.type === 'touchmove' || event.type === 'touchend') {
-    return getPixelCoordinatesFromTouchInteraction(event as React.TouchEvent<HTMLCanvasElement>)
+function getPixelCoordinatesFromUserInteraction(
+  event:
+    | React.MouseEvent<HTMLCanvasElement>
+    | React.TouchEvent<HTMLCanvasElement>
+) {
+  if (
+    event.type === "touchstart" ||
+    event.type === "touchmove" ||
+    event.type === "touchend"
+  ) {
+    return getPixelCoordinatesFromTouchInteraction(
+      event as React.TouchEvent<HTMLCanvasElement>
+    );
   }
 
-  return getPixelCoordinatesFromMouseInteraction(event as React.MouseEvent<HTMLCanvasElement>)
+  return getPixelCoordinatesFromMouseInteraction(
+    event as React.MouseEvent<HTMLCanvasElement>
+  );
 }
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
@@ -59,15 +74,18 @@ function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
 }
 
 export function passTurn() {
-  if (currentTurn === PLAYER_ONE && turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS) {
-    nextPhase()
+  if (
+    currentTurn === PLAYER_ONE &&
+    turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS
+  ) {
+    nextPhase();
     // @ts-expect-error todo
-    document.getElementById('skipTurnButton').classList.add('hidden')
-    const loadingSpinnerComponent = document.getElementById("loadingSpinner")
+    document.getElementById("skipTurnButton").classList.add("hidden");
+    const loadingSpinnerComponent = document.getElementById("loadingSpinner");
     if (loadingSpinnerComponent) {
       loadingSpinnerComponent.classList.remove("hidden");
     }
-    setTimeout(moveAI)
+    setTimeout(moveAI);
   }
 }
 
@@ -96,9 +114,9 @@ export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
 
   const [x, y] = getPixelCoordinatesFromUserInteraction(event);
   drawGameBoardState();
-  const gamePiece = gameBoardState.get(movingPiece)
+  const gamePiece = gameBoardState.get(movingPiece);
   if (!gamePiece) {
-    throw new Error('gamepiece not here')
+    throw new Error("gamepiece not here");
   }
   drawGamePiece(gamePiece, x, y);
 }
@@ -140,7 +158,7 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   drawGameBoardState();
 
   if (turnPhase === TURN_PHASES.CAPTURE && currentTurn === PLAYER_TWO) {
-    const loadingSpinnerComponent = document.getElementById("loadingSpinner")
+    const loadingSpinnerComponent = document.getElementById("loadingSpinner");
     if (loadingSpinnerComponent) {
       loadingSpinnerComponent.classList.remove("hidden");
     }
@@ -148,11 +166,14 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   }
 }
 
-function capturePiece(fromCoordinates: ValidCoordinate, toCoordinates: ValidCoordinate) {
+function capturePiece(
+  fromCoordinates: ValidCoordinate,
+  toCoordinates: ValidCoordinate
+) {
   const fromPiece = gameBoardState.get(fromCoordinates);
 
   if (!fromPiece) {
-    throw new Error('fromPiece not there.')
+    throw new Error("fromPiece not there.");
   }
 
   setNewgameBoardState(
@@ -161,12 +182,15 @@ function capturePiece(fromCoordinates: ValidCoordinate, toCoordinates: ValidCoor
   checkGameStateAndStartNextTurn();
 }
 
-function stackPiece(fromCoordinates: ValidCoordinate, toCoordinates: ValidCoordinate) {
+function stackPiece(
+  fromCoordinates: ValidCoordinate,
+  toCoordinates: ValidCoordinate
+) {
   const fromPiece = gameBoardState.get(fromCoordinates);
   const toPiece = gameBoardState.get(toCoordinates);
 
   if (!fromPiece || !toPiece) {
-    throw new Error('Stacking broken')
+    throw new Error("Stacking broken");
   }
 
   setNewgameBoardState(
@@ -180,7 +204,6 @@ function stackPiece(fromCoordinates: ValidCoordinate, toCoordinates: ValidCoordi
   );
   checkGameStateAndStartNextTurn();
 }
-
 
 function checkGameStateAndStartNextTurn() {
   nextPhase();
@@ -197,53 +220,72 @@ export const createChildCallback = (node: any, move: string) => {
   let gamestateToAnalyze;
 
   if (!node.gamestate.gamestate) {
-    gamestateToAnalyze = node.gamestate
+    gamestateToAnalyze = node.gamestate;
   } else {
-    gamestateToAnalyze = node.gamestate.gamestate
+    gamestateToAnalyze = node.gamestate.gamestate;
   }
 
-  const data = node.parent ? node.parent.data + 1 : 1
-  const aim = data === 0 ? 1 : -1
+  const data = node.parent ? node.parent.data + 1 : 1;
+  const aim = data === 0 ? 1 : -1;
 
   if (data === 0 && aim === -1) {
-    throw new Error('Hmm no? Right??')
+    throw new Error("Hmm no? Right??");
   }
 
-  const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move)
-  const childNode = new minimaxer.Node(1, updatedBoardGameState, move, data, aim);
+  const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move);
+
+  const winner = evaluation.getWinner(updatedBoardGameState);
+
+  // if (move === "4,3->7,0=>8,2->8,3") {
+  //   debugger;
+  //   evaluation.getWinner(updatedBoardGameState);
+  // }
+
+  const nodeType = winner ? 2 : 1;
+
+  const childNode = new minimaxer.Node(
+    nodeType,
+    updatedBoardGameState,
+    move,
+    data,
+    aim
+  );
   return childNode;
 };
 
 function moveAI() {
+  console.log(`MOVE AI`);
   if (currentTurn !== PLAYER_TWO) {
     return;
   }
 
-  console.log(window.gameBoardState.toJS())
-
   const now = Date.now();
   const opts = new minimaxer.NegamaxOpts();
 
-  const loadingSpinnerComponent = document.getElementById("loadingSpinner")
+  const loadingSpinnerComponent = document.getElementById("loadingSpinner");
 
   const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
     gameBoardState,
     PLAYER_TWO
-  ).keySeq().toJS()
+  )
+    .keySeq()
+    .toJS();
 
-  console.log(`All possible starting moves: ${allPossibleStatesAfterTurn.length}`)
-  opts.depth = allPossibleStatesAfterTurn.length < 500 ? 2 : 1
-  opts.method = 0
-  opts.pruning = 1
-  opts.sortMethod = 0
-  opts.genBased = false
-  opts.optimal = false
-  console.log('DEPTH is ' + opts.depth)
+  console.log(
+    `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
+  );
+  opts.depth = allPossibleStatesAfterTurn.length < 500 ? 2 : 1;
+  opts.method = 0;
+  opts.pruning = 1;
+  opts.sortMethod = 0;
+  opts.genBased = false;
+  opts.optimal = false;
+  console.log("DEPTH is " + opts.depth);
 
-  let aim = 1
-  let data = 0
-  let move = null
-  const nodeType = 0
+  let aim = 1;
+  let data = 0;
+  let move = null;
+  const nodeType = 0;
   const root = new minimaxer.Node(
     nodeType,
     gameBoardState,
@@ -257,39 +299,35 @@ function moveAI() {
   // @ts-expect-error Figure out. TODO
   tree.CreateChildNode = createChildCallback;
   tree.EvaluateNode = (node) => {
-
     let gamestateToAnalyze;
 
     // @ts-expect-error TODO
     if (!node.gamestate.gamestate) {
-
-      gamestateToAnalyze = node.gamestate
+      gamestateToAnalyze = node.gamestate;
     } else {
       // @ts-expect-error TODO
-      gamestateToAnalyze = node.gamestate.gamestate
+      gamestateToAnalyze = node.gamestate.gamestate;
     }
 
     const scoreForNode = evaluation.getGameStateScore(gamestateToAnalyze);
 
-    return scoreForNode
-  }
+    return scoreForNode;
+  };
   tree.GetMoves = (gamestate) => {
+    const gamestateToAnalyze = gamestate.gamestate;
 
-    const gamestateToAnalyze = gamestate.gamestate
+    const player = gamestate.data % 2 === 1 ? PLAYER_ONE : PLAYER_TWO;
 
-    const player = gamestate.data % 2 === 1 ? PLAYER_ONE : PLAYER_TWO
+    const moves = getGameStatesToAnalyze(gamestateToAnalyze, player)
+      .keySeq()
+      .toJS();
 
-    return getGameStatesToAnalyze(
-      gamestateToAnalyze,
-      player
-    ).keySeq().toJS()
+    return moves;
   };
 
   const result = tree.evaluate();
 
-  console.log(result)
-  console.log(`nodes: ${result.nodes}`)
-  console.log(`outcomes: ${result.outcomes}`)
+  console.log(result);
   const elapsed = Date.now() - now;
   console.log("Took %d ms", elapsed);
   // @ts-expect-error fix TODO
@@ -306,7 +344,9 @@ function applyMoveToGameState(gamestate: any, move: string) {
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
     const fromPiece = gamestate.get(firstFromCoordinate);
-    return gamestate.set(firstFromCoordinate, false).set(firstToCoordinate, fromPiece)
+    return gamestate
+      .set(firstFromCoordinate, false)
+      .set(firstToCoordinate, fromPiece);
   }
 
   const [firstMove, secondMove] = move.split("=>");
@@ -315,36 +355,37 @@ function applyMoveToGameState(gamestate: any, move: string) {
   const fromPiece = gamestate.get(firstFromCoordinate);
 
   // dont render moving piece in the same spot...
-  let updatedBoardGameState = gamestate.set(firstFromCoordinate, false)
+  let updatedBoardGameState = gamestate.set(firstFromCoordinate, false);
 
-  updatedBoardGameState = (updatedBoardGameState.set(firstToCoordinate, fromPiece));
-
+  updatedBoardGameState = updatedBoardGameState.set(
+    firstToCoordinate,
+    fromPiece
+  );
 
   const secondFromPiece = updatedBoardGameState.get(secondFromCoordinate);
-  updatedBoardGameState = (updatedBoardGameState.set(secondFromCoordinate, false));
-
+  updatedBoardGameState = updatedBoardGameState.set(
+    secondFromCoordinate,
+    false
+  );
 
   const toPiece = updatedBoardGameState.get(secondToCoordinate);
 
   if (secondFromPiece.ownedBy === toPiece.ownedBy) {
-    updatedBoardGameState = (
-      updatedBoardGameState
-        .set(secondToCoordinate, secondFromPiece)
-        .setIn(
-          [secondToCoordinate, "stackSize"],
-          secondFromPiece.stackSize + toPiece.stackSize
-        )
-    );
+    updatedBoardGameState = updatedBoardGameState
+      .set(secondToCoordinate, secondFromPiece)
+      .setIn(
+        [secondToCoordinate, "stackSize"],
+        secondFromPiece.stackSize + toPiece.stackSize
+      );
   } else {
-    updatedBoardGameState = (
-      updatedBoardGameState.set(secondToCoordinate, secondFromPiece)
+    updatedBoardGameState = updatedBoardGameState.set(
+      secondToCoordinate,
+      secondFromPiece
     );
   }
 
-
-  return updatedBoardGameState
+  return updatedBoardGameState;
 }
-
 
 function playMove(move: string) {
   if (currentTurn !== PLAYER_TWO) {
@@ -355,20 +396,18 @@ function playMove(move: string) {
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
 
-    const fromCoordinate = firstFromCoordinate as ValidCoordinate
-    const toCoordinate = firstToCoordinate as ValidCoordinate
+    const fromCoordinate = firstFromCoordinate as ValidCoordinate;
+    const toCoordinate = firstToCoordinate as ValidCoordinate;
 
     const fromPiece = gameBoardState.get(fromCoordinate);
     setNewgameBoardState(gameBoardState.set(fromCoordinate, false));
-    const fromFirstPixelCoodinate = getPixelCoordinatesFromBoardCoordinates(
-      fromCoordinate
-    );
-    const toFirstPixelCoordinate = getPixelCoordinatesFromBoardCoordinates(
-      toCoordinate
-    );
+    const fromFirstPixelCoodinate =
+      getPixelCoordinatesFromBoardCoordinates(fromCoordinate);
+    const toFirstPixelCoordinate =
+      getPixelCoordinatesFromBoardCoordinates(toCoordinate);
 
     if (!fromPiece) {
-      throw new Error('No from piece')
+      throw new Error("No from piece");
     }
 
     renderMovingPiece(
@@ -391,35 +430,28 @@ function playMove(move: string) {
   const [firstFromCoordinate, firstToCoordinate] = firstMove.split("->");
   const [secondFromCoordinate, secondToCoordinate] = secondMove.split("->");
 
-  const fromCoordinate = firstFromCoordinate as ValidCoordinate
-  const toCoordinate = firstToCoordinate as ValidCoordinate
-  const fromCoordinate2 = secondFromCoordinate as ValidCoordinate
-  const toCoordinate2 = secondToCoordinate as ValidCoordinate
-
+  const fromCoordinate = firstFromCoordinate as ValidCoordinate;
+  const toCoordinate = firstToCoordinate as ValidCoordinate;
+  const fromCoordinate2 = secondFromCoordinate as ValidCoordinate;
+  const toCoordinate2 = secondToCoordinate as ValidCoordinate;
 
   const fromPiece = gameBoardState.get(fromCoordinate);
 
   // dont render moving piece in the same spot...
   setNewgameBoardState(gameBoardState.set(fromCoordinate, false));
-  const fromFirstPixelCoodinate = getPixelCoordinatesFromBoardCoordinates(
-    fromCoordinate
-  );
-  const toFirstPixelCoordinate = getPixelCoordinatesFromBoardCoordinates(
-    toCoordinate
-  );
+  const fromFirstPixelCoodinate =
+    getPixelCoordinatesFromBoardCoordinates(fromCoordinate);
+  const toFirstPixelCoordinate =
+    getPixelCoordinatesFromBoardCoordinates(toCoordinate);
 
-  const fromSecondPixelCoodinate = getPixelCoordinatesFromBoardCoordinates(
-    fromCoordinate2
-  );
-  const toSecondPixelCoordinate = getPixelCoordinatesFromBoardCoordinates(
-    toCoordinate2
-  );
-
+  const fromSecondPixelCoodinate =
+    getPixelCoordinatesFromBoardCoordinates(fromCoordinate2);
+  const toSecondPixelCoordinate =
+    getPixelCoordinatesFromBoardCoordinates(toCoordinate2);
 
   if (!fromPiece) {
-    throw new Error('No from Piece')
+    throw new Error("No from Piece");
   }
-
   renderMovingPiece(
     fromPiece,
     fromFirstPixelCoodinate,
@@ -434,7 +466,7 @@ function playMove(move: string) {
       const secondFromPiece = gameBoardState.get(fromCoordinate2);
 
       if (!secondFromPiece) {
-        throw new Error('no secondFromPiece')
+        throw new Error("no secondFromPiece");
       }
 
       setNewgameBoardState(gameBoardState.set(fromCoordinate2, false));
@@ -448,7 +480,7 @@ function playMove(move: string) {
         () => {
           const toPiece = gameBoardState.get(toCoordinate2);
           if (!toPiece) {
-            throw new Error('no toPiece')
+            throw new Error("no toPiece");
           }
           if (secondFromPiece.ownedBy === toPiece.ownedBy) {
             setNewgameBoardState(
@@ -474,16 +506,27 @@ function playMove(move: string) {
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  const piecesToSetup =
-    SETUP_STYLE !== "RANDOM"
-      ? setupSymmetricalBoard()
-      : setupRandomBoard();
+  // const piecesToSetup =
+  //   SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
   // const piecesToSetup = depth2GameState()
   // const piecesToSetup = MovesState34()
+
+  // setInitialGameState(piecesToSetup);
+  const piecesToSetup = AIWinner();
   drawInitialGrid();
   renderInitializingBoard(piecesToSetup, () => {
+    setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
+
+    drawCoordinates();
+
     drawGameBoardState();
-    if (window.localStorage && window.localStorage.getItem('DEBUG_TZAAR') === 'true') {
+    //"4,3->7,0=>8,2->8,3"
+    // setTimeout(moveAI, 1000);
+    moveAI();
+    if (
+      window.localStorage &&
+      window.localStorage.getItem("DEBUG_TZAAR") === "true"
+    ) {
       drawCoordinates();
     }
   });
