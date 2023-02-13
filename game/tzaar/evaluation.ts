@@ -111,9 +111,10 @@ export function getGameStateScore(gameState: typeof gameBoardState) {
 
             (stacks: number) => stacks + Number(stackSize)
           )
-          // @ts-expect-error fix
           .updateIn(
             [ownedBy, type, "largestStackSize"],
+            // @ts-expect-error fix
+
             (largestStackSize: number) =>
               Math.max(largestStackSize, Number(stackSize))
           )
@@ -125,9 +126,10 @@ export function getGameStateScore(gameState: typeof gameBoardState) {
             }
             return stacksOnEdge;
           })
-          // @ts-expect-error fix
           .updateIn(
             [ownedBy, type, "stacksOnCorner"],
+            // @ts-expect-error fix
+
             (stacksOnCorner: number) => {
               // @ts-expect-error fix
               if (stackSize > 1 && CORNER_COORDINATES.includes(coordinate)) {
@@ -146,6 +148,8 @@ export function getGameStateScore(gameState: typeof gameBoardState) {
   // @ts-expect-error fix
   scoringMap
     .get(PLAYER_ONE)
+    // @ts-expect-error fix
+
     .forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
       score =
         score -
@@ -165,6 +169,8 @@ export function getGameStateScore(gameState: typeof gameBoardState) {
   // @ts-expect-error fix
   scoringMap
     .get(PLAYER_TWO)
+    // @ts-expect-error fix
+
     .forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
       score =
         score +
