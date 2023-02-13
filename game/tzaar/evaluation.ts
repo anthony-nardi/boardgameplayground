@@ -222,7 +222,6 @@ export function getWinner(
   gameState: typeof gameBoardState,
   beforeTurnStart = false
 ) {
-  debugger;
   const pieceCountsByPlayer = getPieces(gameState);
 
   const playerOneLost =

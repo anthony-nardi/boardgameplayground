@@ -32,6 +32,7 @@ import React from "react";
 import { ValidCoordinate } from "./types/types";
 import { secondQuestionableMoveByAI } from "./tests/QuestionableMoves";
 import { AIWinner, HumanWinner } from "./tests/Winners";
+import aiKillsItself from "./tests/aiKillsItself";
 
 function getPixelCoordinatesFromTouchInteraction(
   event: React.TouchEvent<HTMLCanvasElement>
@@ -179,7 +180,7 @@ function capturePiece(
   setNewgameBoardState(
     gameBoardState.set(fromCoordinates, false).set(toCoordinates, fromPiece)
   );
-  checkGameStateAndStartNextTurn();
+  checkGameStateAndStartNextTurn(true);
 }
 
 function stackPiece(
@@ -205,11 +206,11 @@ function stackPiece(
   checkGameStateAndStartNextTurn();
 }
 
-function checkGameStateAndStartNextTurn() {
+function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
   nextPhase();
   let winner;
 
-  if (turnPhase === TURN_PHASES.CAPTURE) {
+  if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
     winner = evaluation.getWinner(gameBoardState, true);
   }
 
@@ -245,6 +246,13 @@ export const createChildCallback = (node: any, move: string) => {
   //   evaluation.getWinner(updatedBoardGameState);
   // }
 
+  // ai kills itself
+
+  // if (move === "0,5->0,6=>5,1->0,6") {
+  //   debugger;
+  //   evaluation.getWinner(updatedBoardGameState);
+  // }
+
   const nodeType = winner ? 2 : 1;
 
   const childNode = new minimaxer.Node(
@@ -273,12 +281,14 @@ function moveAI() {
     PLAYER_TWO
   )
     .keySeq()
+    // @ts-expect-error this works
+    .sort((a, b) => (a.length < b.length ? -1 : 1))
     .toJS();
 
   console.log(
     `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
   );
-  opts.depth = allPossibleStatesAfterTurn.length < 500 ? 2 : 1;
+  opts.depth = allPossibleStatesAfterTurn.length < 400 ? 2 : 1;
   opts.method = 0;
   opts.pruning = 1;
   opts.sortMethod = 0;
@@ -304,7 +314,10 @@ function moveAI() {
   tree.CreateChildNode = createChildCallback;
   tree.EvaluateNode = (node) => {
     let gamestateToAnalyze;
-
+    // if (node.move === "0,5->0,6=>5,1->0,6") {
+    //   debugger;
+    //   // evaluation.getWinner(updatedBoardGameState);
+    // }
     // @ts-expect-error TODO
     if (!node.gamestate.gamestate) {
       gamestateToAnalyze = node.gamestate;
@@ -314,7 +327,7 @@ function moveAI() {
     }
 
     const scoreForNode = evaluation.getGameStateScore(gamestateToAnalyze);
-
+    console.log(scoreForNode);
     return scoreForNode;
   };
   tree.GetMoves = (gamestate) => {
@@ -518,6 +531,7 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   // setInitialGameState(piecesToSetup);
   // const piecesToSetup = AIWinner();
   // const piecesToSetup = AIWinner();
+  // const piecesToSetup = aiKillsItself();
   drawInitialGrid();
   renderInitializingBoard(piecesToSetup, () => {
     // setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
