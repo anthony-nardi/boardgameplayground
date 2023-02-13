@@ -14,11 +14,10 @@ import { gameBoardState, setNewgameBoardState } from "./gameState";
 import { List, RecordOf } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { ValidCoordinate } from "./types/types";
-import { circlePatternInsideOut } from './initialSetupOptions'
+import { circlePatternInsideOut } from "./initialSetupOptions";
 function getContext() {
-
   if (!window.GAME_STATE_BOARD_CANVAS) {
-    throw new Error('GAME_STATE_BOARD_CANVAS not ready')
+    throw new Error("GAME_STATE_BOARD_CANVAS not ready");
   }
 
   return window.GAME_STATE_BOARD_CANVAS.getContext("2d");
@@ -32,30 +31,36 @@ export function drawCoordinate(coordinate: ValidCoordinate) {
   const context = getContext();
   const [x, y] = coordinate.split(",");
 
-
-  if (!GamePieceRenderer.TRIANGLE_HEIGHT || !GamePieceRenderer.TRIANGLE_SIDE_LENGTH) {
-    throw new Error('GamePieceRenderer not ready')
+  if (
+    !GamePieceRenderer.TRIANGLE_HEIGHT ||
+    !GamePieceRenderer.TRIANGLE_SIDE_LENGTH
+  ) {
+    throw new Error("GamePieceRenderer not ready");
   }
 
   if (!context) {
-    throw new Error('context not ready')
+    throw new Error("context not ready");
   }
 
-
-  const offsetXToCenter = WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
-  const offsetYToCenter = WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
+  const offsetXToCenter =
+    WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+  const offsetYToCenter =
+    WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const offsetX =
-    +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+    +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH -
+    Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
 
   const xPos =
-    (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
+    (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 +
+    offsetX +
+    offsetXToCenter;
 
   const yPos = +y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   context.font = "1rem Helvetica";
   context.fillStyle = "#ccc";
-  context.fillRect(xPos + 5, yPos - 5, 30, 20)
-  context.fillStyle = "#d92121";
+  context.fillRect(xPos + 5, yPos - 5, 30, 20);
+  context.fillStyle = "#000";
 
   context.fillText(coordinate, xPos + 10, yPos + 10);
 }
@@ -64,36 +69,54 @@ export function drawGameBoardState() {
   clearCanvas();
   drawCachedBoard();
   drawGamePieces();
-  // drawCoordinates();
+  if (
+    window.localStorage &&
+    window.localStorage.getItem("DEBUG_TZAAR") === "true"
+  ) {
+    drawCoordinates();
+  }
 }
 
-export function drawStaticGamePiece(gamePiece: RecordOf<GamePieceRecordProps> | false, coordinate: ValidCoordinate) {
+export function drawStaticGamePiece(
+  gamePiece: RecordOf<GamePieceRecordProps> | false,
+  coordinate: ValidCoordinate
+) {
   if (!gamePiece || gamePiece.isDragging) {
     return;
   }
 
-  const [xPos, yPos] = getPixelCoordinatesFromBoardCoordinates(
-    coordinate
-  ).split(",");
+  const [xPos, yPos] =
+    getPixelCoordinatesFromBoardCoordinates(coordinate).split(",");
 
   drawGamePiece(gamePiece, Number(xPos), Number(yPos));
 }
 
-export function drawGamePiece(gamePiece: RecordOf<GamePieceRecordProps>, xPos: number, yPos: number) {
+export function drawGamePiece(
+  gamePiece: RecordOf<GamePieceRecordProps>,
+  xPos: number,
+  yPos: number
+) {
   const context = getContext();
 
   if (!context) {
-    throw new Error('context not available.')
+    throw new Error("context not available.");
   }
 
-  if (!GamePieceRenderer.GAME_PIECE_RADIUS || !GamePieceRenderer.CANVAS_SIDE_LENGTH) {
-    throw new Error('GamePieceRenderer not ready.')
+  if (
+    !GamePieceRenderer.GAME_PIECE_RADIUS ||
+    !GamePieceRenderer.CANVAS_SIDE_LENGTH
+  ) {
+    throw new Error("GamePieceRenderer not ready.");
   }
 
-  const dx = Math.floor(xPos - GamePieceRenderer.GAME_PIECE_RADIUS)
-  const dy = Math.floor(yPos - GamePieceRenderer.GAME_PIECE_RADIUS)
-  const dw = Math.floor(GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio)
-  const dh = Math.floor(GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio)
+  const dx = Math.floor(xPos - GamePieceRenderer.GAME_PIECE_RADIUS);
+  const dy = Math.floor(yPos - GamePieceRenderer.GAME_PIECE_RADIUS);
+  const dw = Math.floor(
+    GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
+  );
+  const dh = Math.floor(
+    GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
+  );
 
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TOTT) {
     context.drawImage(GamePieceRenderer.PLAYER_ONE_TOTT, dx, dy, dw, dh);
@@ -114,8 +137,8 @@ export function drawGamePiece(gamePiece: RecordOf<GamePieceRecordProps>, xPos: n
     context.drawImage(GamePieceRenderer.PLAYER_TWO_TZAAR, dx, dy, dw, dh);
   }
 
-  const textPositionX = Math.floor(+xPos - 6)
-  const textPositionY = Math.floor(+yPos + 6)
+  const textPositionX = Math.floor(+xPos - 6);
+  const textPositionY = Math.floor(+yPos + 6);
 
   context.font = "1.15rem Helvetica";
   context.fillStyle = gamePiece.type === TZAAR ? "#000" : "#fff";
@@ -129,7 +152,7 @@ export function drawGamePieces() {
 export function clearCanvas() {
   const context = getContext();
   if (!context) {
-    throw new Error('context not available')
+    throw new Error("context not available");
   }
   context.clearRect(0, 0, WindowHelper.width, WindowHelper.height);
 }
@@ -148,24 +171,25 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
       array[i] = array[j];
       array[j] = temp;
     }
-  }
+  };
 
-  let coordinates = Object.keys(piecesToDraw)
-  shuffleArray(coordinates)
-  let reversed = [...circlePatternInsideOut]
-  reversed.reverse()
-  if (Math.random() < .5) {
-    coordinates = circlePatternInsideOut
-
+  let coordinates = Object.keys(piecesToDraw);
+  shuffleArray(coordinates);
+  let reversed = [...circlePatternInsideOut];
+  reversed.reverse();
+  if (Math.random() < 0.5) {
+    coordinates = circlePatternInsideOut;
   }
-  if (Math.random() < .2) {
-    coordinates = reversed
+  if (Math.random() < 0.2) {
+    coordinates = reversed;
   }
 
   for (let index in coordinates) {
-    const coordinate = coordinates[index]
-    const piece = piecesToDraw[coordinate]
-    const to = getPixelCoordinatesFromBoardCoordinates(coordinate as ValidCoordinate);
+    const coordinate = coordinates[index];
+    const piece = piecesToDraw[coordinate];
+    const to = getPixelCoordinatesFromBoardCoordinates(
+      coordinate as ValidCoordinate
+    );
     const from = `${WindowHelper.width / 2},${WindowHelper.height / 2}`;
 
     piecesToRenderList = piecesToRenderList.push({
@@ -173,27 +197,34 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
       from,
       to,
       // @ts-expect-error fix
-      delay: index * 25
+      delay: index * 25,
     });
   }
-
 
   // piecesToRenderList = piecesToRenderList.sortBy(Math.random)
 
   renderMovingPieces(piecesToRenderList, 500, Date.now(), () => {
     let index = 0;
     for (const coordinate in piecesToDraw) {
-      const piece = piecesToDraw[coordinate]
-      setNewgameBoardState(gameBoardState.set(coordinate as ValidCoordinate, piece));
+      const piece = piecesToDraw[coordinate];
+      setNewgameBoardState(
+        gameBoardState.set(coordinate as ValidCoordinate, piece)
+      );
       index = index + 1;
     }
-
 
     callback();
   });
 }
 
-function renderMovingPieces(piecesToRenderList: List<any>, duration: number, startTime: number, callback: Function) {
+function renderMovingPieces(
+  piecesToRenderList: List<any>,
+  duration: number,
+  startTime: number,
+  callback: Function
+) {
+  piecesToRenderList = piecesToRenderList.filter((piece) => piece.piece);
+
   const now = Date.now();
 
   const timePassedInMilliSec = now - startTime;
@@ -206,30 +237,43 @@ function renderMovingPieces(piecesToRenderList: List<any>, duration: number, sta
   clearCanvas();
   drawCachedBoard();
 
-  piecesToRenderList.forEach(({ piece, from, to, delay }: { piece: RecordOf<GamePieceRecordProps>, from: string, to: string, delay: number }) => {
-    const timePassed = Math.min(
-      Math.max((now - startTime - delay) / duration, 0),
-      1
-    );
+  piecesToRenderList.forEach(
+    ({
+      piece,
+      from,
+      to,
+      delay,
+    }: {
+      piece: RecordOf<GamePieceRecordProps>;
+      from: string;
+      to: string;
+      delay: number;
+    }) => {
+      const timePassed = Math.min(
+        Math.max((now - startTime - delay) / duration, 0),
+        1
+      );
 
-    const [fromX, fromY] = from.split(",");
-    const [toX, toY] = to.split(",");
+      const [fromX, fromY] = from.split(",");
+      const [toX, toY] = to.split(",");
 
-    const distance = Math.sqrt(
-      Math.pow(+fromX - +toX, 2) + Math.pow(+fromY - +toY, 2)
-    );
+      const distance = Math.sqrt(
+        Math.pow(+fromX - +toX, 2) + Math.pow(+fromY - +toY, 2)
+      );
 
-    const currentDistance = (timeFunction(timePassed) * distance) / distance;
+      const currentDistance = (timeFunction(timePassed) * distance) / distance;
 
-    const renderX = (1 - currentDistance) * +fromX + currentDistance * +toX;
-    const renderY = (1 - currentDistance) * +fromY + currentDistance * +toY;
+      const renderX = (1 - currentDistance) * +fromX + currentDistance * +toX;
+      const renderY = (1 - currentDistance) * +fromY + currentDistance * +toY;
 
-    drawGamePiece(piece, renderX, renderY);
-  });
+      drawGamePiece(piece, renderX, renderY);
+    }
+  );
 
-  window && window.requestAnimationFrame(() => {
-    renderMovingPieces(piecesToRenderList, duration, startTime, callback);
-  });
+  window &&
+    window.requestAnimationFrame(() => {
+      renderMovingPieces(piecesToRenderList, duration, startTime, callback);
+    });
 }
 
 export function renderMovingPiece(
@@ -268,7 +312,8 @@ export function renderMovingPiece(
   drawGamePieces();
   drawGamePiece(piece, renderX, renderY);
 
-  window && window.requestAnimationFrame(() => {
-    renderMovingPiece(piece, from, to, duration, startTime, callback);
-  });
+  window &&
+    window.requestAnimationFrame(() => {
+      renderMovingPiece(piece, from, to, duration, startTime, callback);
+    });
 }

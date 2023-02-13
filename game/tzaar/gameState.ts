@@ -1,19 +1,51 @@
 import { Map, RecordOf } from "immutable";
-import { GamePieceRecordProps, PLAYER_ONE, PLAYER_TWO, TURN_PHASES } from "./constants";
+import {
+  GamePieceRecordProps,
+  PLAYER_ONE,
+  PLAYER_TWO,
+  TURN_PHASES,
+} from "./constants";
 import { ValidCoordinate } from "./types/types";
 
 export let movingPiece: null | ValidCoordinate = null;
-export let gameBoardState = Map<ValidCoordinate, RecordOf<GamePieceRecordProps> | false>();
+export let gameBoardState = Map<
+  ValidCoordinate,
+  RecordOf<GamePieceRecordProps> | false
+>();
 export let isVeryFirstTurn = true;
 export let currentTurn = PLAYER_ONE;
 export let turnPhase = TURN_PHASES.CAPTURE;
 export let numberOfTurnsIntoGame = 0;
 
+export function logGameState() {
+  console.log(
+    `gameBoardState: ${gameBoardState.toJS()}`,
+    `currentTurn: ${currentTurn}`,
+    `turnPhase: ${turnPhase}`,
+    `numberOfTurnsIntoGame: ${numberOfTurnsIntoGame}`
+  );
+}
 
+export function setInitialGameState(
+  board: typeof gameBoardState,
+  turn: typeof PLAYER_ONE | typeof PLAYER_TWO = PLAYER_ONE,
+  phase:
+    | typeof TURN_PHASES.CAPTURE
+    | typeof TURN_PHASES.STACK_OR_CAPTURE_OR_PASS = TURN_PHASES.CAPTURE,
+  numberOfTurns: number = 0
+) {
+  if (board) {
+    setNewgameBoardState(board);
+  }
+  currentTurn = turn;
+  turnPhase = phase;
+  numberOfTurnsIntoGame = numberOfTurns;
+  isVeryFirstTurn = numberOfTurns === 0;
+}
 
 export function setNewgameBoardState(newState: typeof gameBoardState) {
   gameBoardState = newState;
-  window.gameBoardState = gameBoardState
+  window.gameBoardState = gameBoardState;
 }
 
 export function setMovingPiece(coordinate: ValidCoordinate | null) {
@@ -21,10 +53,10 @@ export function setMovingPiece(coordinate: ValidCoordinate | null) {
 }
 
 export function nextPhase() {
-  const skipTurnButton = document.getElementById('skipTurnButton')
+  const skipTurnButton = document.getElementById("skipTurnButton");
 
   if (skipTurnButton) {
-    skipTurnButton.classList.add('hidden')
+    skipTurnButton.classList.add("hidden");
   }
 
   // first turn of the game is special
@@ -47,7 +79,7 @@ export function nextPhase() {
     // @ts-expect-error todo
     document.getElementById("phaseDiv").innerHTML = "Phase: STACK OR CAPTURE";
     // @ts-expect-error todo
-    skipTurnButton.classList.remove('hidden')
+    skipTurnButton.classList.remove("hidden");
     return;
   }
   if (currentTurn === PLAYER_TWO && turnPhase === TURN_PHASES.CAPTURE) {

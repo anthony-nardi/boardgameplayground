@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   initGame,
   handleDropPiece,
@@ -10,17 +10,31 @@ import WindowHelper from "./WindowHelper";
 import gamePieceRenderer from "./gamePieceRenderer";
 import { Button } from "@mantine/core";
 
+
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
+  const isGameInitializedRef = useRef(false)
 
   useEffect(() => {
-    window.GAME_STATE_BOARD_CANVAS = Canvas.current;
-    WindowHelper.setHeight();
-    WindowHelper.setWidth();
-    WindowHelper.setUseWindowHeight();
-    WindowHelper.setDevicePixelRatio();
-    gamePieceRenderer.init();
-    initGame();
+    if (Canvas.current && !isGameInitializedRef.current) {
+
+      if (window.localStorage.getItem("DEBUG_TZAAR") === "true") {
+        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "true"`)
+      } else {
+        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "false"`)
+      }
+
+      isGameInitializedRef.current = true
+      window.GAME_STATE_BOARD_CANVAS = Canvas.current;
+      WindowHelper.setHeight();
+      WindowHelper.setWidth();
+      WindowHelper.setUseWindowHeight();
+      WindowHelper.setDevicePixelRatio();
+      gamePieceRenderer.init();
+      initGame();
+    }
+
+
   }, [Canvas]);
 
   return (
