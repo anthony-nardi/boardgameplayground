@@ -19,7 +19,6 @@ import {
   movingPiece,
   gameBoardState,
   setNewgameBoardState,
-  setInitialGameState,
   setMovingPiece,
   nextPhase,
   currentTurn,
@@ -30,69 +29,36 @@ import * as evaluation from "./evaluation";
 import * as minimaxer from "minimaxer";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
-import { secondQuestionableMoveByAI } from "./tests/QuestionableMoves";
-import { AIWinner, HumanWinner } from "./tests/Winners";
-import aiKillsItself from "./tests/aiKillsItself";
-
-function getPixelCoordinatesFromTouchInteraction(
-  event: React.TouchEvent<HTMLCanvasElement>
-) {
-  const x = event.changedTouches[0].clientX;
-  const y = event.changedTouches[0].clientY;
-  return [x, y];
-}
-
-function getPixelCoordinatesFromMouseInteraction(
-  event: React.MouseEvent<HTMLCanvasElement>
-) {
-  const x = event.clientX;
-  const y = event.clientY;
-  return [x, y];
-}
-
-function getPixelCoordinatesFromUserInteraction(
-  event:
-    | React.MouseEvent<HTMLCanvasElement>
-    | React.TouchEvent<HTMLCanvasElement>
-) {
-  if (
-    event.type === "touchstart" ||
-    event.type === "touchmove" ||
-    event.type === "touchend"
-  ) {
-    return getPixelCoordinatesFromTouchInteraction(
-      event as React.TouchEvent<HTMLCanvasElement>
-    );
-  }
-
-  return getPixelCoordinatesFromMouseInteraction(
-    event as React.MouseEvent<HTMLCanvasElement>
-  );
-}
+import {
+  getPixelCoordinatesFromUserInteraction,
+  getBoardCoordinatesFromUserInteraction,
+} from "./coordinateHelpers";
+import {
+  showSkipButton,
+  hideSkipButton,
+  showLoadingSpinner,
+  hideLoadingSpinner,
+} from "./domHelpers";
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   return gameBoardState.getIn([boardCoordinate, "ownedBy"]) === currentTurn;
 }
 
 export function passTurn() {
-  if (
+  const canPass =
     currentTurn === PLAYER_ONE &&
-    turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS
-  ) {
+    turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS;
+
+  if (canPass) {
     nextPhase();
-    // @ts-expect-error todo
-    document.getElementById("skipTurnButton").classList.add("hidden");
-    const loadingSpinnerComponent = document.getElementById("loadingSpinner");
-    if (loadingSpinnerComponent) {
-      loadingSpinnerComponent.classList.remove("hidden");
-    }
+    hideSkipButton();
+    showLoadingSpinner();
     setTimeout(moveAI);
   }
 }
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
-  const [x, y] = getPixelCoordinatesFromUserInteraction(event);
-  const boardCoordinate = getBoardCoordinatesFromPixelCoordinates(x, y);
+  const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
 
   if (!isCurrentPlayerPiece(boardCoordinate)) {
     return;
@@ -105,6 +71,7 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   setNewgameBoardState(
     gameBoardState.setIn([boardCoordinate, "isDragging"], true)
   );
+
   setMovingPiece(boardCoordinate);
 }
 
@@ -113,12 +80,16 @@ export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
     return;
   }
 
-  const [x, y] = getPixelCoordinatesFromUserInteraction(event);
-  drawGameBoardState();
   const gamePiece = gameBoardState.get(movingPiece);
+
   if (!gamePiece) {
     throw new Error("gamepiece not here");
   }
+
+  const [x, y] = getPixelCoordinatesFromUserInteraction(event);
+
+  drawGameBoardState();
+
   drawGamePiece(gamePiece, x, y);
 }
 
@@ -127,8 +98,7 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
     return;
   }
 
-  const [x, y] = getPixelCoordinatesFromUserInteraction(event);
-  const toCoordinates = getBoardCoordinatesFromPixelCoordinates(x, y);
+  const toCoordinates = getBoardCoordinatesFromUserInteraction(event);
 
   setNewgameBoardState(
     gameBoardState.setIn([movingPiece, "isDragging"], false)
@@ -145,24 +115,22 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   const isValidCapture = validCaptures.includes(toCoordinates);
   const isValidStack = validStacks.includes(toCoordinates);
 
-  if (turnPhase === TURN_PHASES.CAPTURE && isValidCapture) {
+  if (isValidCapture) {
     capturePiece(movingPiece, toCoordinates);
-  } else if (turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS) {
-    if (isValidCapture) {
-      capturePiece(movingPiece, toCoordinates);
-    } else if (isValidStack) {
-      stackPiece(movingPiece, toCoordinates);
-    }
+  }
+
+  if (isValidStack && turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS) {
+    stackPiece(movingPiece, toCoordinates);
   }
 
   setMovingPiece(null);
   drawGameBoardState();
 
-  if (turnPhase === TURN_PHASES.CAPTURE && currentTurn === PLAYER_TWO) {
-    const loadingSpinnerComponent = document.getElementById("loadingSpinner");
-    if (loadingSpinnerComponent) {
-      loadingSpinnerComponent.classList.remove("hidden");
-    }
+  const isNextPlayersTurn =
+    turnPhase === TURN_PHASES.CAPTURE && currentTurn === PLAYER_TWO;
+
+  if (isNextPlayersTurn) {
+    showLoadingSpinner();
     setTimeout(() => moveAI(), 50);
   }
 }
@@ -327,7 +295,6 @@ function moveAI() {
     }
 
     const scoreForNode = evaluation.getGameStateScore(gamestateToAnalyze);
-    console.log(scoreForNode);
     return scoreForNode;
   };
   tree.GetMoves = (gamestate) => {
@@ -525,23 +492,11 @@ function playMove(move: string) {
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   const piecesToSetup =
     SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
-  // const piecesToSetup = depth2GameState()
-  // const piecesToSetup = MovesState34()
 
-  // setInitialGameState(piecesToSetup);
-  // const piecesToSetup = AIWinner();
-  // const piecesToSetup = AIWinner();
-  // const piecesToSetup = aiKillsItself();
   drawInitialGrid();
   renderInitializingBoard(piecesToSetup, () => {
-    // setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
-
-    // drawCoordinates();
-    // checkGameStateAndStartNextTurn();
     drawGameBoardState();
-    //"4,3->7,0=>8,2->8,3"
-    // setTimeout(moveAI, 1000);
-    // moveAI();
+
     if (
       window.localStorage &&
       window.localStorage.getItem("DEBUG_TZAAR") === "true"
