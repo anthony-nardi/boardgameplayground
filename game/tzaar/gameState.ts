@@ -117,3 +117,18 @@ export function nextPhase() {
     return;
   }
 }
+
+// export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
+//   nextPhase();
+//   let winner;
+
+//   if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
+//     winner = evaluation.getWinner(gameBoardState, true);
+//   }
+
+//   let message = winner === PLAYER_TWO ? "You lost." : "You won!";
+//   if (winner) {
+//     alert(`${message}`);
+//     location.reload();
+//   }
+// }
