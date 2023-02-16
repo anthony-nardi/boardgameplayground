@@ -10,13 +10,17 @@ import {
   GamePieceRecordProps,
 } from "./constants";
 import { gameBoardState, currentTurn, turnPhase } from "./gameState";
-import { PieceType, Player, ValidCoordinate } from "./types/types";
+import { PieceType, Player, PlayerPieces, ValidCoordinate } from "./types/types";
 import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
-import { scoringMapRecord } from "./scoringMap";
+import { scoringMapRecord, PieceRecordProps, ScoringMapProps } from "./scoringMap";
+import { getPieces, getAllPlayerPieceCoordinates, getAllPlayerPieceCoordinatesByType } from "./evaluationHelpers";
 
 // Pieces on the edge and corner have less mobility
 const EDGE_PENALTY = -5;
 const CORNER_PENALTY = -10;
+// Whoever has the largest stack gets bonus points
+const LARGEST_STACK_BONUS = 500
+
 
 function getIsPieceThreatened(
   coordinate: ValidCoordinate,
@@ -28,16 +32,9 @@ function getIsPieceThreatened(
 function getScoreForEdgesAndCorners(edges: number, corners: number) {
   return edges * EDGE_PENALTY + corners * CORNER_PENALTY;
 }
+
 function getScoreForHighestStack(currentStack: number, stackToBeat: number) {
-  if (currentStack > stackToBeat) {
-    return 20;
-  }
-
-  if (currentStack < stackToBeat) {
-    return -20;
-  }
-
-  return 0;
+  return (currentStack > stackToBeat) ? LARGEST_STACK_BONUS : 0
 }
 
 function addOne(n: any) {
@@ -60,9 +57,14 @@ function buildScoringMap(gameState: typeof gameBoardState) {
       const largestStackSizePath = [ownedBy, type, "largestStackSize"];
       const stacksOnEdgePath = [ownedBy, type, "stacksOnEdge"];
       const stacksOnCornerPath = [ownedBy, type, "stacksOnCorner"];
+      const stackValuePath = [ownedBy, type, "stackValue"]
+
 
       return piecesByPlayer
         .updateIn(countPath, addOne)
+        .updateIn(stackValuePath, (stackValue: any) => {
+          return stackValue + stackSize
+        })
         .updateIn(stacksThreatenedPath, (stacksThreatened: any) => {
           const isPieceThreatened = getIsPieceThreatened(coordinate, gameState);
 
@@ -99,16 +101,8 @@ export function getGameStateScore(
 ) {
   const winner = getWinner(gameState);
 
-  if (winner === PLAYER_ONE) {
-    return -Infinity;
-  }
-
-  if (winner === PLAYER_TWO) {
-    return Infinity;
-  }
-
-  if (debug) {
-    debugger;
+  if (winner) {
+    return winner === PLAYER_ONE ? -Infinity : Infinity
   }
 
   const scoringMap = buildScoringMap(gameState);
@@ -118,94 +112,78 @@ export function getGameStateScore(
   }
 
   let score = 0;
-  // @ts-expect-error fix
-  scoringMap
-    .get(PLAYER_ONE)
-    // @ts-expect-error fix
 
-    .forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
-      const scoreForStacks = // @ts-expect-error fix
-        getScoreForStacks(data.get("count"), data.get("stacksGreaterThanOne"));
-      const scoreForHighestStack = getScoreForHighestStack(
-        // @ts-expect-error fix
-        data.get("largestStackSize"),
-        scoringMap.getIn([PLAYER_TWO, pieceType, "largestStackSize"])
-      );
-      // @ts-expect-error fix
-      const scoreForStacksThreatened = getScoreForStacksThreatened(
-        data.get("stacksThreatened"),
-        pieceType
-      );
-      const scoreForEdgesAndCorners = getScoreForEdgesAndCorners(
-        // @ts-expect-error fix
-        data.get("stacksOnEdge"),
-        data.get("stacksOnCorner")
-      );
+  const playerOneTOTTScore = getPlayersScore(TOTT, PLAYER_ONE, scoringMap, debug);
+  const playerOneTZARRAScore = getPlayersScore(TZARRA, PLAYER_ONE, scoringMap, debug);
+  const playerOneTZAARScore = getPlayersScore(TZAAR, PLAYER_ONE, scoringMap, debug);
+  const playerTwoTOTTScore = getPlayersScore(TOTT, PLAYER_TWO, scoringMap, debug);
+  const playerTwoTZARRAScore = getPlayersScore(TZARRA, PLAYER_TWO, scoringMap, debug);
+  const playerTwoTZAARScore = getPlayersScore(TZAAR, PLAYER_TWO, scoringMap, debug);
 
-      const scoreForPlayerOne =
-        -scoreForStacks -
-        scoreForHighestStack +
-        scoreForStacksThreatened +
-        scoreForEdgesAndCorners;
+  const playerOneTotalScore = playerOneTOTTScore + playerOneTZARRAScore + playerOneTZAARScore;
+  const playerTwoTotalScore = playerTwoTOTTScore + playerTwoTZARRAScore + playerTwoTZAARScore
 
-      if (debug) {
-        console.log(`
-          Player 1 score breakdown for ${pieceType}:
-          scoreForStacks -${scoreForStacks}
-          scoreForHighestStack -${scoreForHighestStack}
-          scoreForStacksThreatened +${scoreForStacksThreatened}
-          scoreForEdgedAndCorners +${scoreForEdgesAndCorners}
-          totalScore:  ${scoreForPlayerOne}
-        `);
-      }
+  score = playerTwoTotalScore - playerOneTotalScore
 
-      score = score + scoreForPlayerOne;
-    });
-  // @ts-expect-error fix
-  scoringMap
-    .get(PLAYER_TWO)
-    // @ts-expect-error fix
-
-    .forEach((data, pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT) => {
-      const scoreForStacks = // @ts-expect-error fix
-        getScoreForStacks(data.get("count"), data.get("stacksGreaterThanOne"));
-      const scoreForHighestStack = getScoreForHighestStack(
-        // @ts-expect-error fix
-        data.get("largestStackSize"),
-        scoringMap.getIn([PLAYER_TWO, pieceType, "largestStackSize"])
-      );
-      // @ts-expect-error fix
-      const scoreForStacksThreatened = getScoreForStacksThreatened(
-        data.get("stacksThreatened"),
-        pieceType
-      );
-      const scoreForEdgesAndCorners = getScoreForEdgesAndCorners(
-        // @ts-expect-error fix
-        data.get("stacksOnEdge"),
-        data.get("stacksOnCorner")
-      );
-
-      const scoreForPlayerTwo =
-        scoreForStacks +
-        scoreForHighestStack -
-        scoreForStacksThreatened -
-        scoreForEdgesAndCorners;
-
-      if (debug) {
-        console.log(`
-          Player 2 score breakdown for ${pieceType}:
-          scoreForStacks +${scoreForStacks}
-          scoreForHighestStack +${scoreForHighestStack}
-          scoreForStacksThreatened -${scoreForStacksThreatened}
-          scoreForEdgedAndCorners -${scoreForEdgesAndCorners}
-          totalScore: ${scoreForPlayerTwo}
-        `);
-      }
-      score = score + scoreForPlayerTwo;
-    });
+  if (debug) {
+    console.log(`Total score for player one: ${playerOneTotalScore}`)
+    console.log(`Total score for player two: ${playerTwoTotalScore}`)
+    console.log(`Score for game state: ${score}`)
+  }
 
   return score;
 }
+
+function getPlayersScore(pieceType: PlayerPieces, player: Player, scoringMap: RecordOf<ScoringMapProps>, debug: Boolean) {
+  const pieceMetadata: RecordOf<PieceRecordProps> = scoringMap[player][pieceType]
+  const {
+    count,
+    stacksGreaterThanOne,
+    largestStackSize,
+    stacksThreatened,
+    stacksOnEdge,
+    stacksOnCorner,
+    stackValue
+  } = pieceMetadata;
+
+  const otherPlayer = player === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE
+
+  const otherPlayerPieces = scoringMap[otherPlayer]
+  const otherPlayerTOTTs = otherPlayerPieces.TOTT
+  const otherPlayerTZARRAs = otherPlayerPieces.TZARRA
+  const otherPlayerTZAARs = otherPlayerPieces.TZAAR
+
+  const opponentsLargestStackSize = Math.max(
+    otherPlayerTOTTs.largestStackSize,
+    otherPlayerTZARRAs.largestStackSize,
+    otherPlayerTZAARs.largestStackSize
+  )
+
+  const scoreForHighestStack = getScoreForHighestStack(largestStackSize, opponentsLargestStackSize);
+  const scoreForStacksThreatened = getScoreForStacksThreatened(stacksThreatened, pieceType);
+  const scoreForEdgesAndCorners = getScoreForEdgesAndCorners(stacksOnEdge, stacksOnCorner);
+  const scoreForPieceMaterialPower = stackValue * count
+
+  const scoreForPlayer =
+    scoreForHighestStack +
+    scoreForStacksThreatened +
+    scoreForEdgesAndCorners +
+    scoreForPieceMaterialPower
+
+  if (debug) {
+    console.log(`
+      ${player} score breakdown for ${pieceType}:
+      scoreForHighestStack ${scoreForHighestStack}
+      scoreForStacksThreatened ${scoreForStacksThreatened}
+      scoreForEdgedAndCorners ${scoreForEdgesAndCorners}
+      scoreForPieceMaterialPower: ${scoreForPieceMaterialPower}
+      totalScore:  ${scoreForPlayer}
+    `);
+  }
+
+  return scoreForPlayer
+}
+
 
 function getScoreForStacksThreatened(
   stacksThreatened: number,
@@ -220,39 +198,7 @@ function getScoreForStacksThreatened(
   if (pieceType === TOTT) {
     return 1 * stacksThreatened;
   }
-}
-
-// we value stacks depending on how many of that type are on the board
-function getScoreForStacks(numberOfPieces: number, stackSize: number) {
-  const MULTIPLIER = 15;
-
-  return (MULTIPLIER - numberOfPieces) * stackSize;
-}
-
-function getPieces(gameState: typeof gameBoardState) {
-  return gameState.reduce(
-    (piecesByPlayer, piece) => {
-      if (!piece) {
-        return piecesByPlayer;
-      }
-      const { ownedBy, type } = piece;
-      return piecesByPlayer.updateIn([ownedBy, type], (pieces: any) =>
-        pieces.push(piece)
-      );
-    },
-    Map({
-      [PLAYER_ONE]: Map({
-        [TOTT]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZARRA]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZAAR]: List<RecordOf<GamePieceRecordProps>>(),
-      }),
-      [PLAYER_TWO]: Map({
-        [TOTT]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZARRA]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZAAR]: List<RecordOf<GamePieceRecordProps>>(),
-      }),
-    })
-  );
+  return 0
 }
 
 export function getWinner(
@@ -287,7 +233,7 @@ export function getWinner(
   if (beforeTurnStart) {
     // TODO: Dont think we need this as it was incorrect all along!
     const possibleCaptures = getAllPlayerPieceCoordinates(
-      gameState, // @ts-expect-error fix
+      gameState,
       currentTurn
     ).map((fromCoordinate) => {
       return getValidCaptures(fromCoordinate, gameState);
@@ -298,7 +244,7 @@ export function getWinner(
     }
   } else {
     const invertedCaptures = getAllPlayerPieceCoordinates(
-      gameState, // @ts-expect-error fix
+      gameState,
       currentTurn
     ).map((fromCoordinate) => {
       return getInvertedValidCaptures(fromCoordinate, gameState);
@@ -312,21 +258,3 @@ export function getWinner(
   }
 }
 
-export function getAllPlayerPieceCoordinates(
-  gameState: typeof gameBoardState,
-  player: Player
-) {
-  return gameState
-    .filter((piece) => piece && piece.ownedBy === player)
-    .keySeq();
-}
-
-export function getAllPlayerPieceCoordinatesByType(
-  gameState: typeof gameBoardState,
-  player: Player,
-  type: PieceType
-) {
-  return gameState
-    .filter((piece) => piece && piece.ownedBy === player && piece.type === type)
-    .keySeq();
-}

@@ -8,6 +8,7 @@ declare global {
 export type Direction = 'w' | 'e' | 'sw' | 'se' | 'nw' | 'ne'
 export type Player = "PLAYER_ONE" | "PLAYER_TWO"
 export type PieceType = typeof TZAAR | typeof TOTT | typeof TZARRA | null
+export type PlayerPieces = typeof TZAAR | typeof TOTT | typeof TZARRA
 export type AllCoordinates =
     "0,0" |
     "0,1" |
