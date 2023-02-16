@@ -64,10 +64,17 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "1,8",
   "2,8",
   "3,8",
-  "4,8"
+  "4,8",
 ];
 
-export const CORNER_COORDINATES = ["4,0", "8,0", "8,4", "4,8", "0,8", "0,4"] as const
+export const CORNER_COORDINATES = [
+  "4,0",
+  "8,0",
+  "8,4",
+  "4,8",
+  "0,8",
+  "0,4",
+] as const;
 export const EDGE_COORDINATES = [
   "5,0",
   "6,0",
@@ -86,8 +93,8 @@ export const EDGE_COORDINATES = [
   "0,5",
   "1,3",
   "2,2",
-  "3,1"
-] as const
+  "3,1",
+] as const;
 
 export const TZAAR = "TZAAR";
 export const TOTT = "TOTT";
@@ -97,20 +104,20 @@ export type GamePieceRecordProps = {
   ownedBy: typeof PLAYER_ONE | typeof PLAYER_TWO | null;
   type: PieceType | null;
   stackSize: number;
-  isDragging: boolean
-}
+  isDragging: boolean;
+};
 
 export const GamePieceRecord = Record<GamePieceRecordProps>({
   ownedBy: null,
   type: null,
   stackSize: 1,
-  isDragging: false
+  isDragging: false,
 });
 
-export const PLAYER_ONE = "PLAYER_ONE"
-export const PLAYER_TWO = "PLAYER_TWO";
+export const PLAYER_ONE = "PLAYER_ONE" as const;
+export const PLAYER_TWO = "PLAYER_TWO" as const;
 
 export const TURN_PHASES = {
   CAPTURE: "CAPTURE",
-  STACK_OR_CAPTURE_OR_PASS: "STACK_OR_CAPTURE_OR_PASS"
+  STACK_OR_CAPTURE_OR_PASS: "STACK_OR_CAPTURE_OR_PASS",
 };
