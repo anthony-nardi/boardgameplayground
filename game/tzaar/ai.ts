@@ -22,7 +22,9 @@ export const createChildCallback = (node: any, move: string) => {
   const aim = turn === 0 ? 1 : -1;
 
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move);
-
+  if (move === "3,7->5,5=>4,5->5,5") {
+    debugger
+  }
   const winner = evaluation.getWinner(updatedBoardGameState);
 
   const nodeType = winner ? 2 : 1;
@@ -85,7 +87,15 @@ export function moveAI() {
 
   tree.EvaluateNode = (node) => {
     const gamestateToAnalyze = node.gamestate;
-    return evaluation.getGameStateScore(gamestateToAnalyze);
+    const score = evaluation.getGameStateScore(gamestateToAnalyze);
+    if (score >= 65) {
+      console.log('WOAH')
+    }
+    if (node && node.move === "3,7->5,5=>4,5->5,5") {
+      evaluation.getGameStateScore(gamestateToAnalyze, true);
+      console.log(`score for ${node.move}: ${score}`)
+    }
+    return score
   };
 
   tree.GetMoves = (gamestate) => {

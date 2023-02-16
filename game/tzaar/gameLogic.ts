@@ -20,6 +20,7 @@ import {
   nextPhase,
   currentTurn,
   turnPhase,
+  setInitialGameState,
 } from "./gameState";
 import * as evaluation from "./evaluation";
 import React from "react";
@@ -30,6 +31,7 @@ import {
 } from "./coordinateHelpers";
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import { moveAI } from "./ai";
+import { firstQuestionableMoveByAI } from './tests/QuestionableMoves'
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   return gameBoardState.getIn([boardCoordinate, "ownedBy"]) === currentTurn;
@@ -181,13 +183,16 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  const piecesToSetup =
-    SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
+  // const piecesToSetup =
+  //   SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
+
+  const piecesToSetup = firstQuestionableMoveByAI()
 
   drawInitialGrid();
   renderInitializingBoard(piecesToSetup, () => {
+    setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
     drawGameBoardState();
-
+    moveAI();
     if (
       window.localStorage &&
       window.localStorage.getItem("DEBUG_TZAAR") === "true"
