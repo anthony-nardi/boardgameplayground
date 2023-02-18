@@ -33,6 +33,8 @@ const EDGE_PENALTY = -500;
 const CORNER_PENALTY = -1000;
 // Whoever has the largest stack gets bonus points
 const LARGEST_STACK_BONUS = 50;
+// Should always be > 15
+const STACK_VALUE_BONUS = 15;
 
 function getIsPieceThreatened(
   coordinate: ValidCoordinate,
@@ -108,8 +110,8 @@ function buildScoringMap(gameState: typeof gameBoardState) {
 
 export function getGameStateScore(
   gameState: typeof gameBoardState,
-  debug = true,
-  playerToMaximize
+  playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO,
+  debug = true
 ) {
   const winner = getWinner(gameState);
 
@@ -162,22 +164,32 @@ export function getGameStateScore(
     debug
   );
 
-
   const playerOneTotalScore =
     playerOneTOTTScore + playerOneTZARRAScore + playerOneTZAARScore;
   const playerTwoTotalScore =
     playerTwoTOTTScore + playerTwoTZARRAScore + playerTwoTZAARScore;
 
   if (playerToMaximize === PLAYER_ONE) {
-    score = playerOneTotalScore - playerTwoTotalScore
+    score = playerOneTotalScore - playerTwoTotalScore;
   } else {
     score = playerTwoTotalScore - playerOneTotalScore;
   }
 
-
   if (debug) {
-    console.log(`Total score for maximizing player: ${playerToMaximize === PLAYER_ONE ? playerOneTotalScore : playerTwoTotalScore}`);
-    console.log(`Total score for minimizing player: ${playerToMaximize === PLAYER_ONE ? playerTwoTotalScore : playerOneTotalScore}`);
+    console.log(
+      `Total score for maximizing player: ${
+        playerToMaximize === PLAYER_ONE
+          ? playerOneTotalScore
+          : playerTwoTotalScore
+      }`
+    );
+    console.log(
+      `Total score for minimizing player: ${
+        playerToMaximize === PLAYER_ONE
+          ? playerTwoTotalScore
+          : playerOneTotalScore
+      }`
+    );
     console.log(`Score for game state: ${score}`);
   }
 
@@ -230,12 +242,13 @@ function getPlayersScore(
     stackValue,
     count
   );
+  const scoreForStacks = getScoreForStacks(count, stackValue);
 
-  const scoreForPlayer =
+  let scoreForPlayer =
     scoreForHighestStack +
-    scoreForStacksThreatened +
-    scoreForEdgesAndCorners +
-    scoreForPieceMaterialPower;
+    // scoreForStacksThreatened +
+    // scoreForPieceMaterialPower
+    scoreForStacks;
 
   if (debug) {
     console.log(`
@@ -249,6 +262,10 @@ function getPlayersScore(
   }
 
   return scoreForPlayer;
+}
+// we value stacks depending on how many of that type are on the board
+function getScoreForStacks(numberOfPieces: number, stackSize: number) {
+  return (STACK_VALUE_BONUS - numberOfPieces) * stackSize;
 }
 
 function getScoreForStacksThreatened(

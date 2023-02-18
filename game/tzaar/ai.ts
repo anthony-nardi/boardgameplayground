@@ -8,7 +8,7 @@ import {
   currentTurn,
   isFirstPlayerAI,
   isSecondPlayerAI,
-  isVeryFirstTurn
+  isVeryFirstTurn,
 } from "./gameState";
 import { getGameStatesToAnalyze } from "./moves";
 import * as evaluation from "./evaluation";
@@ -19,24 +19,21 @@ import { checkGameStateAndStartNextTurn } from "./gameLogic";
 
 export const createChildCallback = (node: any, move: string) => {
   const gamestateToAnalyze = node.gamestate;
-  console.log(currentTurn)
 
-
-  let turn
+  let turn;
+  let aim;
 
   if (!node.parent) {
-    turn = node.data.nextPlayerToMaximize
+    turn = node.data.nextPlayerToMaximize;
+    aim = 1;
   } else {
-    turn = node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE
-
+    turn =
+      node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+    aim = node.parent.aim * -1;
   }
-
-  const aim = currentTurn === node.data.nextPlayerToMaximize ? 1 : -1
 
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move);
-  if (move === "3,7->5,5=>4,5->5,5") {
-    debugger
-  }
+
   const winner = evaluation.getWinner(updatedBoardGameState);
 
   const nodeType = winner ? 2 : 1;
@@ -52,8 +49,11 @@ export const createChildCallback = (node: any, move: string) => {
 };
 
 export function moveAI() {
-  console.log('MOVING AI...')
-  if ((currentTurn === PLAYER_ONE && !isFirstPlayerAI) || (currentTurn === PLAYER_TWO && !isSecondPlayerAI)) {
+  console.log("MOVING AI...");
+  if (
+    (currentTurn === PLAYER_ONE && !isFirstPlayerAI) ||
+    (currentTurn === PLAYER_TWO && !isSecondPlayerAI)
+  ) {
     return;
   }
 
@@ -73,8 +73,9 @@ export function moveAI() {
   console.log(
     `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
   );
-  opts.depth = allPossibleStatesAfterTurn.length < 400 && !isVeryFirstTurn ? 2 : 1;
-  console.log(allPossibleStatesAfterTurn)
+  opts.depth =
+    allPossibleStatesAfterTurn.length < 400 && !isVeryFirstTurn ? 2 : 1;
+
   opts.method = 0;
   opts.pruning = 1;
   opts.sortMethod = 0;
@@ -102,17 +103,21 @@ export function moveAI() {
   tree.EvaluateNode = (node) => {
     const gamestateToAnalyze = node.gamestate;
 
-
-    const score = evaluation.getGameStateScore(gamestateToAnalyze, false, node.data.nextPlayerToMaximize);
-    console.log(score)
-    return score
+    const score = evaluation.getGameStateScore(
+      gamestateToAnalyze,
+      node.data.nextPlayerToMaximize,
+      false
+    );
+    return score;
   };
 
   tree.GetMoves = (node) => {
     const gamestateToAnalyze = node.gamestate;
 
-
-    const moves = getGameStatesToAnalyze(gamestateToAnalyze, node.data.nextPlayerToMaximize)
+    const moves = getGameStatesToAnalyze(
+      gamestateToAnalyze,
+      node.data.nextPlayerToMaximize
+    )
       .keySeq()
       .toJS();
 
@@ -181,10 +186,10 @@ export function applyMoveToGameState(gamestate: any, move: string) {
 
 export function playMove(move: string) {
   if (currentTurn === PLAYER_ONE && !isFirstPlayerAI) {
-    throw new Error('playMove should not happen for a human player')
+    throw new Error("playMove should not happen for a human player");
   }
   if (currentTurn === PLAYER_TWO && !isSecondPlayerAI) {
-    throw new Error('playMove should not happen for a human player')
+    throw new Error("playMove should not happen for a human player");
   }
   if (
     window.localStorage &&
@@ -222,7 +227,9 @@ export function playMove(move: string) {
         checkGameStateAndStartNextTurn();
         drawGameBoardState();
 
-        const shouldAIMakeNextMove = (currentTurn === PLAYER_TWO && isSecondPlayerAI) || (currentTurn === PLAYER_ONE && isFirstPlayerAI);
+        const shouldAIMakeNextMove =
+          (currentTurn === PLAYER_TWO && isSecondPlayerAI) ||
+          (currentTurn === PLAYER_ONE && isFirstPlayerAI);
 
         if (shouldAIMakeNextMove) {
           setTimeout(() => moveAI(), 50);
@@ -305,7 +312,9 @@ export function playMove(move: string) {
 
           checkGameStateAndStartNextTurn();
           drawGameBoardState();
-          const shouldAIMakeNextMove = (currentTurn === PLAYER_TWO && isSecondPlayerAI) || (currentTurn === PLAYER_ONE && isFirstPlayerAI);
+          const shouldAIMakeNextMove =
+            (currentTurn === PLAYER_TWO && isSecondPlayerAI) ||
+            (currentTurn === PLAYER_ONE && isFirstPlayerAI);
 
           if (shouldAIMakeNextMove) {
             setTimeout(() => moveAI(), 50);

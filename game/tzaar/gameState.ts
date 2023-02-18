@@ -5,7 +5,7 @@ import {
   PLAYER_TWO,
   TURN_PHASES,
   CAPTURE,
-  STACK_OR_CAPTURE_OR_PASS
+  STACK_OR_CAPTURE_OR_PASS,
 } from "./constants";
 import { Player, ValidCoordinate } from "./types/types";
 
@@ -16,10 +16,11 @@ export let gameBoardState = Map<
 >();
 export let isVeryFirstTurn = true;
 export let currentTurn: Player = PLAYER_ONE;
-export let turnPhase: typeof CAPTURE | typeof STACK_OR_CAPTURE_OR_PASS = TURN_PHASES.CAPTURE;
+export let turnPhase: typeof CAPTURE | typeof STACK_OR_CAPTURE_OR_PASS =
+  TURN_PHASES.CAPTURE;
 export let numberOfTurnsIntoGame = 0;
 export let isFirstPlayerAI = true;
-export let isSecondPlayerAI = true
+export let isSecondPlayerAI = true;
 
 export function logGameState() {
   console.log(
@@ -121,4 +122,3 @@ export function nextPhase() {
     return;
   }
 }
-

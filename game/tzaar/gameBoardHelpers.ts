@@ -9,7 +9,7 @@ import {
   NUMBER_OF_TZARRAS,
   NUMBER_OF_TZAARS,
   PLAYER_TWO,
-  PLAYER_ONE
+  PLAYER_ONE,
 } from "./constants";
 import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
@@ -17,41 +17,61 @@ import { Direction, ValidCoordinate } from "./types/types";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { gameBoardState } from "./gameState";
 
-export function getPixelCoordinatesFromBoardCoordinates(coordinate: ValidCoordinate) {
+export function getPixelCoordinatesFromBoardCoordinates(
+  coordinate: ValidCoordinate
+) {
   const [x, y] = coordinate.split(",");
 
-  if (!GamePieceRenderer.TRIANGLE_SIDE_LENGTH || !GamePieceRenderer.TRIANGLE_HEIGHT) {
-    throw new Error('GamePieceRenderer not ready.')
+  if (
+    !GamePieceRenderer.TRIANGLE_SIDE_LENGTH ||
+    !GamePieceRenderer.TRIANGLE_HEIGHT
+  ) {
+    throw new Error("GamePieceRenderer not ready.");
   }
 
-  const offsetXToCenter = WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
-  const offsetYToCenter = WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
+  const offsetXToCenter =
+    WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+  const offsetYToCenter =
+    WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const offsetX =
-    +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH - Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+    +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH -
+    Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
 
   const xPos =
-    (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 + offsetX + offsetXToCenter;
+    (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 +
+    offsetX +
+    offsetXToCenter;
 
   const yPos = +y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   return `${xPos},${yPos}`;
 }
 
-export function getBoardCoordinatesFromPixelCoordinates(x: number, y: number): ValidCoordinate {
-  if (!GamePieceRenderer.TRIANGLE_SIDE_LENGTH || !GamePieceRenderer.TRIANGLE_HEIGHT) {
-    throw new Error('GamePieceRenderer not ready.')
+export function getBoardCoordinatesFromPixelCoordinates(
+  x: number,
+  y: number
+): ValidCoordinate {
+  if (
+    !GamePieceRenderer.TRIANGLE_SIDE_LENGTH ||
+    !GamePieceRenderer.TRIANGLE_HEIGHT
+  ) {
+    throw new Error("GamePieceRenderer not ready.");
   }
   const offsetXToCenter =
-    (WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+    (WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) /
+    GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
   const offsetYToCenter =
-    (WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) / GamePieceRenderer.TRIANGLE_HEIGHT;
+    (WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) /
+    GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const yPos = y / GamePieceRenderer.TRIANGLE_HEIGHT - offsetYToCenter;
 
   const interimX = x / GamePieceRenderer.TRIANGLE_SIDE_LENGTH - offsetXToCenter;
 
   const offsetXBecauseY =
-    (Math.abs(4 - yPos) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 / GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+    (Math.abs(4 - yPos) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) /
+    2 /
+    GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
 
   const offsetXBecauseAnotherY = Math.max(4 - yPos, 0);
 
@@ -65,7 +85,7 @@ export function getBoardCoordinatesFromPixelCoordinates(x: number, y: number): V
 
 export function goWest(coordinate: ValidCoordinate) {
   let [x, y] = coordinate.split(",");
-  return `${+x - 1},${y}` as ValidCoordinate
+  return `${+x - 1},${y}` as ValidCoordinate;
 }
 
 export function goEast(coordinate: ValidCoordinate) {
@@ -98,7 +118,9 @@ export function isPlayableSpace(coordinate: ValidCoordinate) {
 }
 
 export function setupSymmetricalBoard() {
-  let piecesToDraw: { [key in ValidCoordinate]: RecordOf<GamePieceRecordProps> } = {
+  let piecesToDraw: {
+    [key in ValidCoordinate]: RecordOf<GamePieceRecordProps>;
+  } = {
     "0,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "0,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
     "0,6": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
@@ -159,7 +181,7 @@ export function setupSymmetricalBoard() {
     "8,2": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "8,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
     "8,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-  }
+  };
   return piecesToDraw;
 }
 
@@ -206,12 +228,16 @@ export function setupRandomBoard() {
   return piecesToDraw.sortBy(Math.random);
 }
 
-export function canCapture(fromCoordinate: ValidCoordinate, toCoordinate: ValidCoordinate, gameState: typeof gameBoardState) {
-  const fromPiece = gameState.get(fromCoordinate)
-  const toPiece = gameState.get(toCoordinate)
+export function canCapture(
+  fromCoordinate: ValidCoordinate,
+  toCoordinate: ValidCoordinate,
+  gameState: typeof gameBoardState
+) {
+  const fromPiece = gameState.get(fromCoordinate);
+  const toPiece = gameState.get(toCoordinate);
 
   if (!fromPiece || !toPiece) {
-    return false
+    return false;
   }
 
   return (
@@ -220,25 +246,35 @@ export function canCapture(fromCoordinate: ValidCoordinate, toCoordinate: ValidC
   );
 }
 
-export function canStack(fromCoordinate: ValidCoordinate, toCoordinate: ValidCoordinate, gameState: typeof gameBoardState) {
-  const fromPiece = gameState.get(fromCoordinate)
-  const toPiece = gameState.get(toCoordinate)
+export function canStack(
+  fromCoordinate: ValidCoordinate,
+  toCoordinate: ValidCoordinate,
+  gameState: typeof gameBoardState
+) {
+  const fromPiece = gameState.get(fromCoordinate);
+  const toPiece = gameState.get(toCoordinate);
 
   if (!fromPiece || !toPiece) {
-    return false
+    return false;
   }
 
   return fromPiece.ownedBy === toPiece.ownedBy;
 }
 
-export function isValidEmptyCoordinate(coordinate: ValidCoordinate, gameState: typeof gameBoardState) {
+export function isValidEmptyCoordinate(
+  coordinate: ValidCoordinate,
+  gameState: typeof gameBoardState
+) {
   return Boolean(
     PLAYABLE_VERTICES.includes(coordinate) && !gameState.get(coordinate)
   );
 }
 
-function getNextValidCapture(fromCoordinate: ValidCoordinate, direction: Direction, gameState: typeof gameBoardState) {
-
+function getNextValidCapture(
+  fromCoordinate: ValidCoordinate,
+  direction: Direction,
+  gameState: typeof gameBoardState
+) {
   let nextMove = undefined;
   let coordinateToCheck = fromCoordinate;
 
@@ -267,9 +303,12 @@ function getNextValidCapture(fromCoordinate: ValidCoordinate, direction: Directi
   return nextMove;
 }
 
-function getNextValidStack(fromCoordinate: ValidCoordinate, direction: Direction, gameState: typeof gameBoardState) {
-
-  let nextMove = undefined
+function getNextValidStack(
+  fromCoordinate: ValidCoordinate,
+  direction: Direction,
+  gameState: typeof gameBoardState
+) {
+  let nextMove = undefined;
   let coordinateToCheck = fromCoordinate;
 
   while (nextMove === undefined) {
@@ -297,40 +336,52 @@ function getNextValidStack(fromCoordinate: ValidCoordinate, direction: Direction
   return nextMove;
 }
 
-export function getValidCaptures(fromCoordinate: ValidCoordinate, gameState: typeof gameBoardState) {
+export function getValidCaptures(
+  fromCoordinate: ValidCoordinate,
+  gameState: typeof gameBoardState
+) {
   return List([
     getNextValidCapture(fromCoordinate, "w", gameState),
     getNextValidCapture(fromCoordinate, "e", gameState),
     getNextValidCapture(fromCoordinate, "nw", gameState),
     getNextValidCapture(fromCoordinate, "ne", gameState),
     getNextValidCapture(fromCoordinate, "sw", gameState),
-    getNextValidCapture(fromCoordinate, "se", gameState)
-  ]).filter(isValidMove => isValidMove);
+    getNextValidCapture(fromCoordinate, "se", gameState),
+  ]).filter((isValidMove) => isValidMove);
 }
 
-export function getValidStacks(fromCoordinate: ValidCoordinate, gameState: typeof gameBoardState) {
+export function getValidStacks(
+  fromCoordinate: ValidCoordinate,
+  gameState: typeof gameBoardState
+) {
   return List([
     getNextValidStack(fromCoordinate, "w", gameState),
     getNextValidStack(fromCoordinate, "e", gameState),
     getNextValidStack(fromCoordinate, "nw", gameState),
     getNextValidStack(fromCoordinate, "ne", gameState),
     getNextValidStack(fromCoordinate, "sw", gameState),
-    getNextValidStack(fromCoordinate, "se", gameState)
-  ]).filter(isValidMove => isValidMove);
+    getNextValidStack(fromCoordinate, "se", gameState),
+  ]).filter((isValidMove) => isValidMove);
 }
-export function getInvertedValidCaptures(toCoordinate: ValidCoordinate, gameState: typeof gameBoardState) {
+export function getInvertedValidCaptures(
+  toCoordinate: ValidCoordinate,
+  gameState: typeof gameBoardState
+) {
   return List([
     getNextInvertedValidCapture(toCoordinate, "w", gameState),
     getNextInvertedValidCapture(toCoordinate, "e", gameState),
     getNextInvertedValidCapture(toCoordinate, "nw", gameState),
     getNextInvertedValidCapture(toCoordinate, "ne", gameState),
     getNextInvertedValidCapture(toCoordinate, "sw", gameState),
-    getNextInvertedValidCapture(toCoordinate, "se", gameState)
-  ]).filter(isValidMove => isValidMove);
+    getNextInvertedValidCapture(toCoordinate, "se", gameState),
+  ]).filter((isValidMove) => isValidMove);
 }
 
-function getNextInvertedValidCapture(toCoordinate: ValidCoordinate, direction: Direction, gameState: typeof gameBoardState) {
-
+function getNextInvertedValidCapture(
+  toCoordinate: ValidCoordinate,
+  direction: Direction,
+  gameState: typeof gameBoardState
+) {
   let nextMove = undefined;
   let coordinateToCheck = toCoordinate;
 
@@ -365,5 +416,5 @@ export const nextPiece = {
   nw: goNorthWest,
   ne: goNorthEast,
   sw: goSouthWest,
-  se: goSouthEast
+  se: goSouthEast,
 };

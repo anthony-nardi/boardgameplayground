@@ -33,7 +33,7 @@ import {
 } from "./coordinateHelpers";
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import { moveAI } from "./ai";
-import { firstQuestionableMoveByAI } from './tests/QuestionableMoves'
+import { firstQuestionableMoveByAI } from "./tests/QuestionableMoves";
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   return gameBoardState.getIn([boardCoordinate, "ownedBy"]) === currentTurn;
@@ -64,7 +64,7 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   }
 
   if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
-    return
+    return;
   }
 
   setNewgameBoardState(
@@ -124,8 +124,6 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
 
   setMovingPiece(null);
   drawGameBoardState();
-
-
 }
 
 function capturePiece(
@@ -180,7 +178,6 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
     alert(`${message}`);
     location.reload();
   }
-
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
@@ -190,7 +187,6 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   drawInitialGrid();
 
   renderInitializingBoard(piecesToSetup, () => {
-
     drawGameBoardState();
 
     if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {

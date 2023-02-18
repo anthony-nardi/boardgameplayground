@@ -40,7 +40,6 @@ export function getPieces(gameState: typeof gameBoardState) {
   );
 }
 
-
 export function getAllPlayerPieceCoordinates(
   gameState: typeof gameBoardState,
   player: Player
