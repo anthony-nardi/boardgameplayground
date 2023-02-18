@@ -29,8 +29,8 @@ import {
 } from "./evaluationHelpers";
 
 // Pieces on the edge and corner have less mobility
-const EDGE_PENALTY = -5;
-const CORNER_PENALTY = -10;
+const EDGE_PENALTY = -500;
+const CORNER_PENALTY = -1000;
 // Whoever has the largest stack gets bonus points
 const LARGEST_STACK_BONUS = 50;
 
@@ -108,12 +108,13 @@ function buildScoringMap(gameState: typeof gameBoardState) {
 
 export function getGameStateScore(
   gameState: typeof gameBoardState,
-  debug: boolean
+  debug = true,
+  playerToMaximize
 ) {
   const winner = getWinner(gameState);
 
   if (winner) {
-    return winner === PLAYER_ONE ? -Infinity : Infinity;
+    return winner !== playerToMaximize ? -Infinity : Infinity;
   }
 
   const scoringMap = buildScoringMap(gameState);
@@ -161,16 +162,22 @@ export function getGameStateScore(
     debug
   );
 
+
   const playerOneTotalScore =
     playerOneTOTTScore + playerOneTZARRAScore + playerOneTZAARScore;
   const playerTwoTotalScore =
     playerTwoTOTTScore + playerTwoTZARRAScore + playerTwoTZAARScore;
 
-  score = playerTwoTotalScore - playerOneTotalScore;
+  if (playerToMaximize === PLAYER_ONE) {
+    score = playerOneTotalScore - playerTwoTotalScore
+  } else {
+    score = playerTwoTotalScore - playerOneTotalScore;
+  }
+
 
   if (debug) {
-    console.log(`Total score for player one: ${playerOneTotalScore}`);
-    console.log(`Total score for player two: ${playerTwoTotalScore}`);
+    console.log(`Total score for maximizing player: ${playerToMaximize === PLAYER_ONE ? playerOneTotalScore : playerTwoTotalScore}`);
+    console.log(`Total score for minimizing player: ${playerToMaximize === PLAYER_ONE ? playerTwoTotalScore : playerOneTotalScore}`);
     console.log(`Score for game state: ${score}`);
   }
 
@@ -181,7 +188,7 @@ function getPlayersScore(
   pieceType: PlayerPieces,
   player: Player,
   scoringMap: RecordOf<ScoringMapProps>,
-  debug: Boolean
+  debug = true
 ) {
   const pieceMetadata: RecordOf<PieceRecordProps> =
     scoringMap[player][pieceType];

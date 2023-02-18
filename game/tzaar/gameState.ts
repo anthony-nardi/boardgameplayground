@@ -4,8 +4,10 @@ import {
   PLAYER_ONE,
   PLAYER_TWO,
   TURN_PHASES,
+  CAPTURE,
+  STACK_OR_CAPTURE_OR_PASS
 } from "./constants";
-import { ValidCoordinate } from "./types/types";
+import { Player, ValidCoordinate } from "./types/types";
 
 export let movingPiece: null | ValidCoordinate = null;
 export let gameBoardState = Map<
@@ -13,9 +15,11 @@ export let gameBoardState = Map<
   RecordOf<GamePieceRecordProps> | false
 >();
 export let isVeryFirstTurn = true;
-export let currentTurn = PLAYER_ONE;
-export let turnPhase = TURN_PHASES.CAPTURE;
+export let currentTurn: Player = PLAYER_ONE;
+export let turnPhase: typeof CAPTURE | typeof STACK_OR_CAPTURE_OR_PASS = TURN_PHASES.CAPTURE;
 export let numberOfTurnsIntoGame = 0;
+export let isFirstPlayerAI = true;
+export let isSecondPlayerAI = true
 
 export function logGameState() {
   console.log(
@@ -118,17 +122,3 @@ export function nextPhase() {
   }
 }
 
-// export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
-//   nextPhase();
-//   let winner;
-
-//   if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
-//     winner = evaluation.getWinner(gameBoardState, true);
-//   }
-
-//   let message = winner === PLAYER_TWO ? "You lost." : "You won!";
-//   if (winner) {
-//     alert(`${message}`);
-//     location.reload();
-//   }
-// }

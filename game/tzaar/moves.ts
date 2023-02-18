@@ -14,7 +14,7 @@ import {
 } from "./gameBoardHelpers";
 import { Player } from "./types/types";
 
-export function getGameStatesToAnalyze(gameState: typeof gameBoardState, turn: Player) {
+export function getGameStatesToAnalyze(gameState: typeof gameBoardState, turn: Player, firstTurnOfGame?: boolean) {
   const EARLY_GAME = numberOfTurnsIntoGame < 10;
 
   let allPossibleStatesAfterTurn = List();
@@ -25,10 +25,11 @@ export function getGameStatesToAnalyze(gameState: typeof gameBoardState, turn: P
     allPossibleStatesAfterTurn = getEarlyGamePossibleMoveSequences(
       gameState,
       TZAAR,
-      turn
+      turn,
+      firstTurnOfGame
     )
-      .concat(getEarlyGamePossibleMoveSequences(gameState, TZARRA, turn))
-      .concat(getEarlyGamePossibleMoveSequences(gameState, TOTT, turn));
+      .concat(getEarlyGamePossibleMoveSequences(gameState, TZARRA, turn, firstTurnOfGame))
+      .concat(getEarlyGamePossibleMoveSequences(gameState, TOTT, turn, firstTurnOfGame));
   }
 
   return allPossibleStatesAfterTurn;
@@ -46,7 +47,7 @@ export function getAllPlayerPieceCoordinatesByType(gameState: typeof gameBoardSt
     .keySeq();
 }
 // @ts-expect-error fix
-function getEarlyGamePossibleMoveSequences(gameState: typeof gameBoardState, PIECE_TYPE, turn: Player) {
+function getEarlyGamePossibleMoveSequences(gameState: typeof gameBoardState, PIECE_TYPE, turn: Player, firstTurnOfGame?: Boolean) {
   const playerPiecesToCapture = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
   let trySecondCapture = false;
 
@@ -81,91 +82,107 @@ function getEarlyGamePossibleMoveSequences(gameState: typeof gameBoardState, PIE
         Map()
       );
 
+      if (firstTurnOfGame) {
+        // debugger
+        allGameStatesAfterMoveSeq = allCaptureStates
+      }
+
       // For every game state resulting from the above process,
       // get all player pieces and return all game states
       // for every valid stack you can make
-      allCaptureStates.forEach((stateAfterCapture, fromToKey) => {
-        if (trySecondCapture) {
-          const allOpponentPlayerPieces = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
-            stateAfterCapture,
-            playerPiecesToCapture,
-            PIECE_TYPE
-          );
-          allOpponentPlayerPieces.forEach((toCoordinate) => {
-            const validCaptures = getInvertedValidCaptures(
-              toCoordinate,// @ts-expect-error fix
-              stateAfterCapture
-            );
 
-            validCaptures.forEach((fromCoordinate) => {// @ts-expect-error fix
-              const fromPiece = stateAfterCapture.get(fromCoordinate);
-              const sequenceKey = `${fromToKey}=>${fromCoordinate}->${toCoordinate}`;// @ts-expect-error fix
-              const gameStateAfterSecondCapture = stateAfterCapture
-                .set(fromCoordinate, null)
-                .set(toCoordinate, fromPiece);
-              allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
-                sequenceKey,
-                gameStateAfterSecondCapture
+      if (!firstTurnOfGame) {
+        allCaptureStates.forEach((stateAfterCapture, fromToKey) => {
+          if (trySecondCapture) {
+            const allOpponentPlayerPieces = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
+              stateAfterCapture,
+              playerPiecesToCapture,
+              PIECE_TYPE
+            );
+            allOpponentPlayerPieces.forEach((toCoordinate) => {
+              const validCaptures = getInvertedValidCaptures(
+                toCoordinate,// @ts-expect-error fix
+                stateAfterCapture
               );
-            });
-          });
-        }
 
-        let allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
-          stateAfterCapture,
-          turn,
-          TZAAR
-        );
-
-        if (!allPlayerPiecesAfterCapture.size) {
-          allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
-            stateAfterCapture,
-            turn,
-            TZARRA
-          );
-        }
-        if (!allPlayerPiecesAfterCapture.size) {
-          allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
-            stateAfterCapture,
-            turn,
-            TOTT
-          );
-        }
-        if (!allPlayerPiecesAfterCapture.size) {
-          alert("This shouldnt be possible, let me know if you see this.");
-        }
-
-        allPlayerPiecesAfterCapture.forEach(
-          (playerPieceCoordinateAfterCapture) => {
-            const validStacks = getValidStacks(
-              playerPieceCoordinateAfterCapture,// @ts-expect-error fix
-              stateAfterCapture
-            );
-            // @ts-expect-error fix
-            const fromPiece = stateAfterCapture.get(
-              playerPieceCoordinateAfterCapture
-            );
-            validStacks.forEach((toCoordinate) => {// @ts-expect-error fix
-              const toPiece = stateAfterCapture.get(toCoordinate);
-              // @ts-expect-error fix
-              const gameStateAfterMoveSeq = stateAfterCapture
-                .set(playerPieceCoordinateAfterCapture, null)
-                .set(toCoordinate, fromPiece)
-                .setIn(
-                  [toCoordinate, "stackSize"],
-                  fromPiece.stackSize + toPiece.stackSize
+              validCaptures.forEach((fromCoordinate) => {// @ts-expect-error fix
+                const fromPiece = stateAfterCapture.get(fromCoordinate);
+                const sequenceKey = `${fromToKey}=>${fromCoordinate}->${toCoordinate}`;// @ts-expect-error fix
+                const gameStateAfterSecondCapture = stateAfterCapture
+                  .set(fromCoordinate, null)
+                  .set(toCoordinate, fromPiece);
+                allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
+                  sequenceKey,
+                  gameStateAfterSecondCapture
                 );
-
-              const sequenceKey = `${fromToKey}=>${playerPieceCoordinateAfterCapture}->${toCoordinate}`;
-
-              allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
-                sequenceKey,
-                gameStateAfterMoveSeq
-              );
+              });
             });
           }
-        );
-      });
+
+          let allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
+            stateAfterCapture,
+            turn,
+            TZAAR
+          );
+
+          if (!allPlayerPiecesAfterCapture.size) {
+            allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
+              stateAfterCapture,
+              turn,
+              TZARRA
+            );
+          }
+          if (!allPlayerPiecesAfterCapture.size) {
+            allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinatesByType(// @ts-expect-error fix
+              stateAfterCapture,
+              turn,
+              TOTT
+            );
+          }
+          if (!allPlayerPiecesAfterCapture.size) {
+            alert("This shouldnt be possible, let me know if you see this.");
+          }
+
+          allPlayerPiecesAfterCapture.forEach(
+            (playerPieceCoordinateAfterCapture) => {
+              const validStacks = getValidStacks(
+                playerPieceCoordinateAfterCapture,// @ts-expect-error fix
+                stateAfterCapture
+              );
+              // @ts-expect-error fix
+              const fromPiece = stateAfterCapture.get(
+                playerPieceCoordinateAfterCapture
+              );
+              validStacks.forEach((toCoordinate) => {// @ts-expect-error fix
+                const toPiece = stateAfterCapture.get(toCoordinate);
+                // @ts-expect-error fix
+                const gameStateAfterMoveSeq = stateAfterCapture
+                  .set(playerPieceCoordinateAfterCapture, null)
+                  .set(toCoordinate, fromPiece)
+                  .setIn(
+                    [toCoordinate, "stackSize"],
+                    fromPiece.stackSize + toPiece.stackSize
+                  );
+
+                const sequenceKey = `${fromToKey}=>${playerPieceCoordinateAfterCapture}->${toCoordinate}`;
+
+                allGameStatesAfterMoveSeq = allGameStatesAfterMoveSeq.set(
+                  sequenceKey,
+                  gameStateAfterMoveSeq
+                );
+              });
+            }
+          );
+        });
+
+
+
+      }
+
+
+
+
+
 
       return allGameStatesAfterMoveSeq;
     },

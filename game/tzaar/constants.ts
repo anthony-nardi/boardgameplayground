@@ -116,8 +116,9 @@ export const GamePieceRecord = Record<GamePieceRecordProps>({
 
 export const PLAYER_ONE = "PLAYER_ONE" as const;
 export const PLAYER_TWO = "PLAYER_TWO" as const;
-
+export const CAPTURE = "CAPTURE" as const;
+export const STACK_OR_CAPTURE_OR_PASS = "STACK_OR_CAPTURE_OR_PASS" as const
 export const TURN_PHASES = {
-  CAPTURE: "CAPTURE",
-  STACK_OR_CAPTURE_OR_PASS: "STACK_OR_CAPTURE_OR_PASS",
+  CAPTURE,
+  STACK_OR_CAPTURE_OR_PASS
 };

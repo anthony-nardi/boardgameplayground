@@ -6,6 +6,9 @@ import {
   setNewgameBoardState,
   nextPhase,
   currentTurn,
+  isFirstPlayerAI,
+  isSecondPlayerAI,
+  isVeryFirstTurn
 } from "./gameState";
 import { getGameStatesToAnalyze } from "./moves";
 import * as evaluation from "./evaluation";
@@ -16,10 +19,19 @@ import { checkGameStateAndStartNextTurn } from "./gameLogic";
 
 export const createChildCallback = (node: any, move: string) => {
   const gamestateToAnalyze = node.gamestate;
+  console.log(currentTurn)
 
-  const turn = node.parent ? node.parent.data + 1 : 1;
 
-  const aim = turn === 0 ? 1 : -1;
+  let turn
+
+  if (!node.parent) {
+    turn = node.data.nextPlayerToMaximize
+  } else {
+    turn = node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE
+
+  }
+
+  const aim = currentTurn === node.data.nextPlayerToMaximize ? 1 : -1
 
   const updatedBoardGameState = applyMoveToGameState(gamestateToAnalyze, move);
   if (move === "3,7->5,5=>4,5->5,5") {
@@ -33,15 +45,15 @@ export const createChildCallback = (node: any, move: string) => {
     nodeType,
     updatedBoardGameState,
     move,
-    turn,
+    { nextPlayerToMaximize: turn },
     aim
   );
   return childNode;
 };
 
 export function moveAI() {
-  console.log(`MOVE AI`);
-  if (currentTurn !== PLAYER_TWO) {
+  console.log('MOVING AI...')
+  if ((currentTurn === PLAYER_ONE && !isFirstPlayerAI) || (currentTurn === PLAYER_TWO && !isSecondPlayerAI)) {
     return;
   }
 
@@ -50,7 +62,8 @@ export function moveAI() {
 
   const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
     gameBoardState,
-    PLAYER_TWO
+    currentTurn,
+    isVeryFirstTurn
   )
     .keySeq()
     // @ts-expect-error this works
@@ -60,7 +73,8 @@ export function moveAI() {
   console.log(
     `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
   );
-  opts.depth = allPossibleStatesAfterTurn.length < 400 ? 2 : 1;
+  opts.depth = allPossibleStatesAfterTurn.length < 400 && !isVeryFirstTurn ? 2 : 1;
+  console.log(allPossibleStatesAfterTurn)
   opts.method = 0;
   opts.pruning = 1;
   opts.sortMethod = 0;
@@ -69,7 +83,7 @@ export function moveAI() {
   console.log("DEPTH is " + opts.depth);
 
   let aim = 1;
-  let data = 0;
+  let data = { nextPlayerToMaximize: currentTurn };
   let move = null;
   const nodeType = 0;
   const root = new minimaxer.Node(
@@ -87,23 +101,18 @@ export function moveAI() {
 
   tree.EvaluateNode = (node) => {
     const gamestateToAnalyze = node.gamestate;
-    const score = evaluation.getGameStateScore(gamestateToAnalyze);
-    if (score >= 65) {
-      console.log('WOAH')
-    }
-    if (node && node.move === "3,7->5,5=>4,5->5,5") {
-      evaluation.getGameStateScore(gamestateToAnalyze, true);
-      console.log(`score for ${node.move}: ${score}`)
-    }
+
+
+    const score = evaluation.getGameStateScore(gamestateToAnalyze, false, node.data.nextPlayerToMaximize);
+    console.log(score)
     return score
   };
 
-  tree.GetMoves = (gamestate) => {
-    const gamestateToAnalyze = gamestate.gamestate;
+  tree.GetMoves = (node) => {
+    const gamestateToAnalyze = node.gamestate;
 
-    const player = gamestate.data % 2 === 1 ? PLAYER_ONE : PLAYER_TWO;
 
-    const moves = getGameStatesToAnalyze(gamestateToAnalyze, player)
+    const moves = getGameStatesToAnalyze(gamestateToAnalyze, node.data.nextPlayerToMaximize)
       .keySeq()
       .toJS();
 
@@ -171,10 +180,18 @@ export function applyMoveToGameState(gamestate: any, move: string) {
 }
 
 export function playMove(move: string) {
-  if (currentTurn !== PLAYER_TWO) {
-    return;
+  if (currentTurn === PLAYER_ONE && !isFirstPlayerAI) {
+    throw new Error('playMove should not happen for a human player')
   }
-  console.log(gameBoardState.toJS());
+  if (currentTurn === PLAYER_TWO && !isSecondPlayerAI) {
+    throw new Error('playMove should not happen for a human player')
+  }
+  if (
+    window.localStorage &&
+    window.localStorage.getItem("DEBUG_TZAAR") === "true"
+  ) {
+    console.log(gameBoardState.toJS());
+  }
   // Single move only
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
@@ -204,6 +221,12 @@ export function playMove(move: string) {
         checkGameStateAndStartNextTurn();
         checkGameStateAndStartNextTurn();
         drawGameBoardState();
+
+        const shouldAIMakeNextMove = (currentTurn === PLAYER_TWO && isSecondPlayerAI) || (currentTurn === PLAYER_ONE && isFirstPlayerAI);
+
+        if (shouldAIMakeNextMove) {
+          setTimeout(() => moveAI(), 50);
+        }
       }
     );
     return;
@@ -282,6 +305,11 @@ export function playMove(move: string) {
 
           checkGameStateAndStartNextTurn();
           drawGameBoardState();
+          const shouldAIMakeNextMove = (currentTurn === PLAYER_TWO && isSecondPlayerAI) || (currentTurn === PLAYER_ONE && isFirstPlayerAI);
+
+          if (shouldAIMakeNextMove) {
+            setTimeout(() => moveAI(), 50);
+          }
         }
       );
     }

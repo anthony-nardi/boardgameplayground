@@ -21,6 +21,8 @@ import {
   currentTurn,
   turnPhase,
   setInitialGameState,
+  isSecondPlayerAI,
+  isFirstPlayerAI,
 } from "./gameState";
 import * as evaluation from "./evaluation";
 import React from "react";
@@ -57,8 +59,12 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
     return;
   }
 
-  if (currentTurn === PLAYER_TWO) {
+  if (currentTurn === PLAYER_TWO && isSecondPlayerAI) {
     return;
+  }
+
+  if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
+    return
   }
 
   setNewgameBoardState(
@@ -119,13 +125,7 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   setMovingPiece(null);
   drawGameBoardState();
 
-  const isNextPlayersTurn =
-    turnPhase === TURN_PHASES.CAPTURE && currentTurn === PLAYER_TWO;
 
-  if (isNextPlayersTurn) {
-    showLoadingSpinner();
-    setTimeout(() => moveAI(), 50);
-  }
 }
 
 function capturePiece(
@@ -180,19 +180,23 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
     alert(`${message}`);
     location.reload();
   }
+
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  // const piecesToSetup =
-  //   SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
-
-  const piecesToSetup = firstQuestionableMoveByAI()
+  const piecesToSetup =
+    SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
 
   drawInitialGrid();
+
   renderInitializingBoard(piecesToSetup, () => {
-    setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
+
     drawGameBoardState();
-    moveAI();
+
+    if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
+      moveAI();
+    }
+
     if (
       window.localStorage &&
       window.localStorage.getItem("DEBUG_TZAAR") === "true"
