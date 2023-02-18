@@ -1,6 +1,10 @@
 import { Record } from "immutable";
 import { PieceType, ValidCoordinate } from "./types/types";
 
+const AI_NORMAL_ANIMATION_DURATION = 2000;
+const AI_FAST_ANIMATION_DURATION = 1000;
+const AI_VERY_FAST_ANIMATION_DURATION = 100;
+export const AI_ANIMATION_DURATION = AI_VERY_FAST_ANIMATION_DURATION;
 export const NUMBER_OF_TOTTS = 15;
 export const NUMBER_OF_TZARRAS = 9;
 export const NUMBER_OF_TZAARS = 6;

@@ -176,7 +176,8 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
   let message = winner === PLAYER_TWO ? "You lost." : "You won!";
   if (winner) {
     alert(`${message}`);
-    location.reload();
+    console.log("WINNER ", winner);
+    // location.reload();
   }
 }
 

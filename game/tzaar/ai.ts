@@ -1,4 +1,4 @@
-import { PLAYER_TWO, PLAYER_ONE } from "./constants";
+import { PLAYER_TWO, PLAYER_ONE, AI_ANIMATION_DURATION } from "./constants";
 import { drawGameBoardState, renderMovingPiece } from "./renderHelpers";
 import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
 import {
@@ -12,6 +12,7 @@ import {
 } from "./gameState";
 import { getGameStatesToAnalyze } from "./moves";
 import * as evaluation from "./evaluation";
+import * as evaluation2 from "./evaluation2";
 import * as minimaxer from "minimaxer";
 import { ValidCoordinate } from "./types/types";
 import { hideLoadingSpinner } from "./domHelpers";
@@ -49,6 +50,16 @@ export const createChildCallback = (node: any, move: string) => {
 };
 
 export function moveAI() {
+  const winner = evaluation.getWinner(gameBoardState);
+
+  if (winner) {
+    let message = winner === PLAYER_TWO ? "You lost." : "You won!";
+    alert(`${message}`);
+    console.log("WINNER ", winner);
+
+    return null;
+  }
+
   console.log("MOVING AI...");
   if (
     (currentTurn === PLAYER_ONE && !isFirstPlayerAI) ||
@@ -56,6 +67,11 @@ export function moveAI() {
   ) {
     return;
   }
+
+  const evalFunction =
+    currentTurn === PLAYER_ONE
+      ? evaluation.getGameStateScore
+      : evaluation2.getGameStateScore;
 
   const now = Date.now();
   const opts = new minimaxer.NegamaxOpts();
@@ -103,7 +119,7 @@ export function moveAI() {
   tree.EvaluateNode = (node) => {
     const gamestateToAnalyze = node.gamestate;
 
-    const score = evaluation.getGameStateScore(
+    const score = evalFunction(
       gamestateToAnalyze,
       node.data.nextPlayerToMaximize,
       false
@@ -219,7 +235,7 @@ export function playMove(move: string) {
       fromPiece,
       fromFirstPixelCoodinate,
       toFirstPixelCoordinate,
-      2000,
+      AI_ANIMATION_DURATION,
       Date.now(),
       () => {
         setNewgameBoardState(gameBoardState.set(toCoordinate, fromPiece));
@@ -269,7 +285,7 @@ export function playMove(move: string) {
     fromPiece,
     fromFirstPixelCoodinate,
     toFirstPixelCoordinate,
-    2000,
+    AI_ANIMATION_DURATION,
     Date.now(),
     () => {
       setNewgameBoardState(gameBoardState.set(toCoordinate, fromPiece));
@@ -288,7 +304,7 @@ export function playMove(move: string) {
         secondFromPiece,
         fromSecondPixelCoodinate,
         toSecondPixelCoordinate,
-        2000,
+        AI_ANIMATION_DURATION,
         Date.now(),
         () => {
           const toPiece = gameBoardState.get(toCoordinate2);
