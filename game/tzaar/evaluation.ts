@@ -177,17 +177,15 @@ export function getGameStateScore(
 
   if (debug) {
     console.log(
-      `Total score for maximizing player: ${
-        playerToMaximize === PLAYER_ONE
-          ? playerOneTotalScore
-          : playerTwoTotalScore
+      `Total score for maximizing player: ${playerToMaximize === PLAYER_ONE
+        ? playerOneTotalScore
+        : playerTwoTotalScore
       }`
     );
     console.log(
-      `Total score for minimizing player: ${
-        playerToMaximize === PLAYER_ONE
-          ? playerTwoTotalScore
-          : playerOneTotalScore
+      `Total score for minimizing player: ${playerToMaximize === PLAYER_ONE
+        ? playerTwoTotalScore
+        : playerOneTotalScore
       }`
     );
     console.log(`Score for game state: ${score}`);
