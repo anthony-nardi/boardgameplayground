@@ -32,8 +32,27 @@ import {
   getBoardCoordinatesFromUserInteraction,
 } from "./coordinateHelpers";
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
-import { moveAI } from "./ai";
 import { firstQuestionableMoveByAI } from "./tests/QuestionableMoves";
+import BotFactory from "./BotFactory";
+
+const botOne = new BotFactory();
+const botTwo = new BotFactory();
+
+function moveAI() {
+  if (
+    (currentTurn === PLAYER_ONE && !isFirstPlayerAI) ||
+    (currentTurn === PLAYER_TWO && !isSecondPlayerAI)
+  ) {
+    return;
+  }
+
+  if (currentTurn === PLAYER_ONE) {
+    botOne.moveAI();
+  }
+  if (currentTurn === PLAYER_TWO) {
+    botTwo.moveAI();
+  }
+}
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   return gameBoardState.getIn([boardCoordinate, "ownedBy"]) === currentTurn;
@@ -191,7 +210,10 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
     drawGameBoardState();
 
     if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
-      moveAI();
+      botOne.moveAI();
+    }
+    if (currentTurn === PLAYER_TWO && isSecondPlayerAI) {
+      botTwo.moveAI();
     }
 
     if (
