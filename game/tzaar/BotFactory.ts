@@ -17,6 +17,54 @@ import { hideLoadingSpinner } from "./domHelpers";
 import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
 
+function applyMoveToGameState(gamestate: any, move: string) {
+  // Single move only
+  if (move.indexOf("=>") === -1) {
+    const [firstFromCoordinate, firstToCoordinate] = move.split("->");
+    const fromPiece = gamestate.get(firstFromCoordinate);
+    return gamestate
+      .set(firstFromCoordinate, false)
+      .set(firstToCoordinate, fromPiece);
+  }
+
+  const [firstMove, secondMove] = move.split("=>");
+  const [firstFromCoordinate, firstToCoordinate] = firstMove.split("->");
+  const [secondFromCoordinate, secondToCoordinate] = secondMove.split("->");
+  const fromPiece = gamestate.get(firstFromCoordinate);
+
+  // dont render moving piece in the same spot...
+  let updatedBoardGameState = gamestate.set(firstFromCoordinate, false);
+
+  updatedBoardGameState = updatedBoardGameState.set(
+    firstToCoordinate,
+    fromPiece
+  );
+
+  const secondFromPiece = updatedBoardGameState.get(secondFromCoordinate);
+  updatedBoardGameState = updatedBoardGameState.set(
+    secondFromCoordinate,
+    false
+  );
+
+  const toPiece = updatedBoardGameState.get(secondToCoordinate);
+
+  if (secondFromPiece.ownedBy === toPiece.ownedBy) {
+    updatedBoardGameState = updatedBoardGameState
+      .set(secondToCoordinate, secondFromPiece)
+      .setIn(
+        [secondToCoordinate, "stackSize"],
+        secondFromPiece.stackSize + toPiece.stackSize
+      );
+  } else {
+    updatedBoardGameState = updatedBoardGameState.set(
+      secondToCoordinate,
+      secondFromPiece
+    );
+  }
+
+  return updatedBoardGameState;
+}
+
 export default class BotFactory {
   constructor() {
     this.evaluation = new EvaluationFactory({
@@ -119,54 +167,6 @@ export default class BotFactory {
     playMove(result.move);
 
     hideLoadingSpinner();
-  }
-
-  private applyMoveToGameState(gamestate: any, move: string) {
-    // Single move only
-    if (move.indexOf("=>") === -1) {
-      const [firstFromCoordinate, firstToCoordinate] = move.split("->");
-      const fromPiece = gamestate.get(firstFromCoordinate);
-      return gamestate
-        .set(firstFromCoordinate, false)
-        .set(firstToCoordinate, fromPiece);
-    }
-
-    const [firstMove, secondMove] = move.split("=>");
-    const [firstFromCoordinate, firstToCoordinate] = firstMove.split("->");
-    const [secondFromCoordinate, secondToCoordinate] = secondMove.split("->");
-    const fromPiece = gamestate.get(firstFromCoordinate);
-
-    // dont render moving piece in the same spot...
-    let updatedBoardGameState = gamestate.set(firstFromCoordinate, false);
-
-    updatedBoardGameState = updatedBoardGameState.set(
-      firstToCoordinate,
-      fromPiece
-    );
-
-    const secondFromPiece = updatedBoardGameState.get(secondFromCoordinate);
-    updatedBoardGameState = updatedBoardGameState.set(
-      secondFromCoordinate,
-      false
-    );
-
-    const toPiece = updatedBoardGameState.get(secondToCoordinate);
-
-    if (secondFromPiece.ownedBy === toPiece.ownedBy) {
-      updatedBoardGameState = updatedBoardGameState
-        .set(secondToCoordinate, secondFromPiece)
-        .setIn(
-          [secondToCoordinate, "stackSize"],
-          secondFromPiece.stackSize + toPiece.stackSize
-        );
-    } else {
-      updatedBoardGameState = updatedBoardGameState.set(
-        secondToCoordinate,
-        secondFromPiece
-      );
-    }
-
-    return updatedBoardGameState;
   }
 
   private playMove(move: string) {
@@ -325,7 +325,7 @@ export default class BotFactory {
       aim = node.parent.aim * -1;
     }
 
-    const updatedBoardGameState = this.applyMoveToGameState(
+    const updatedBoardGameState = applyMoveToGameState(
       gamestateToAnalyze,
       move
     );
