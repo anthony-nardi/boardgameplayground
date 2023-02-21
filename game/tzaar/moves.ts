@@ -6,7 +6,7 @@ import {
   getValidStacks,
   getInvertedValidCaptures,
 } from "./gameBoardHelpers";
-import { Player } from "./types/types";
+import { Player, PlayerPieces } from "./types/types";
 
 export function getGameStatesToAnalyze(
   gameState: typeof gameBoardState,
@@ -57,11 +57,11 @@ export function getAllPlayerPieceCoordinates(
     .filter((piece) => piece && piece.ownedBy === player)
     .keySeq();
 }
-// @ts-expect-error fix
+
 export function getAllPlayerPieceCoordinatesByType(
   gameState: typeof gameBoardState,
   player: Player,
-  type
+  type: PlayerPieces
 ) {
   return gameState
     .filter((piece) => piece && piece.ownedBy === player && piece.type === type)
@@ -70,7 +70,7 @@ export function getAllPlayerPieceCoordinatesByType(
 
 function getEarlyGamePossibleMoveSequences(
   gameState: typeof gameBoardState,
-  PIECE_TYPE,
+  PIECE_TYPE: PlayerPieces,
   turn: Player,
   firstTurnOfGame?: Boolean
 ) {

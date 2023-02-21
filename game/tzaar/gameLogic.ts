@@ -20,7 +20,6 @@ import {
   nextPhase,
   currentTurn,
   turnPhase,
-  setInitialGameState,
   isSecondPlayerAI,
   isFirstPlayerAI,
 } from "./gameState";
@@ -32,7 +31,6 @@ import {
   getBoardCoordinatesFromUserInteraction,
 } from "./coordinateHelpers";
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
-import { firstQuestionableMoveByAI } from "./tests/QuestionableMoves";
 import BotFactory from "./BotFactory";
 
 const botOne = new BotFactory();
