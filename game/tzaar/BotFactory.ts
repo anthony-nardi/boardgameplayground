@@ -16,6 +16,7 @@ import { ValidCoordinate } from "./types/types";
 import { hideLoadingSpinner } from "./domHelpers";
 import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
+import { getWinner } from "./evaluationHelpers";
 
 function applyMoveToGameState(gamestate: any, move: string) {
   // Single move only
@@ -78,7 +79,7 @@ export default class BotFactory {
   private evaluation: EvaluationFactory;
 
   public moveAI() {
-    const winner = this.evaluation.getWinner(gameBoardState);
+    const winner = getWinner(gameBoardState);
 
     if (winner) {
       let message = winner === PLAYER_TWO ? "You lost." : "You won!";
@@ -88,7 +89,9 @@ export default class BotFactory {
       return null;
     }
 
-    const evalFunction = this.evaluation.getGameStateScore;
+    const evalFunction = (gameState, playerToMaximize, debug) => {
+      return this.evaluation.getGameStateScore(gameState, playerToMaximize, debug)
+    }
 
     const now = Date.now();
     const opts = new minimaxer.NegamaxOpts();
@@ -164,12 +167,17 @@ export default class BotFactory {
     console.log("Took %d ms", elapsed);
     // @ts-expect-error fix TODO
 
-    playMove(result.move);
+    this.playMove(result.move);
 
     hideLoadingSpinner();
   }
 
   private playMove(move: string) {
+
+    const moveAiCallback = (args) => {
+      this.moveAI.apply(this, args)
+    }
+
     if (currentTurn === PLAYER_ONE && !isFirstPlayerAI) {
       throw new Error("playMove should not happen for a human player");
     }
@@ -217,7 +225,10 @@ export default class BotFactory {
             (currentTurn === PLAYER_ONE && isFirstPlayerAI);
 
           if (shouldAIMakeNextMove) {
-            setTimeout(this.moveAI, 50);
+            setTimeout(() => {
+              debugger
+              this.moveAI()
+            }, 50);
           }
         }
       );
@@ -302,7 +313,7 @@ export default class BotFactory {
               (currentTurn === PLAYER_ONE && isFirstPlayerAI);
 
             if (shouldAIMakeNextMove) {
-              setTimeout(this.moveAI, 50);
+              setTimeout(moveAiCallback, 50);
             }
           }
         );
@@ -330,7 +341,7 @@ export default class BotFactory {
       move
     );
 
-    const winner = this.evaluation.getWinner(updatedBoardGameState);
+    const winner = getWinner(updatedBoardGameState);
 
     const nodeType = winner ? 2 : 1;
 

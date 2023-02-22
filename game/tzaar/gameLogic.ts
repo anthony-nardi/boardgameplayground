@@ -23,7 +23,6 @@ import {
   isSecondPlayerAI,
   isFirstPlayerAI,
 } from "./gameState";
-import * as evaluation from "./evaluation";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
 import {
@@ -32,6 +31,7 @@ import {
 } from "./coordinateHelpers";
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import BotFactory from "./BotFactory";
+import { getWinner } from "./evaluationHelpers";
 
 const botOne = new BotFactory();
 const botTwo = new BotFactory();
@@ -187,7 +187,7 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
   let winner;
 
   if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
-    winner = evaluation.getWinner(gameBoardState, true);
+    winner = getWinner(gameBoardState, true);
   }
 
   let message = winner === PLAYER_TWO ? "You lost." : "You won!";

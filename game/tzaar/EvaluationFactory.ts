@@ -16,7 +16,7 @@ import {
   PieceRecordProps,
   ScoringMapProps,
 } from "./scoringMap";
-import { getPieces, getAllPlayerPieceCoordinates } from "./evaluationHelpers";
+import { getWinner } from "./evaluationHelpers";
 
 export default class EvaluationFactory {
   constructor(props: {
@@ -41,7 +41,7 @@ export default class EvaluationFactory {
     playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO,
     debug = true
   ) {
-    const winner = this.getWinner(gameState);
+    const winner = getWinner(gameState);
 
     if (winner) {
       return winner !== playerToMaximize ? -Infinity : Infinity;
@@ -105,17 +105,15 @@ export default class EvaluationFactory {
 
     if (debug) {
       console.log(
-        `Total score for maximizing player: ${
-          playerToMaximize === PLAYER_ONE
-            ? playerOneTotalScore
-            : playerTwoTotalScore
+        `Total score for maximizing player: ${playerToMaximize === PLAYER_ONE
+          ? playerOneTotalScore
+          : playerTwoTotalScore
         }`
       );
       console.log(
-        `Total score for minimizing player: ${
-          playerToMaximize === PLAYER_ONE
-            ? playerTwoTotalScore
-            : playerOneTotalScore
+        `Total score for minimizing player: ${playerToMaximize === PLAYER_ONE
+          ? playerTwoTotalScore
+          : playerOneTotalScore
         }`
       );
       console.log(`Score for game state: ${score}`);
@@ -192,61 +190,6 @@ export default class EvaluationFactory {
     return scoreForPlayer;
   }
 
-  public getWinner(gameState: typeof gameBoardState, beforeTurnStart = false) {
-    const pieceCountsByPlayer = getPieces(gameState);
-
-    const playerOneLost =
-      // @ts-expect-error fix
-      !pieceCountsByPlayer.getIn([PLAYER_ONE, TOTT]).size ||
-      // @ts-expect-error fix
-      !pieceCountsByPlayer.getIn([PLAYER_ONE, TZARRA]).size ||
-      // @ts-expect-error fix
-      !pieceCountsByPlayer.getIn([PLAYER_ONE, TZAAR]).size;
-
-    const playerTwoLost =
-      // @ts-expect-error fix
-      !pieceCountsByPlayer.getIn([PLAYER_TWO, TOTT]).size ||
-      // @ts-expect-error fix
-      !pieceCountsByPlayer.getIn([PLAYER_TWO, TZARRA]).size ||
-      // @ts-expect-error fix
-      !pieceCountsByPlayer.getIn([PLAYER_TWO, TZAAR]).size;
-
-    if (playerOneLost) {
-      return PLAYER_TWO;
-    }
-    if (playerTwoLost) {
-      return PLAYER_ONE;
-    }
-
-    if (beforeTurnStart) {
-      // TODO: Dont think we need this as it was incorrect all along!
-      const possibleCaptures = getAllPlayerPieceCoordinates(
-        gameState,
-        currentTurn
-      ).map((fromCoordinate) => {
-        return getValidCaptures(fromCoordinate, gameState);
-      });
-      // @ts-expect-error fix
-      if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
-        return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-      }
-    } else {
-      const invertedCaptures = getAllPlayerPieceCoordinates(
-        gameState,
-        currentTurn
-      ).map((fromCoordinate) => {
-        return getInvertedValidCaptures(fromCoordinate, gameState);
-      });
-
-      if (
-        !invertedCaptures.find((possibleCapture) =>
-          Boolean(possibleCapture.size)
-        )
-      ) {
-        return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
-      }
-    }
-  }
 
   // we value stacks depending on how many of that type are on the board
   private getScoreForStacks(numberOfPieces: number, stackSize: number) {
