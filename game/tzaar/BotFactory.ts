@@ -67,29 +67,56 @@ function applyMoveToGameState(gamestate: any, move: string) {
 }
 
 export default class BotFactory {
-  constructor() {
-    this.evaluation = new EvaluationFactory({
-      EDGE_PENALTY: 10,
-      CORNER_PENALTY: 15,
+  constructor(props: {
+    EDGE_PENALTY: number;
+    CORNER_PENALTY: number;
+    LARGEST_STACK_BONUS: number;
+    STACK_VALUE_BONUS: number;
+    STACK_SIZE_SCORE_MULTIPLIER: number,
+    COUNT_SCORE_MULTIPLIER: number,
+    STACK_VALUE_BONUS_MULTIPLIER: number,
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number,
+    VERSION: number
+  } = {
+      EDGE_PENALTY: 5,
+      CORNER_PENALTY: 10,
       LARGEST_STACK_BONUS: 50,
-      STACK_VALUE_BONUS: 15,
+      STACK_VALUE_BONUS: 10,
+      STACK_SIZE_SCORE_MULTIPLIER: 1,
+      COUNT_SCORE_MULTIPLIER: 1, STACK_VALUE_BONUS_MULTIPLIER: 1,
+      SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1,
+      VERSION: 1
+    }) {
+    this.evaluation = new EvaluationFactory({
+      EDGE_PENALTY: props.EDGE_PENALTY,
+      CORNER_PENALTY: props.CORNER_PENALTY,
+      LARGEST_STACK_BONUS: props.LARGEST_STACK_BONUS,
+      STACK_VALUE_BONUS: props.STACK_VALUE_BONUS,
+      STACK_SIZE_SCORE_MULTIPLIER: props.STACK_SIZE_SCORE_MULTIPLIER,
+      COUNT_SCORE_MULTIPLIER: props.COUNT_SCORE_MULTIPLIER,
+      SCORE_FOR_STACKS_THREATENED_MULTIPLIER: props.SCORE_FOR_STACKS_THREATENED_MULTIPLIER,
+      STACK_VALUE_BONUS_MULTIPLIER: props.STACK_VALUE_BONUS_MULTIPLIER,
+      VERSION: props.VERSION
     });
+
+    this.VERSION = props.VERSION
   }
 
+  private VERSION: number
   private evaluation: EvaluationFactory;
 
-  public moveAI() {
+  public moveAI(moveAiCallback: Function) {
     const winner = getWinner(gameBoardState);
 
     if (winner) {
       let message = winner === PLAYER_TWO ? "You lost." : "You won!";
-      alert(`${message}`);
+      // alert(`${message}`);
       console.log("WINNER ", winner);
 
       return null;
     }
 
-    const evalFunction = (gameState, playerToMaximize, debug) => {
+    const evalFunction = (gameState: typeof gameBoardState, playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO, debug: boolean) => {
       return this.evaluation.getGameStateScore(gameState, playerToMaximize, debug)
     }
 
@@ -106,9 +133,9 @@ export default class BotFactory {
       .sort((a, b) => (a.length < b.length ? -1 : 1))
       .toJS();
 
-    console.log(
-      `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
-    );
+    // console.log(
+    //   `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
+    // );
     opts.depth =
       allPossibleStatesAfterTurn.length < 400 && !isVeryFirstTurn ? 2 : 1;
 
@@ -117,7 +144,7 @@ export default class BotFactory {
     opts.sortMethod = 0;
     opts.genBased = false;
     opts.optimal = false;
-    console.log("DEPTH is " + opts.depth);
+    // console.log("DEPTH is " + opts.depth);
 
     let aim = 1;
     let data = { nextPlayerToMaximize: currentTurn };
@@ -167,28 +194,25 @@ export default class BotFactory {
     console.log("Took %d ms", elapsed);
     // @ts-expect-error fix TODO
 
-    this.playMove(result.move);
+    this.playMove(result.move, moveAiCallback);
 
     hideLoadingSpinner();
   }
 
-  private playMove(move: string) {
-
-    const moveAiCallback = (args) => {
-      this.moveAI.apply(this, args)
-    }
+  private playMove(move: string, moveAiCallback: Function) {
 
     if (currentTurn === PLAYER_ONE && !isFirstPlayerAI) {
       throw new Error("playMove should not happen for a human player");
     }
     if (currentTurn === PLAYER_TWO && !isSecondPlayerAI) {
+
       throw new Error("playMove should not happen for a human player");
     }
     if (
       window.localStorage &&
       window.localStorage.getItem("DEBUG_TZAAR") === "true"
     ) {
-      console.log(gameBoardState.toJS());
+      // console.log(gameBoardState.toJS());
     }
     // Single move only
     if (move.indexOf("=>") === -1) {
@@ -225,10 +249,7 @@ export default class BotFactory {
             (currentTurn === PLAYER_ONE && isFirstPlayerAI);
 
           if (shouldAIMakeNextMove) {
-            setTimeout(() => {
-              debugger
-              this.moveAI()
-            }, 50);
+            setTimeout(moveAiCallback, 50);
           }
         }
       );

@@ -33,8 +33,10 @@ import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
 
-const botOne = new BotFactory();
-const botTwo = new BotFactory();
+let botOne: undefined | BotFactory
+let botTwo: undefined | BotFactory
+
+let matchIndex = 0
 
 function moveAI() {
   if (
@@ -45,10 +47,10 @@ function moveAI() {
   }
 
   if (currentTurn === PLAYER_ONE) {
-    botOne.moveAI();
+    botOne?.moveAI(moveAI);
   }
   if (currentTurn === PLAYER_TWO) {
-    botTwo.moveAI();
+    botTwo?.moveAI(moveAI);
   }
 }
 
@@ -192,9 +194,15 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
 
   let message = winner === PLAYER_TWO ? "You lost." : "You won!";
   if (winner) {
-    alert(`${message}`);
-    console.log("WINNER ", winner);
-    // location.reload();
+    console.log("WINNER ", winner, message);
+    // @ts-expect-error fix
+    const matchesToPlay = setupSurvivalOfTheFittest()
+
+    if (matchIndex < Object.keys(matchesToPlay).length) {
+      matchIndex += 1
+      initGame()
+    }
+
   }
 }
 
@@ -204,15 +212,50 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
 
   drawInitialGrid();
 
+
+  const matchesToPlay = setupSurvivalOfTheFittest(2)
+
+  const matchToPlay = Object.keys(matchesToPlay)[matchIndex]
+
+  const botOneName = matchToPlay.split('|')[0]
+  const botTwoName = matchToPlay.split('|')[1]
+
+  // @ts-expect-error fix
+  const botOneParameters = matchesToPlay[matchToPlay][botOneName]
+  // @ts-expect-error fix
+  const botTwoParameters = matchesToPlay[matchToPlay][botTwoName]
+  botOne = new BotFactory({
+    VERSION: 1,
+    EDGE_PENALTY: 1,
+    CORNER_PENALTY: 2,
+    LARGEST_STACK_BONUS: 1000,
+    STACK_VALUE_BONUS: 15,
+    COUNT_SCORE_MULTIPLIER: 0,
+    STACK_SIZE_SCORE_MULTIPLIER: 0,
+    STACK_VALUE_BONUS_MULTIPLIER: 1,
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 0
+  })
+  botTwo = new BotFactory({
+    VERSION: 2,
+    EDGE_PENALTY: 1,
+    CORNER_PENALTY: 2,
+    LARGEST_STACK_BONUS: 0,
+    STACK_VALUE_BONUS: 15,
+    COUNT_SCORE_MULTIPLIER: 0,
+    STACK_SIZE_SCORE_MULTIPLIER: 1,
+    STACK_VALUE_BONUS_MULTIPLIER: 1,
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1
+  })
+
+  console.log(`${botOneName} VERSUS ${botTwoName}`)
+  console.log(`Bot one weights: `, botOneParameters)
+  console.log(`Bot two weights`, botTwoParameters)
+
+
   renderInitializingBoard(piecesToSetup, () => {
     drawGameBoardState();
 
-    if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
-      botOne.moveAI();
-    }
-    if (currentTurn === PLAYER_TWO && isSecondPlayerAI) {
-      botTwo.moveAI();
-    }
+    moveAI()
 
     if (
       window.localStorage &&
@@ -221,4 +264,46 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
       drawCoordinates();
     }
   });
+}
+function randomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+function setupSurvivalOfTheFittest(numberOfBots: number) {
+
+  const matches = {}
+
+  for (let i = 1; i <= numberOfBots; i++) {
+    for (let k = 1; k <= numberOfBots; k++) {
+      if (i !== k) {
+        const firstBotName = `BOT_${i}`
+        const secondBotName = `BOT_${k}`
+        const matchKey = `${firstBotName}|${secondBotName}`
+        const inverseKey = `${secondBotName}|${firstBotName}`
+
+        // @ts-expect-error fix
+        if (!matches[inverseKey]) {
+          // @ts-expect-error fix
+          matches[matchKey] = {
+            winner: 'N/A',
+            [firstBotName]: {
+              EDGE_PENALTY: randomNumber(1, 20),
+              CORNER_PENALTY: randomNumber(1, 40),
+              LARGEST_STACK_BONUS: randomNumber(1, 100)
+
+            },
+            [secondBotName]: {
+
+              EDGE_PENALTY: randomNumber(1, 20),
+              CORNER_PENALTY: randomNumber(1, 40),
+              LARGEST_STACK_BONUS: randomNumber(1, 100)
+            }
+
+          }
+        }
+      }
+    }
+  }
+
+  console.log(matches)
+  return matches
 }

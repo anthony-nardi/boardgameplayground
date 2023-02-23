@@ -24,17 +24,32 @@ export default class EvaluationFactory {
     CORNER_PENALTY: number;
     LARGEST_STACK_BONUS: number;
     STACK_VALUE_BONUS: number;
+    VERSION: number
+    STACK_SIZE_SCORE_MULTIPLIER: number,
+    COUNT_SCORE_MULTIPLIER: number,
+    STACK_VALUE_BONUS_MULTIPLIER: number
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number
   }) {
     this.EDGE_PENALTY = props.EDGE_PENALTY;
     this.CORNER_PENALTY = props.CORNER_PENALTY;
     this.LARGEST_STACK_BONUS = props.LARGEST_STACK_BONUS;
     this.STACK_VALUE_BONUS = props.STACK_VALUE_BONUS;
+    this.VERSION = props.VERSION
+    this.STACK_SIZE_SCORE_MULTIPLIER = props.STACK_SIZE_SCORE_MULTIPLIER
+    this.COUNT_SCORE_MULTIPLIER = props.COUNT_SCORE_MULTIPLIER
+    this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER = props.SCORE_FOR_STACKS_THREATENED_MULTIPLIER
+    this.STACK_VALUE_BONUS_MULTIPLIER = props.STACK_VALUE_BONUS_MULTIPLIER
   }
 
   EDGE_PENALTY: number;
   CORNER_PENALTY: number;
   LARGEST_STACK_BONUS: number;
   STACK_VALUE_BONUS: number;
+  STACK_SIZE_SCORE_MULTIPLIER: number;
+  COUNT_SCORE_MULTIPLIER: number
+  STACK_VALUE_BONUS_MULTIPLIER: number
+  SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number
+  VERSION: number
 
   public getGameStateScore(
     gameState: typeof gameBoardState,
@@ -54,6 +69,9 @@ export default class EvaluationFactory {
     }
 
     let score = 0;
+
+
+
 
     const playerOneTOTTScore = this.getPlayersScore(
       TOTT,
@@ -137,6 +155,7 @@ export default class EvaluationFactory {
       stacksOnEdge,
       stacksOnCorner,
       stackValue,
+      stacks
     } = pieceMetadata;
 
     const otherPlayer = player === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
@@ -159,7 +178,7 @@ export default class EvaluationFactory {
     const scoreForStacksThreatened = this.getScoreForStacksThreatened(
       stacksThreatened,
       pieceType
-    );
+    ) * this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER
     const scoreForEdgesAndCorners = this.getScoreForEdgesAndCorners(
       stacksOnEdge,
       stacksOnCorner
@@ -168,21 +187,29 @@ export default class EvaluationFactory {
       stackValue,
       count
     );
-    const scoreForStacks = this.getScoreForStacks(count, stackValue);
+
+    const scoreForStacks = this.getScoreForStacks(count, stackValue) * this.STACK_VALUE_BONUS_MULTIPLIER
+    const countScore = this.getCountScore(count) * this.COUNT_SCORE_MULTIPLIER
+    const stackSizeScore = this.getStacksScore(stacks) * this.STACK_SIZE_SCORE_MULTIPLIER
+
+    const materialScore = countScore * stackSizeScore
 
     let scoreForPlayer =
       scoreForHighestStack +
-      // scoreForStacksThreatened +
+      scoreForStacksThreatened +
       // scoreForPieceMaterialPower
-      scoreForStacks;
+      scoreForStacks +
+      materialScore
 
-    if (debug) {
+    debugger
+
+    if (countScore) {
       console.log(`
       ${player} score breakdown for ${pieceType}:
+      materialScore: ${materialScore}
       scoreForHighestStack ${scoreForHighestStack}
       scoreForStacksThreatened ${scoreForStacksThreatened}
       scoreForEdgedAndCorners ${scoreForEdgesAndCorners}
-      scoreForPieceMaterialPower: ${scoreForPieceMaterialPower}
       totalScore:  ${scoreForPlayer}
     `);
     }
@@ -200,16 +227,7 @@ export default class EvaluationFactory {
     stacksThreatened: number,
     pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT
   ) {
-    if (pieceType === TZAAR) {
-      return 10 * stacksThreatened;
-    }
-    if (pieceType === TZARRA) {
-      return 10 * stacksThreatened;
-    }
-    if (pieceType === TOTT) {
-      return 1 * stacksThreatened;
-    }
-    return 0;
+    return stacksThreatened
   }
 
   private getScoreForMaterialPower(stackSize: number, count: number) {
@@ -243,6 +261,47 @@ export default class EvaluationFactory {
     return n + 1;
   }
 
+  private getStacksScore(stacks: number[]) {
+    return stacks.reduce((total, stack) => {
+      return total + this.getStackSizeScore(stack)
+    }, 0)
+  }
+
+  private getStackSizeScore(stackSize: number) {
+
+    if (this.VERSION === 1) {
+      return 0
+    }
+    if (this.VERSION === 2) {
+
+      if (stackSize <= 4) {
+        return Math.pow(stackSize, 3)
+      } else {
+        return 64 - Math.pow((stackSize - 4), 2)
+      }
+    }
+
+    return 0
+  }
+
+  private getCountScore(count: number) {
+    if (this.VERSION === 1) {
+      return 0
+    }
+    if (this.VERSION === 2) {
+      if (count === 1) {
+        return 100
+      }
+      if (count > 5) {
+        return 20
+      }
+      return 100 / (count + 1)
+    }
+
+    return 0
+  }
+
+
   // Convert the board state into something a bit simpler to think about
   // (# of types of pieces, stack sizes, threatening positions, etc)
   private buildScoringMap(gameState: typeof gameBoardState) {
@@ -264,19 +323,27 @@ export default class EvaluationFactory {
         const stacksOnEdgePath = [ownedBy, type, "stacksOnEdge"];
         const stacksOnCornerPath = [ownedBy, type, "stacksOnCorner"];
         const stackValuePath = [ownedBy, type, "stackValue"];
+        const stacksPath = [ownedBy, type, 'stacks']
 
         return piecesByPlayer
           .updateIn(countPath, this.addOne)
           .updateIn(stackValuePath, (stackValue: any) => {
             return stackValue + stackSize;
           })
+          .updateIn(stacksPath, (stacks: any) => {
+            return stacks.concat([stackSize])
+          })
           .updateIn(stacksThreatenedPath, (stacksThreatened: any) => {
-            const isPieceThreatened = this.getIsPieceThreatened(
-              coordinate,
-              gameState
-            );
 
-            return isPieceThreatened ? stacksThreatened + 1 : stacksThreatened;
+            if (stackSize > 1) {
+              const isPieceThreatened = this.getIsPieceThreatened(
+                coordinate,
+                gameState
+              );
+              return isPieceThreatened ? stackSize + stacksThreatened : stacksThreatened
+            }
+            return stacksThreatened
+
           })
           .updateIn(
             stacksGreaterThanOnePath,

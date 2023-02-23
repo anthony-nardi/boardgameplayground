@@ -9,6 +9,7 @@ export type PieceRecordProps = {
   stacksOnCorner: number;
   stacksThreatened: number;
   stackValue: number;
+  stacks: number[]
 };
 
 export type PlayerPiecesProps = {
@@ -30,6 +31,7 @@ const PlayerPieceRecord = Record<PieceRecordProps>({
   stacksOnCorner: 0,
   stacksThreatened: 0,
   stackValue: 0,
+  stacks: []
 });
 
 const PlayerPiecesRecord = Record<PlayerPiecesProps>({
