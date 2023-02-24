@@ -8,7 +8,7 @@ import {
   CORNER_COORDINATES,
   EDGE_COORDINATES,
 } from "./constants";
-import { gameBoardState, currentTurn } from "./gameState";
+import { gameBoardState } from "./gameState";
 import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
 import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
 import {
@@ -20,36 +20,39 @@ import { getWinner } from "./evaluationHelpers";
 
 export default class EvaluationFactory {
   constructor(props: {
-    EDGE_PENALTY: number;
-    CORNER_PENALTY: number;
-    LARGEST_STACK_BONUS: number;
-    STACK_VALUE_BONUS: number;
-    VERSION: number
-    STACK_SIZE_SCORE_MULTIPLIER: number,
-    COUNT_SCORE_MULTIPLIER: number,
-    STACK_VALUE_BONUS_MULTIPLIER: number
-    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number
+    CORNER_PENALTY_MULTIPLIER: number;
+    COUNT_SCORE_MULTIPLIER: number;
+    EDGE_PENALTY_MULTIPLIER: number;
+    LARGEST_STACK_BONUS_MULTIPLIER: number;
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number;
+    STACK_SIZE_SCORE_MULTIPLIER: number;
+    STACK_VALUE_BONUS_MULTIPLIER: number;
+    VERSION: number;
   }) {
-    this.EDGE_PENALTY = props.EDGE_PENALTY;
-    this.CORNER_PENALTY = props.CORNER_PENALTY;
-    this.LARGEST_STACK_BONUS = props.LARGEST_STACK_BONUS;
-    this.STACK_VALUE_BONUS = props.STACK_VALUE_BONUS;
-    this.VERSION = props.VERSION
-    this.STACK_SIZE_SCORE_MULTIPLIER = props.STACK_SIZE_SCORE_MULTIPLIER
-    this.COUNT_SCORE_MULTIPLIER = props.COUNT_SCORE_MULTIPLIER
-    this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER = props.SCORE_FOR_STACKS_THREATENED_MULTIPLIER
-    this.STACK_VALUE_BONUS_MULTIPLIER = props.STACK_VALUE_BONUS_MULTIPLIER
+    this.VERSION = props.VERSION;
+    this.CORNER_PENALTY_MULTIPLIER = props.CORNER_PENALTY_MULTIPLIER;
+    this.EDGE_PENALTY_MULTIPLIER = props.EDGE_PENALTY_MULTIPLIER;
+    this.LARGEST_STACK_BONUS_MULTIPLIER = props.LARGEST_STACK_BONUS_MULTIPLIER;
+    this.STACK_SIZE_SCORE_MULTIPLIER = props.STACK_SIZE_SCORE_MULTIPLIER;
+    this.COUNT_SCORE_MULTIPLIER = props.COUNT_SCORE_MULTIPLIER;
+    this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER =
+      props.SCORE_FOR_STACKS_THREATENED_MULTIPLIER;
+    this.STACK_VALUE_BONUS_MULTIPLIER = props.STACK_VALUE_BONUS_MULTIPLIER;
   }
 
-  EDGE_PENALTY: number;
-  CORNER_PENALTY: number;
-  LARGEST_STACK_BONUS: number;
-  STACK_VALUE_BONUS: number;
+  CORNER_PENALTY_MULTIPLIER: number;
+  COUNT_SCORE_MULTIPLIER: number;
+  EDGE_PENALTY_MULTIPLIER: number;
+  LARGEST_STACK_BONUS_MULTIPLIER: number;
+  SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number;
   STACK_SIZE_SCORE_MULTIPLIER: number;
-  COUNT_SCORE_MULTIPLIER: number
-  STACK_VALUE_BONUS_MULTIPLIER: number
-  SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number
-  VERSION: number
+  STACK_VALUE_BONUS_MULTIPLIER: number;
+  VERSION: number;
+
+  STACK_VALUE_BONUS = 15;
+  EDGE_PENALTY = 1;
+  CORNER_PENALTY = 2;
+  LARGEST_STACK_BONUS = 1;
 
   public getGameStateScore(
     gameState: typeof gameBoardState,
@@ -69,9 +72,6 @@ export default class EvaluationFactory {
     }
 
     let score = 0;
-
-
-
 
     const playerOneTOTTScore = this.getPlayersScore(
       TOTT,
@@ -123,15 +123,17 @@ export default class EvaluationFactory {
 
     if (debug) {
       console.log(
-        `Total score for maximizing player: ${playerToMaximize === PLAYER_ONE
-          ? playerOneTotalScore
-          : playerTwoTotalScore
+        `Total score for maximizing player: ${
+          playerToMaximize === PLAYER_ONE
+            ? playerOneTotalScore
+            : playerTwoTotalScore
         }`
       );
       console.log(
-        `Total score for minimizing player: ${playerToMaximize === PLAYER_ONE
-          ? playerTwoTotalScore
-          : playerOneTotalScore
+        `Total score for minimizing player: ${
+          playerToMaximize === PLAYER_ONE
+            ? playerTwoTotalScore
+            : playerOneTotalScore
         }`
       );
       console.log(`Score for game state: ${score}`);
@@ -155,7 +157,7 @@ export default class EvaluationFactory {
       stacksOnEdge,
       stacksOnCorner,
       stackValue,
-      stacks
+      stacks,
     } = pieceMetadata;
 
     const otherPlayer = player === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
@@ -175,10 +177,9 @@ export default class EvaluationFactory {
       largestStackSize,
       opponentsLargestStackSize
     );
-    const scoreForStacksThreatened = this.getScoreForStacksThreatened(
-      stacksThreatened,
-      pieceType
-    ) * this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER
+    const scoreForStacksThreatened =
+      this.getScoreForStacksThreatened(stacksThreatened, pieceType) *
+      this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER;
     const scoreForEdgesAndCorners = this.getScoreForEdgesAndCorners(
       stacksOnEdge,
       stacksOnCorner
@@ -188,20 +189,23 @@ export default class EvaluationFactory {
       count
     );
 
-    const scoreForStacks = this.getScoreForStacks(count, stackValue) * this.STACK_VALUE_BONUS_MULTIPLIER
-    const countScore = this.getCountScore(count) * this.COUNT_SCORE_MULTIPLIER
-    const stackSizeScore = this.getStacksScore(stacks) * this.STACK_SIZE_SCORE_MULTIPLIER
+    const scoreForStacks =
+      this.getScoreForStacks(count, stackValue) *
+      this.STACK_VALUE_BONUS_MULTIPLIER;
+    const countScore = this.getCountScore(count) * this.COUNT_SCORE_MULTIPLIER;
+    const stackSizeScore =
+      this.getStacksScore(stacks) * this.STACK_SIZE_SCORE_MULTIPLIER;
 
-    const materialScore = countScore * stackSizeScore
+    const materialScore = countScore * stackSizeScore;
 
     let scoreForPlayer =
       scoreForHighestStack +
       scoreForStacksThreatened +
       // scoreForPieceMaterialPower
       scoreForStacks +
-      materialScore
+      materialScore;
 
-    debugger
+    debugger;
 
     if (countScore) {
       console.log(`
@@ -217,7 +221,6 @@ export default class EvaluationFactory {
     return scoreForPlayer;
   }
 
-
   // we value stacks depending on how many of that type are on the board
   private getScoreForStacks(numberOfPieces: number, stackSize: number) {
     return (this.STACK_VALUE_BONUS - numberOfPieces) * stackSize;
@@ -227,7 +230,7 @@ export default class EvaluationFactory {
     stacksThreatened: number,
     pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT
   ) {
-    return stacksThreatened
+    return stacksThreatened;
   }
 
   private getScoreForMaterialPower(stackSize: number, count: number) {
@@ -263,44 +266,97 @@ export default class EvaluationFactory {
 
   private getStacksScore(stacks: number[]) {
     return stacks.reduce((total, stack) => {
-      return total + this.getStackSizeScore(stack)
-    }, 0)
+      return total + this.getStackSizeScore(stack);
+    }, 0);
   }
 
   private getStackSizeScore(stackSize: number) {
-
     if (this.VERSION === 1) {
-      return 0
+      return 0;
     }
     if (this.VERSION === 2) {
-
       if (stackSize <= 4) {
-        return Math.pow(stackSize, 3)
+        return Math.pow(stackSize, 3);
       } else {
-        return 64 - Math.pow((stackSize - 4), 2)
+        return 64 - Math.pow(stackSize - 4, 2);
       }
     }
 
-    return 0
+    return 0;
   }
 
   private getCountScore(count: number) {
     if (this.VERSION === 1) {
-      return 0
+      return 0;
     }
     if (this.VERSION === 2) {
       if (count === 1) {
-        return 100
+        return 100;
       }
       if (count > 5) {
-        return 20
+        return 20;
       }
-      return 100 / (count + 1)
+      return 100 / (count + 1);
     }
 
-    return 0
+    return 0;
   }
 
+  private getGameStateMetadata(gameState: typeof gameBoardState) {
+    const player1Stacks = {
+      [TOTT]: [] as number[],
+      [TZARRA]: [] as number[],
+      [TZAAR]: [] as number[],
+    };
+    const player2Stacks = {
+      [TOTT]: [] as number[],
+      [TZARRA]: [] as number[],
+      [TZAAR]: [] as number[],
+    };
+    const player1StacksOnEdge: number[] = [];
+    const player1StacksOnCorner: number[] = [];
+    const player2StacksOnEdge: number[] = [];
+    const player2StacksOnCorner: number[] = [];
+
+    gameState.map((piece, coordinate) => {
+      if (piece && piece.type) {
+        const { ownedBy, type, stackSize } = piece;
+        // @ts-expect-error fix
+        const isEdgePiece = EDGE_COORDINATES.includes(coordinate);
+        // @ts-expect-error fix
+        const isCornerPiece = CORNER_COORDINATES.includes(coordinate);
+
+        if (ownedBy === PLAYER_ONE) {
+          player1Stacks[type].push(stackSize);
+          if (isEdgePiece) {
+            player1StacksOnEdge.push(stackSize);
+          }
+          if (isCornerPiece) {
+            player1StacksOnCorner.push(stackSize);
+          }
+        }
+
+        if (ownedBy === PLAYER_TWO) {
+          player2Stacks[type].push(stackSize);
+          if (isEdgePiece) {
+            player2StacksOnEdge.push(stackSize);
+          }
+          if (isCornerPiece) {
+            player2StacksOnCorner.push(stackSize);
+          }
+        }
+      }
+    });
+
+    return {
+      player1Stacks,
+      player2Stacks,
+      player1StacksOnEdge,
+      player1StacksOnCorner,
+      player2StacksOnEdge,
+      player2StacksOnCorner,
+    };
+  }
 
   // Convert the board state into something a bit simpler to think about
   // (# of types of pieces, stack sizes, threatening positions, etc)
@@ -323,7 +379,7 @@ export default class EvaluationFactory {
         const stacksOnEdgePath = [ownedBy, type, "stacksOnEdge"];
         const stacksOnCornerPath = [ownedBy, type, "stacksOnCorner"];
         const stackValuePath = [ownedBy, type, "stackValue"];
-        const stacksPath = [ownedBy, type, 'stacks']
+        const stacksPath = [ownedBy, type, "stacks"];
 
         return piecesByPlayer
           .updateIn(countPath, this.addOne)
@@ -331,19 +387,19 @@ export default class EvaluationFactory {
             return stackValue + stackSize;
           })
           .updateIn(stacksPath, (stacks: any) => {
-            return stacks.concat([stackSize])
+            return stacks.concat([stackSize]);
           })
           .updateIn(stacksThreatenedPath, (stacksThreatened: any) => {
-
             if (stackSize > 1) {
               const isPieceThreatened = this.getIsPieceThreatened(
                 coordinate,
                 gameState
               );
-              return isPieceThreatened ? stackSize + stacksThreatened : stacksThreatened
+              return isPieceThreatened
+                ? stackSize + stacksThreatened
+                : stacksThreatened;
             }
-            return stacksThreatened
-
+            return stacksThreatened;
           })
           .updateIn(
             stacksGreaterThanOnePath,

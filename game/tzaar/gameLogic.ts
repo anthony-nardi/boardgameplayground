@@ -33,10 +33,10 @@ import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
 
-let botOne: undefined | BotFactory
-let botTwo: undefined | BotFactory
+let botOne: undefined | BotFactory;
+let botTwo: undefined | BotFactory;
 
-let matchIndex = 0
+let matchIndex = 0;
 
 function moveAI() {
   if (
@@ -196,13 +196,12 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
   if (winner) {
     console.log("WINNER ", winner, message);
     // @ts-expect-error fix
-    const matchesToPlay = setupSurvivalOfTheFittest()
+    const matchesToPlay = setupSurvivalOfTheFittest();
 
     if (matchIndex < Object.keys(matchesToPlay).length) {
-      matchIndex += 1
-      initGame()
+      matchIndex += 1;
+      initGame();
     }
-
   }
 }
 
@@ -212,50 +211,46 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
 
   drawInitialGrid();
 
+  const matchesToPlay = setupSurvivalOfTheFittest(2);
 
-  const matchesToPlay = setupSurvivalOfTheFittest(2)
+  const matchToPlay = Object.keys(matchesToPlay)[matchIndex];
 
-  const matchToPlay = Object.keys(matchesToPlay)[matchIndex]
-
-  const botOneName = matchToPlay.split('|')[0]
-  const botTwoName = matchToPlay.split('|')[1]
+  const botOneName = matchToPlay.split("|")[0];
+  const botTwoName = matchToPlay.split("|")[1];
 
   // @ts-expect-error fix
-  const botOneParameters = matchesToPlay[matchToPlay][botOneName]
+  const botOneParameters = matchesToPlay[matchToPlay][botOneName];
   // @ts-expect-error fix
-  const botTwoParameters = matchesToPlay[matchToPlay][botTwoName]
-  botOne = new BotFactory({
-    VERSION: 1,
-    EDGE_PENALTY: 1,
-    CORNER_PENALTY: 2,
-    LARGEST_STACK_BONUS: 1000,
-    STACK_VALUE_BONUS: 15,
-    COUNT_SCORE_MULTIPLIER: 0,
-    STACK_SIZE_SCORE_MULTIPLIER: 0,
-    STACK_VALUE_BONUS_MULTIPLIER: 1,
-    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 0
-  })
+  const botTwoParameters = matchesToPlay[matchToPlay][botTwoName];
   botTwo = new BotFactory({
-    VERSION: 2,
-    EDGE_PENALTY: 1,
-    CORNER_PENALTY: 2,
-    LARGEST_STACK_BONUS: 0,
-    STACK_VALUE_BONUS: 15,
-    COUNT_SCORE_MULTIPLIER: 0,
+    VERSION: 1,
+    CORNER_PENALTY_MULTIPLIER: 1,
+    COUNT_SCORE_MULTIPLIER: 1,
+    EDGE_PENALTY_MULTIPLIER: 1,
+    LARGEST_STACK_BONUS_MULTIPLIER: 1,
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1,
     STACK_SIZE_SCORE_MULTIPLIER: 1,
     STACK_VALUE_BONUS_MULTIPLIER: 1,
-    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1
-  })
+  });
+  botOne = new BotFactory({
+    VERSION: 2,
+    CORNER_PENALTY_MULTIPLIER: 1,
+    COUNT_SCORE_MULTIPLIER: 1,
+    EDGE_PENALTY_MULTIPLIER: 1,
+    LARGEST_STACK_BONUS_MULTIPLIER: 1,
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1,
+    STACK_SIZE_SCORE_MULTIPLIER: 1,
+    STACK_VALUE_BONUS_MULTIPLIER: 1,
+  });
 
-  console.log(`${botOneName} VERSUS ${botTwoName}`)
-  console.log(`Bot one weights: `, botOneParameters)
-  console.log(`Bot two weights`, botTwoParameters)
-
+  console.log(`${botOneName} VERSUS ${botTwoName}`);
+  console.log(`Bot one weights: `, botOneParameters);
+  console.log(`Bot two weights`, botTwoParameters);
 
   renderInitializingBoard(piecesToSetup, () => {
     drawGameBoardState();
 
-    moveAI()
+    moveAI();
 
     if (
       window.localStorage &&
@@ -269,41 +264,37 @@ function randomNumber(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 function setupSurvivalOfTheFittest(numberOfBots: number) {
-
-  const matches = {}
+  const matches = {};
 
   for (let i = 1; i <= numberOfBots; i++) {
     for (let k = 1; k <= numberOfBots; k++) {
       if (i !== k) {
-        const firstBotName = `BOT_${i}`
-        const secondBotName = `BOT_${k}`
-        const matchKey = `${firstBotName}|${secondBotName}`
-        const inverseKey = `${secondBotName}|${firstBotName}`
+        const firstBotName = `BOT_${i}`;
+        const secondBotName = `BOT_${k}`;
+        const matchKey = `${firstBotName}|${secondBotName}`;
+        const inverseKey = `${secondBotName}|${firstBotName}`;
 
         // @ts-expect-error fix
         if (!matches[inverseKey]) {
           // @ts-expect-error fix
           matches[matchKey] = {
-            winner: 'N/A',
+            winner: "N/A",
             [firstBotName]: {
               EDGE_PENALTY: randomNumber(1, 20),
               CORNER_PENALTY: randomNumber(1, 40),
-              LARGEST_STACK_BONUS: randomNumber(1, 100)
-
+              LARGEST_STACK_BONUS: randomNumber(1, 100),
             },
             [secondBotName]: {
-
               EDGE_PENALTY: randomNumber(1, 20),
               CORNER_PENALTY: randomNumber(1, 40),
-              LARGEST_STACK_BONUS: randomNumber(1, 100)
-            }
-
-          }
+              LARGEST_STACK_BONUS: randomNumber(1, 100),
+            },
+          };
         }
       }
     }
   }
 
-  console.log(matches)
-  return matches
+  console.log(matches);
+  return matches;
 }

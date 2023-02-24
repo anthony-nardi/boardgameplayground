@@ -68,41 +68,21 @@ function applyMoveToGameState(gamestate: any, move: string) {
 
 export default class BotFactory {
   constructor(props: {
-    EDGE_PENALTY: number;
-    CORNER_PENALTY: number;
-    LARGEST_STACK_BONUS: number;
-    STACK_VALUE_BONUS: number;
-    STACK_SIZE_SCORE_MULTIPLIER: number,
-    COUNT_SCORE_MULTIPLIER: number,
-    STACK_VALUE_BONUS_MULTIPLIER: number,
-    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number,
-    VERSION: number
-  } = {
-      EDGE_PENALTY: 5,
-      CORNER_PENALTY: 10,
-      LARGEST_STACK_BONUS: 50,
-      STACK_VALUE_BONUS: 10,
-      STACK_SIZE_SCORE_MULTIPLIER: 1,
-      COUNT_SCORE_MULTIPLIER: 1, STACK_VALUE_BONUS_MULTIPLIER: 1,
-      SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1,
-      VERSION: 1
-    }) {
-    this.evaluation = new EvaluationFactory({
-      EDGE_PENALTY: props.EDGE_PENALTY,
-      CORNER_PENALTY: props.CORNER_PENALTY,
-      LARGEST_STACK_BONUS: props.LARGEST_STACK_BONUS,
-      STACK_VALUE_BONUS: props.STACK_VALUE_BONUS,
-      STACK_SIZE_SCORE_MULTIPLIER: props.STACK_SIZE_SCORE_MULTIPLIER,
-      COUNT_SCORE_MULTIPLIER: props.COUNT_SCORE_MULTIPLIER,
-      SCORE_FOR_STACKS_THREATENED_MULTIPLIER: props.SCORE_FOR_STACKS_THREATENED_MULTIPLIER,
-      STACK_VALUE_BONUS_MULTIPLIER: props.STACK_VALUE_BONUS_MULTIPLIER,
-      VERSION: props.VERSION
-    });
+    CORNER_PENALTY_MULTIPLIER: number;
+    COUNT_SCORE_MULTIPLIER: number;
+    EDGE_PENALTY_MULTIPLIER: number;
+    LARGEST_STACK_BONUS_MULTIPLIER: number;
+    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number;
+    STACK_SIZE_SCORE_MULTIPLIER: number;
+    STACK_VALUE_BONUS_MULTIPLIER: number;
+    VERSION: number;
+  }) {
+    this.evaluation = new EvaluationFactory(props);
 
-    this.VERSION = props.VERSION
+    this.VERSION = props.VERSION;
   }
 
-  private VERSION: number
+  private VERSION: number;
   private evaluation: EvaluationFactory;
 
   public moveAI(moveAiCallback: Function) {
@@ -116,9 +96,17 @@ export default class BotFactory {
       return null;
     }
 
-    const evalFunction = (gameState: typeof gameBoardState, playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO, debug: boolean) => {
-      return this.evaluation.getGameStateScore(gameState, playerToMaximize, debug)
-    }
+    const evalFunction = (
+      gameState: typeof gameBoardState,
+      playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO,
+      debug: boolean
+    ) => {
+      return this.evaluation.getGameStateScore(
+        gameState,
+        playerToMaximize,
+        debug
+      );
+    };
 
     const now = Date.now();
     const opts = new minimaxer.NegamaxOpts();
@@ -200,12 +188,10 @@ export default class BotFactory {
   }
 
   private playMove(move: string, moveAiCallback: Function) {
-
     if (currentTurn === PLAYER_ONE && !isFirstPlayerAI) {
       throw new Error("playMove should not happen for a human player");
     }
     if (currentTurn === PLAYER_TWO && !isSecondPlayerAI) {
-
       throw new Error("playMove should not happen for a human player");
     }
     if (
