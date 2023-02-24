@@ -65,50 +65,50 @@ export default class EvaluationFactory {
       return winner !== playerToMaximize ? -Infinity : Infinity;
     }
 
-    const scoringMap = this.buildScoringMap(gameState);
-
-    if (debug) {
-      console.log(scoringMap.toJS());
-    }
+    // const scoringMap = this.buildScoringMap(gameState);
+    const gameMetadata = this.getGameStateMetadata(gameState);
 
     let score = 0;
 
-    const playerOneTOTTScore = this.getPlayersScore(
-      TOTT,
-      PLAYER_ONE,
-      scoringMap,
-      debug
-    );
-    const playerOneTZARRAScore = this.getPlayersScore(
-      TZARRA,
-      PLAYER_ONE,
-      scoringMap,
-      debug
-    );
-    const playerOneTZAARScore = this.getPlayersScore(
-      TZAAR,
-      PLAYER_ONE,
-      scoringMap,
-      debug
-    );
-    const playerTwoTOTTScore = this.getPlayersScore(
-      TOTT,
-      PLAYER_TWO,
-      scoringMap,
-      debug
-    );
-    const playerTwoTZARRAScore = this.getPlayersScore(
-      TZARRA,
-      PLAYER_TWO,
-      scoringMap,
-      debug
-    );
-    const playerTwoTZAARScore = this.getPlayersScore(
-      TZAAR,
-      PLAYER_TWO,
-      scoringMap,
-      debug
-    );
+    const playerOneTotalScore = this.getTotalScore(gameMetadata, PLAYER_ONE);
+    const playerOneTotalScore = this.getTotalScore(gameMetadata, PLAYER_ONE);
+
+    // const playerOneTOTTScore = this.getPlayersScore(
+    //   TOTT,
+    //   PLAYER_ONE,
+    //   scoringMap,
+    //   debug
+    // );
+    // const playerOneTZARRAScore = this.getPlayersScore(
+    //   TZARRA,
+    //   PLAYER_ONE,
+    //   scoringMap,
+    //   debug
+    // );
+    // const playerOneTZAARScore = this.getPlayersScore(
+    //   TZAAR,
+    //   PLAYER_ONE,
+    //   scoringMap,
+    //   debug
+    // );
+    // const playerTwoTOTTScore = this.getPlayersScore(
+    //   TOTT,
+    //   PLAYER_TWO,
+    //   scoringMap,
+    //   debug
+    // );
+    // const playerTwoTZARRAScore = this.getPlayersScore(
+    //   TZARRA,
+    //   PLAYER_TWO,
+    //   scoringMap,
+    //   debug
+    // );
+    // const playerTwoTZAARScore = this.getPlayersScore(
+    //   TZAAR,
+    //   PLAYER_TWO,
+    //   scoringMap,
+    //   debug
+    // );
 
     const playerOneTotalScore =
       playerOneTOTTScore + playerOneTZARRAScore + playerOneTZAARScore;
@@ -141,6 +141,26 @@ export default class EvaluationFactory {
 
     return score;
   }
+
+  private getTotalScore(
+    gameMetadata: {
+      player1Stacks: {
+        TOTT: number[];
+        TZARRA: number[];
+        TZAAR: number[];
+      };
+      player2Stacks: {
+        TOTT: number[];
+        TZARRA: number[];
+        TZAAR: number[];
+      };
+      player1StacksOnEdge: number[];
+      player1StacksOnCorner: number[];
+      player2StacksOnEdge: number[];
+      player2StacksOnCorner: number[];
+    },
+    player: typeof PLAYER_ONE | typeof PLAYER_TWO
+  ) {}
 
   private getPlayersScore(
     pieceType: PlayerPieces,
