@@ -71,49 +71,7 @@ export default class EvaluationFactory {
     let score = 0;
 
     const playerOneTotalScore = this.getTotalScore(gameMetadata, PLAYER_ONE);
-    const playerOneTotalScore = this.getTotalScore(gameMetadata, PLAYER_ONE);
-
-    // const playerOneTOTTScore = this.getPlayersScore(
-    //   TOTT,
-    //   PLAYER_ONE,
-    //   scoringMap,
-    //   debug
-    // );
-    // const playerOneTZARRAScore = this.getPlayersScore(
-    //   TZARRA,
-    //   PLAYER_ONE,
-    //   scoringMap,
-    //   debug
-    // );
-    // const playerOneTZAARScore = this.getPlayersScore(
-    //   TZAAR,
-    //   PLAYER_ONE,
-    //   scoringMap,
-    //   debug
-    // );
-    // const playerTwoTOTTScore = this.getPlayersScore(
-    //   TOTT,
-    //   PLAYER_TWO,
-    //   scoringMap,
-    //   debug
-    // );
-    // const playerTwoTZARRAScore = this.getPlayersScore(
-    //   TZARRA,
-    //   PLAYER_TWO,
-    //   scoringMap,
-    //   debug
-    // );
-    // const playerTwoTZAARScore = this.getPlayersScore(
-    //   TZAAR,
-    //   PLAYER_TWO,
-    //   scoringMap,
-    //   debug
-    // );
-
-    const playerOneTotalScore =
-      playerOneTOTTScore + playerOneTZARRAScore + playerOneTZAARScore;
-    const playerTwoTotalScore =
-      playerTwoTOTTScore + playerTwoTZARRAScore + playerTwoTZAARScore;
+    const playerTwoTotalScore = this.getTotalScore(gameMetadata, PLAYER_TWO);
 
     if (playerToMaximize === PLAYER_ONE) {
       score = playerOneTotalScore - playerTwoTotalScore;
@@ -160,7 +118,53 @@ export default class EvaluationFactory {
       player2StacksOnCorner: number[];
     },
     player: typeof PLAYER_ONE | typeof PLAYER_TWO
-  ) {}
+  ) {
+    const key = player === PLAYER_ONE ? "player1Stacks" : "player2Stacks";
+
+    let stacksOnEdgeScore = gameMetadata[`${key}OnEdge`].reduce(
+      (total, stackSize) => {
+        return stackSize * this.EDGE_PENALTY + total;
+      },
+      0
+    );
+    let stacksOnCornerScore = gameMetadata[`${key}OnCorner`].reduce(
+      (total, stackSize) => {
+        return stackSize * this.CORNER_PENALTY + total;
+      },
+      0
+    );
+
+    let tottScore = gameMetadata[key].TOTT.reduce((total, stackSize) => {
+      return (
+        total + this.getScoreForStacks(gameMetadata[key].TOTT.length, stackSize)
+      );
+    });
+    let tzaaraScore = gameMetadata[key].TZARRA.reduce((total, stackSize) => {
+      return (
+        total +
+        this.getScoreForStacks(gameMetadata[key].TZARRA.length, stackSize)
+      );
+    });
+    let tzaarScore = gameMetadata[key].TZAAR.reduce((total, stackSize) => {
+      return (
+        total +
+        this.getScoreForStacks(gameMetadata[key].TZAAR.length, stackSize)
+      );
+    });
+    stacksOnEdgeScore = stacksOnEdgeScore * this.EDGE_PENALTY_MULTIPLIER;
+    stacksOnCornerScore = stacksOnCornerScore * this.CORNER_PENALTY_MULTIPLIER;
+    tottScore = tottScore * this.STACK_VALUE_BONUS_MULTIPLIER;
+    tzaaraScore = tzaaraScore * this.STACK_VALUE_BONUS_MULTIPLIER;
+    tzaarScore = tzaarScore * this.STACK_VALUE_BONUS_MULTIPLIER;
+
+    return (
+      stacksOnEdgeScore +
+      stacksOnCornerScore +
+      tottScore +
+      tzaaraScore +
+      tzaarScore
+    );
+  }
 
   private getPlayersScore(
     pieceType: PlayerPieces,
