@@ -125,13 +125,15 @@ export default class BotFactory {
     //   `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
     // );
     opts.depth =
-      allPossibleStatesAfterTurn.length < 400 && !isVeryFirstTurn ? 2 : 1;
-
+      allPossibleStatesAfterTurn.length < 2500 && !isVeryFirstTurn ? 2 : 1;
+    // opts.expireTime = 5000;
     opts.method = 0;
+    // opts.method = 3;
     opts.pruning = 1;
     opts.sortMethod = 0;
     opts.genBased = false;
     opts.optimal = false;
+    // opts.timeout = 10000;
     // console.log("DEPTH is " + opts.depth);
 
     let aim = 1;
@@ -348,8 +350,11 @@ export default class BotFactory {
       move
     );
 
-    const winner = getWinner(updatedBoardGameState);
-
+    const winner2 = getWinner(updatedBoardGameState);
+    if (winner2) {
+      console.log("HMMM");
+    }
+    const winner = false;
     const nodeType = winner ? 2 : 1;
 
     const childNode = new minimaxer.Node(

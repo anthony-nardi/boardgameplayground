@@ -1,4 +1,3 @@
-import { RecordOf } from "immutable";
 import {
   TZAAR,
   TOTT,
@@ -11,11 +10,6 @@ import {
 import { gameBoardState } from "./gameState";
 import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
 import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
-import {
-  scoringMapRecord,
-  PieceRecordProps,
-  ScoringMapProps,
-} from "./scoringMap";
 import { getWinner } from "./evaluationHelpers";
 
 export default class EvaluationFactory {
@@ -50,8 +44,8 @@ export default class EvaluationFactory {
   VERSION: number;
 
   STACK_VALUE_BONUS = 15;
-  EDGE_PENALTY = 1;
-  CORNER_PENALTY = 2;
+  EDGE_PENALTY = -1;
+  CORNER_PENALTY = -2;
   LARGEST_STACK_BONUS = 1;
 
   public getGameStateScore(
@@ -156,6 +150,9 @@ export default class EvaluationFactory {
     tottScore = tottScore * this.STACK_VALUE_BONUS_MULTIPLIER;
     tzaaraScore = tzaaraScore * this.STACK_VALUE_BONUS_MULTIPLIER;
     tzaarScore = tzaarScore * this.STACK_VALUE_BONUS_MULTIPLIER;
+    if (stacksOnEdgeScore > 0) {
+      debugger;
+    }
 
     return (
       stacksOnEdgeScore +
@@ -166,84 +163,84 @@ export default class EvaluationFactory {
     );
   }
 
-  private getPlayersScore(
-    pieceType: PlayerPieces,
-    player: Player,
-    scoringMap: RecordOf<ScoringMapProps>,
-    debug = true
-  ) {
-    const pieceMetadata: RecordOf<PieceRecordProps> =
-      scoringMap[player][pieceType];
-    const {
-      count,
-      largestStackSize,
-      stacksThreatened,
-      stacksOnEdge,
-      stacksOnCorner,
-      stackValue,
-      stacks,
-    } = pieceMetadata;
+  // private getPlayersScore(
+  //   pieceType: PlayerPieces,
+  //   player: Player,
+  //   scoringMap: RecordOf<ScoringMapProps>,
+  //   debug = true
+  // ) {
+  //   const pieceMetadata: RecordOf<PieceRecordProps> =
+  //     scoringMap[player][pieceType];
+  //   const {
+  //     count,
+  //     largestStackSize,
+  //     stacksThreatened,
+  //     stacksOnEdge,
+  //     stacksOnCorner,
+  //     stackValue,
+  //     stacks,
+  //   } = pieceMetadata;
 
-    const otherPlayer = player === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+  //   const otherPlayer = player === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
 
-    const otherPlayerPieces = scoringMap[otherPlayer];
-    const otherPlayerTOTTs = otherPlayerPieces.TOTT;
-    const otherPlayerTZARRAs = otherPlayerPieces.TZARRA;
-    const otherPlayerTZAARs = otherPlayerPieces.TZAAR;
+  //   const otherPlayerPieces = scoringMap[otherPlayer];
+  //   const otherPlayerTOTTs = otherPlayerPieces.TOTT;
+  //   const otherPlayerTZARRAs = otherPlayerPieces.TZARRA;
+  //   const otherPlayerTZAARs = otherPlayerPieces.TZAAR;
 
-    const opponentsLargestStackSize = Math.max(
-      otherPlayerTOTTs.largestStackSize,
-      otherPlayerTZARRAs.largestStackSize,
-      otherPlayerTZAARs.largestStackSize
-    );
+  //   const opponentsLargestStackSize = Math.max(
+  //     otherPlayerTOTTs.largestStackSize,
+  //     otherPlayerTZARRAs.largestStackSize,
+  //     otherPlayerTZAARs.largestStackSize
+  //   );
 
-    const scoreForHighestStack = this.getScoreForHighestStack(
-      largestStackSize,
-      opponentsLargestStackSize
-    );
-    const scoreForStacksThreatened =
-      this.getScoreForStacksThreatened(stacksThreatened, pieceType) *
-      this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER;
-    const scoreForEdgesAndCorners = this.getScoreForEdgesAndCorners(
-      stacksOnEdge,
-      stacksOnCorner
-    );
-    const scoreForPieceMaterialPower = this.getScoreForMaterialPower(
-      stackValue,
-      count
-    );
+  //   const scoreForHighestStack = this.getScoreForHighestStack(
+  //     largestStackSize,
+  //     opponentsLargestStackSize
+  //   );
+  //   const scoreForStacksThreatened =
+  //     this.getScoreForStacksThreatened(stacksThreatened, pieceType) *
+  //     this.SCORE_FOR_STACKS_THREATENED_MULTIPLIER;
+  //   const scoreForEdgesAndCorners = this.getScoreForEdgesAndCorners(
+  //     stacksOnEdge,
+  //     stacksOnCorner
+  //   );
+  //   const scoreForPieceMaterialPower = this.getScoreForMaterialPower(
+  //     stackValue,
+  //     count
+  //   );
 
-    const scoreForStacks =
-      this.getScoreForStacks(count, stackValue) *
-      this.STACK_VALUE_BONUS_MULTIPLIER;
-    const countScore = this.getCountScore(count) * this.COUNT_SCORE_MULTIPLIER;
-    const stackSizeScore =
-      this.getStacksScore(stacks) * this.STACK_SIZE_SCORE_MULTIPLIER;
+  //   const scoreForStacks =
+  //     this.getScoreForStacks(count, stackValue) *
+  //     this.STACK_VALUE_BONUS_MULTIPLIER;
+  //   const countScore = this.getCountScore(count) * this.COUNT_SCORE_MULTIPLIER;
+  //   const stackSizeScore =
+  //     this.getStacksScore(stacks) * this.STACK_SIZE_SCORE_MULTIPLIER;
 
-    const materialScore = countScore * stackSizeScore;
+  //   const materialScore = countScore * stackSizeScore;
 
-    let scoreForPlayer =
-      scoreForHighestStack +
-      scoreForStacksThreatened +
-      // scoreForPieceMaterialPower
-      scoreForStacks +
-      materialScore;
+  //   let scoreForPlayer =
+  //     scoreForHighestStack +
+  //     scoreForStacksThreatened +
+  //     // scoreForPieceMaterialPower
+  //     scoreForStacks +
+  //     materialScore;
 
-    debugger;
+  //   debugger;
 
-    if (countScore) {
-      console.log(`
-      ${player} score breakdown for ${pieceType}:
-      materialScore: ${materialScore}
-      scoreForHighestStack ${scoreForHighestStack}
-      scoreForStacksThreatened ${scoreForStacksThreatened}
-      scoreForEdgedAndCorners ${scoreForEdgesAndCorners}
-      totalScore:  ${scoreForPlayer}
-    `);
-    }
+  //   if (countScore) {
+  //     console.log(`
+  //     ${player} score breakdown for ${pieceType}:
+  //     materialScore: ${materialScore}
+  //     scoreForHighestStack ${scoreForHighestStack}
+  //     scoreForStacksThreatened ${scoreForStacksThreatened}
+  //     scoreForEdgedAndCorners ${scoreForEdgesAndCorners}
+  //     totalScore:  ${scoreForPlayer}
+  //   `);
+  //   }
 
-    return scoreForPlayer;
-  }
+  //   return scoreForPlayer;
+  // }
 
   // we value stacks depending on how many of that type are on the board
   private getScoreForStacks(numberOfPieces: number, stackSize: number) {
@@ -380,73 +377,5 @@ export default class EvaluationFactory {
       player2StacksOnEdge,
       player2StacksOnCorner,
     };
-  }
-
-  // Convert the board state into something a bit simpler to think about
-  // (# of types of pieces, stack sizes, threatening positions, etc)
-  private buildScoringMap(gameState: typeof gameBoardState) {
-    const scoringMap = gameState.reduce(
-      (piecesByPlayer, piece, coordinate: ValidCoordinate) => {
-        if (!piece) {
-          return piecesByPlayer;
-        }
-
-        const { ownedBy, type, stackSize } = piece;
-        const countPath = [ownedBy, type, "count"];
-        const stacksThreatenedPath = [ownedBy, type, "stacksThreatened"];
-        const stacksGreaterThanOnePath = [
-          ownedBy,
-          type,
-          "stacksGreaterThanOne",
-        ];
-        const largestStackSizePath = [ownedBy, type, "largestStackSize"];
-        const stacksOnEdgePath = [ownedBy, type, "stacksOnEdge"];
-        const stacksOnCornerPath = [ownedBy, type, "stacksOnCorner"];
-        const stackValuePath = [ownedBy, type, "stackValue"];
-        const stacksPath = [ownedBy, type, "stacks"];
-
-        return piecesByPlayer
-          .updateIn(countPath, this.addOne)
-          .updateIn(stackValuePath, (stackValue: any) => {
-            return stackValue + stackSize;
-          })
-          .updateIn(stacksPath, (stacks: any) => {
-            return stacks.concat([stackSize]);
-          })
-          .updateIn(stacksThreatenedPath, (stacksThreatened: any) => {
-            if (stackSize > 1) {
-              const isPieceThreatened = this.getIsPieceThreatened(
-                coordinate,
-                gameState
-              );
-              return isPieceThreatened
-                ? stackSize + stacksThreatened
-                : stacksThreatened;
-            }
-            return stacksThreatened;
-          })
-          .updateIn(
-            stacksGreaterThanOnePath,
-            (stacks: any) => stacks + (stackSize > 1 ? 1 : 0)
-          )
-          .updateIn(largestStackSizePath, (largestStackSize: any) =>
-            Math.max(largestStackSize, Number(stackSize))
-          )
-          .updateIn(stacksOnEdgePath, (stacksOnEdge: any) => {
-            const isStackOnEdge = // @ts-expect-error fix
-              stackSize > 1 && EDGE_COORDINATES.includes(coordinate);
-
-            return isStackOnEdge ? stacksOnEdge + 1 : stacksOnEdge;
-          })
-          .updateIn(stacksOnCornerPath, (stacksOnCorner: any) => {
-            const isStackOnCorner = // @ts-expect-error fix
-              stackSize > 1 && CORNER_COORDINATES.includes(coordinate);
-            return isStackOnCorner ? stacksOnCorner + 1 : stacksOnCorner;
-          });
-      },
-      new scoringMapRecord()
-    );
-
-    return scoringMap;
   }
 }
