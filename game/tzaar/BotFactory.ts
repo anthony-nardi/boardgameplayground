@@ -127,7 +127,7 @@ export default class BotFactory {
     opts.depth =
       allPossibleStatesAfterTurn.length < 2500 && !isVeryFirstTurn ? 2 : 1;
     // opts.expireTime = 5000;
-    opts.method = 0;
+    opts.method = 2;
     // opts.method = 3;
     opts.pruning = 1;
     opts.sortMethod = 0;
@@ -349,12 +349,9 @@ export default class BotFactory {
       gamestateToAnalyze,
       move
     );
+    // TODO: getWinner uses current turn, which seems wrong when analyzing a child
+    const winner = getWinner(updatedBoardGameState);
 
-    const winner2 = getWinner(updatedBoardGameState);
-    if (winner2) {
-      console.log("HMMM");
-    }
-    const winner = false;
     const nodeType = winner ? 2 : 1;
 
     const childNode = new minimaxer.Node(

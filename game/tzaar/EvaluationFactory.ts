@@ -75,17 +75,15 @@ export default class EvaluationFactory {
 
     if (debug) {
       console.log(
-        `Total score for maximizing player: ${
-          playerToMaximize === PLAYER_ONE
-            ? playerOneTotalScore
-            : playerTwoTotalScore
+        `Total score for maximizing player: ${playerToMaximize === PLAYER_ONE
+          ? playerOneTotalScore
+          : playerTwoTotalScore
         }`
       );
       console.log(
-        `Total score for minimizing player: ${
-          playerToMaximize === PLAYER_ONE
-            ? playerTwoTotalScore
-            : playerOneTotalScore
+        `Total score for minimizing player: ${playerToMaximize === PLAYER_ONE
+          ? playerTwoTotalScore
+          : playerOneTotalScore
         }`
       );
       console.log(`Score for game state: ${score}`);
@@ -150,9 +148,7 @@ export default class EvaluationFactory {
     tottScore = tottScore * this.STACK_VALUE_BONUS_MULTIPLIER;
     tzaaraScore = tzaaraScore * this.STACK_VALUE_BONUS_MULTIPLIER;
     tzaarScore = tzaarScore * this.STACK_VALUE_BONUS_MULTIPLIER;
-    if (stacksOnEdgeScore > 0) {
-      debugger;
-    }
+
 
     return (
       stacksOnEdgeScore +

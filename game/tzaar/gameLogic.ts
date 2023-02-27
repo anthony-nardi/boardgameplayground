@@ -22,6 +22,7 @@ import {
   turnPhase,
   isSecondPlayerAI,
   isFirstPlayerAI,
+  setInitialGameState,
 } from "./gameState";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
@@ -32,6 +33,7 @@ import {
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
+import { secondQuestionableMoveByAI } from "./tests/QuestionableMoves";
 
 let botOne: undefined | BotFactory;
 let botTwo: undefined | BotFactory;
@@ -45,6 +47,11 @@ function moveAI() {
   ) {
     return;
   }
+
+  if (getWinner(gameBoardState, true)) {
+    return null
+  }
+
 
   if (currentTurn === PLAYER_ONE) {
     botOne?.moveAI(moveAI);
@@ -206,9 +213,9 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  const piecesToSetup =
-    SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
-
+  // const piecesToSetup =
+  //   SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
+  const piecesToSetup = secondQuestionableMoveByAI()
   drawInitialGrid();
 
   const matchesToPlay = setupSurvivalOfTheFittest(2);
@@ -248,7 +255,11 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   console.log(`Bot two weights`, botTwoParameters);
 
   renderInitializingBoard(piecesToSetup, () => {
+    setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
+
     drawGameBoardState();
+
+
 
     moveAI();
 

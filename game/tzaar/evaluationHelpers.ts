@@ -14,6 +14,47 @@ import { PieceType, Player, ValidCoordinate } from "./types/types";
 import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
 import { scoringMapRecord } from "./scoringMap";
 
+export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
+
+  const playerPieces = {
+    [PLAYER_ONE]: {
+      [TOTT]: false,
+      [TZARRA]: false,
+      [TZAAR]: false,
+      uniquePieces: 0
+    },
+    [PLAYER_TWO]: {
+      [TOTT]: false,
+      [TZARRA]: false,
+      [TZAAR]: false,
+      uniquePieces: 0
+    },
+  }
+
+  gameState.forEach((piece) => {
+    if (piece) {
+      const { ownedBy, type } = piece;
+      // @ts-expect-error fix
+      if (!playerPieces[ownedBy][type]) {
+        // @ts-expect-error fix
+        playerPieces[ownedBy][type] = true
+        // @ts-expect-error fix
+        playerPieces[ownedBy].uniquePieces++
+
+        if (playerPieces[PLAYER_ONE].uniquePieces + playerPieces[PLAYER_TWO].uniquePieces === 6) {
+          return false
+        }
+      }
+    }
+  })
+
+  return {
+    [PLAYER_ONE]: playerPieces[PLAYER_ONE].uniquePieces === 3,
+    [PLAYER_TWO]: playerPieces[PLAYER_TWO].uniquePieces === 3
+  }
+
+}
+
 export function getPieces(gameState: typeof gameBoardState) {
   return gameState.reduce(
     (piecesByPlayer, piece) => {
@@ -61,55 +102,47 @@ export function getAllPlayerPieceCoordinatesByType(
 
 
 export function getWinner(gameState: typeof gameBoardState, beforeTurnStart = false) {
-  const pieceCountsByPlayer = getPieces(gameState);
+  const playersHaveAllPieces = getHasAllThreePieceTypes(gameState)
 
-  const playerOneLost =
-    // @ts-expect-error fix
-    !pieceCountsByPlayer.getIn([PLAYER_ONE, TOTT]).size ||
-    // @ts-expect-error fix
-    !pieceCountsByPlayer.getIn([PLAYER_ONE, TZARRA]).size ||
-    // @ts-expect-error fix
-    !pieceCountsByPlayer.getIn([PLAYER_ONE, TZAAR]).size;
-
-  const playerTwoLost =
-    // @ts-expect-error fix
-    !pieceCountsByPlayer.getIn([PLAYER_TWO, TOTT]).size ||
-    // @ts-expect-error fix
-    !pieceCountsByPlayer.getIn([PLAYER_TWO, TZARRA]).size ||
-    // @ts-expect-error fix
-    !pieceCountsByPlayer.getIn([PLAYER_TWO, TZAAR]).size;
-
-  if (playerOneLost) {
+  if (!playersHaveAllPieces[PLAYER_ONE]) {
     return PLAYER_TWO;
   }
-  if (playerTwoLost) {
+  if (!playersHaveAllPieces[PLAYER_TWO]) {
     return PLAYER_ONE;
   }
 
   if (beforeTurnStart) {
-    // TODO: Dont think we need this as it was incorrect all along!
-    const possibleCaptures = getAllPlayerPieceCoordinates(
+    let gameWillContinue = false;
+
+    getAllPlayerPieceCoordinates(
       gameState,
       currentTurn
-    ).map((fromCoordinate) => {
-      return getValidCaptures(fromCoordinate, gameState);
+    ).forEach((fromCoordinate) => {
+      if (getValidCaptures(fromCoordinate, gameState).size) {
+        gameWillContinue = true;
+        return false
+      }
     });
-    // @ts-expect-error fix
-    if (!possibleCaptures.find((possibleCapture) => possibleCapture.size)) {
+    if (!gameWillContinue) {
       return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
     }
   } else {
-    const invertedCaptures = getAllPlayerPieceCoordinates(
+
+    let gameWillContinue = false;
+
+    getAllPlayerPieceCoordinates(
       gameState,
       currentTurn
-    ).map((fromCoordinate) => {
-      return getInvertedValidCaptures(fromCoordinate, gameState);
+    ).forEach((fromCoordinate) => {
+      if (getInvertedValidCaptures(fromCoordinate, gameState).size) {
+        gameWillContinue = true
+        return false
+      }
     });
 
+
     if (
-      !invertedCaptures.find((possibleCapture) =>
-        Boolean(possibleCapture.size)
-      )
+      !gameWillContinue
     ) {
       return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
     }

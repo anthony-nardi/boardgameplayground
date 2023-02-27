@@ -32,7 +32,7 @@ export function logGameState() {
 }
 
 export function setInitialGameState(
-  board: typeof gameBoardState,
+  board: typeof gameBoardState | null,
   turn: typeof PLAYER_ONE | typeof PLAYER_TWO = PLAYER_ONE,
   phase:
     | typeof TURN_PHASES.CAPTURE
