@@ -121,11 +121,11 @@ export default class BotFactory {
       .sort((a, b) => (a.length < b.length ? -1 : 1))
       .toJS();
 
-    // console.log(
-    //   `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
-    // );
+    console.log(
+      `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
+    );
     opts.depth =
-      allPossibleStatesAfterTurn.length < 2500 && !isVeryFirstTurn ? 2 : 1;
+      allPossibleStatesAfterTurn.length < 702 && !isVeryFirstTurn ? 2 : 1;
     // opts.expireTime = 5000;
     opts.method = 2;
     // opts.method = 3;

@@ -391,16 +391,19 @@ function getNextInvertedValidCapture(
     // Not a space that we can play on
     if (!isPlayableSpace(coordinateToCheck)) {
       nextMove = false;
+      continue;
     }
 
     // This space is empty so we can continue
     else if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
       nextMove = undefined;
+      continue;
     }
 
     // First piece we encounter can't be captured
     else if (!canCapture(coordinateToCheck, toCoordinate, gameState)) {
       nextMove = false;
+      continue;
     }
     // Finally a piece we can capture
     else {

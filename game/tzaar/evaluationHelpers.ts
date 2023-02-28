@@ -5,31 +5,27 @@ import {
   TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
-  CORNER_COORDINATES,
-  EDGE_COORDINATES,
   GamePieceRecordProps,
 } from "./constants";
-import { gameBoardState, currentTurn, turnPhase } from "./gameState";
-import { PieceType, Player, ValidCoordinate } from "./types/types";
+import { gameBoardState, currentTurn } from "./gameState";
+import { PieceType, Player } from "./types/types";
 import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
-import { scoringMapRecord } from "./scoringMap";
 
 export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
-
   const playerPieces = {
     [PLAYER_ONE]: {
       [TOTT]: false,
       [TZARRA]: false,
       [TZAAR]: false,
-      uniquePieces: 0
+      uniquePieces: 0,
     },
     [PLAYER_TWO]: {
       [TOTT]: false,
       [TZARRA]: false,
       [TZAAR]: false,
-      uniquePieces: 0
+      uniquePieces: 0,
     },
-  }
+  };
 
   gameState.forEach((piece) => {
     if (piece) {
@@ -37,22 +33,25 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
       // @ts-expect-error fix
       if (!playerPieces[ownedBy][type]) {
         // @ts-expect-error fix
-        playerPieces[ownedBy][type] = true
+        playerPieces[ownedBy][type] = true;
         // @ts-expect-error fix
-        playerPieces[ownedBy].uniquePieces++
+        playerPieces[ownedBy].uniquePieces++;
 
-        if (playerPieces[PLAYER_ONE].uniquePieces + playerPieces[PLAYER_TWO].uniquePieces === 6) {
-          return false
+        if (
+          playerPieces[PLAYER_ONE].uniquePieces +
+            playerPieces[PLAYER_TWO].uniquePieces ===
+          6
+        ) {
+          return false;
         }
       }
     }
-  })
+  });
 
   return {
     [PLAYER_ONE]: playerPieces[PLAYER_ONE].uniquePieces === 3,
-    [PLAYER_TWO]: playerPieces[PLAYER_TWO].uniquePieces === 3
-  }
-
+    [PLAYER_TWO]: playerPieces[PLAYER_TWO].uniquePieces === 3,
+  };
 }
 
 export function getPieces(gameState: typeof gameBoardState) {
@@ -100,9 +99,11 @@ export function getAllPlayerPieceCoordinatesByType(
     .keySeq();
 }
 
-
-export function getWinner(gameState: typeof gameBoardState, beforeTurnStart = false) {
-  const playersHaveAllPieces = getHasAllThreePieceTypes(gameState)
+export function getWinner(
+  gameState: typeof gameBoardState,
+  beforeTurnStart = false
+) {
+  const playersHaveAllPieces = getHasAllThreePieceTypes(gameState);
 
   if (!playersHaveAllPieces[PLAYER_ONE]) {
     return PLAYER_TWO;
@@ -114,97 +115,31 @@ export function getWinner(gameState: typeof gameBoardState, beforeTurnStart = fa
   if (beforeTurnStart) {
     let gameWillContinue = false;
 
-    getAllPlayerPieceCoordinates(
-      gameState,
-      currentTurn
-    ).forEach((fromCoordinate) => {
-      if (getValidCaptures(fromCoordinate, gameState).size) {
-        gameWillContinue = true;
-        return false
+    getAllPlayerPieceCoordinates(gameState, currentTurn).forEach(
+      (fromCoordinate) => {
+        if (getValidCaptures(fromCoordinate, gameState).size) {
+          gameWillContinue = true;
+          return false;
+        }
       }
-    });
+    );
     if (!gameWillContinue) {
       return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
     }
   } else {
-
     let gameWillContinue = false;
 
-    getAllPlayerPieceCoordinates(
-      gameState,
-      currentTurn
-    ).forEach((fromCoordinate) => {
-      if (getInvertedValidCaptures(fromCoordinate, gameState).size) {
-        gameWillContinue = true
-        return false
+    getAllPlayerPieceCoordinates(gameState, currentTurn).forEach(
+      (fromCoordinate) => {
+        if (getInvertedValidCaptures(fromCoordinate, gameState).size) {
+          gameWillContinue = true;
+          return false;
+        }
       }
-    });
+    );
 
-
-    if (
-      !gameWillContinue
-    ) {
+    if (!gameWillContinue) {
       return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
     }
   }
 }
-
- // Convert the board state into something a bit simpler to think about
-  // (# of types of pieces, stack sizes, threatening positions, etc)
-//   private buildScoringMap(gameState: typeof gameBoardState) {
-//   const scoringMap = gameState.reduce(
-//     (piecesByPlayer, piece, coordinate: ValidCoordinate) => {
-//       if (!piece) {
-//         return piecesByPlayer;
-//       }
-
-//       const { ownedBy, type, stackSize } = piece;
-//       const countPath = [ownedBy, type, "count"];
-//       const stacksThreatenedPath = [ownedBy, type, "stacksThreatened"];
-//       const stacksGreaterThanOnePath = [
-//         ownedBy,
-//         type,
-//         "stacksGreaterThanOne",
-//       ];
-//       const largestStackSizePath = [ownedBy, type, "largestStackSize"];
-//       const stacksOnEdgePath = [ownedBy, type, "stacksOnEdge"];
-//       const stacksOnCornerPath = [ownedBy, type, "stacksOnCorner"];
-//       const stackValuePath = [ownedBy, type, "stackValue"];
-
-//       return piecesByPlayer
-//         .updateIn(countPath, addOne)
-//         .updateIn(stackValuePath, (stackValue: any) => {
-//           return stackValue + stackSize;
-//         })
-//         .updateIn(stacksThreatenedPath, (stacksThreatened: any) => {
-//           const isPieceThreatened = getIsPieceThreatened(
-//             coordinate,
-//             gameState
-//           );
-
-//           return isPieceThreatened ? stacksThreatened + 1 : stacksThreatened;
-//         })
-//         .updateIn(
-//           stacksGreaterThanOnePath,
-//           (stacks: any) => stacks + (stackSize > 1 ? 1 : 0)
-//         )
-//         .updateIn(largestStackSizePath, (largestStackSize: any) =>
-//           Math.max(largestStackSize, Number(stackSize))
-//         )
-//         .updateIn(stacksOnEdgePath, (stacksOnEdge: any) => {
-//           const isStackOnEdge = // @ts-expect-error fix
-//             stackSize > 1 && EDGE_COORDINATES.includes(coordinate);
-
-//           return isStackOnEdge ? stacksOnEdge + 1 : stacksOnEdge;
-//         })
-//         .updateIn(stacksOnCornerPath, (stacksOnCorner: any) => {
-//           const isStackOnCorner = // @ts-expect-error fix
-//             stackSize > 1 && CORNER_COORDINATES.includes(coordinate);
-//           return isStackOnCorner ? stacksOnCorner + 1 : stacksOnCorner;
-//         });
-//     },
-//     new scoringMapRecord()
-//   );
-
-//   return scoringMap;
-// }
