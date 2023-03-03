@@ -251,7 +251,7 @@ export function canStack(
   toCoordinate: ValidCoordinate,
   gameState: typeof gameBoardState
 ) {
-  const fromPiece = gameState[(fromCoordinate)];
+  const fromPiece = gameState[fromCoordinate];
   const toPiece = gameState[toCoordinate];
 
   if (!fromPiece || !toPiece) {
@@ -340,14 +340,14 @@ export function getValidCaptures(
   fromCoordinate: ValidCoordinate,
   gameState: typeof gameBoardState
 ) {
-  return List([
+  return [
     getNextValidCapture(fromCoordinate, "w", gameState),
     getNextValidCapture(fromCoordinate, "e", gameState),
     getNextValidCapture(fromCoordinate, "nw", gameState),
     getNextValidCapture(fromCoordinate, "ne", gameState),
     getNextValidCapture(fromCoordinate, "sw", gameState),
     getNextValidCapture(fromCoordinate, "se", gameState),
-  ]).filter((isValidMove) => isValidMove);
+  ].filter(Boolean) as ValidCoordinate[];
 }
 
 export function getAnyCapture(
@@ -361,48 +361,49 @@ export function getAnyCapture(
     getNextValidCapture(fromCoordinate, "ne", gameState) ||
     getNextValidCapture(fromCoordinate, "sw", gameState) ||
     getNextValidCapture(fromCoordinate, "se", gameState)
-  )
+  );
 }
 
 export function getValidStacks(
   fromCoordinate: ValidCoordinate,
   gameState: typeof gameBoardState
 ) {
-  return List([
+  return [
     getNextValidStack(fromCoordinate, "w", gameState),
     getNextValidStack(fromCoordinate, "e", gameState),
     getNextValidStack(fromCoordinate, "nw", gameState),
     getNextValidStack(fromCoordinate, "ne", gameState),
     getNextValidStack(fromCoordinate, "sw", gameState),
     getNextValidStack(fromCoordinate, "se", gameState),
-  ]).filter((isValidMove) => isValidMove);
+  ].filter(Boolean) as ValidCoordinate[];
 }
 
 export function getAnyInvertedValidCaptures(
   toCoordinate: ValidCoordinate,
   gameState: typeof gameBoardState
 ) {
-
-  return (getNextInvertedValidCapture(toCoordinate, "w", gameState) ||
+  return (
+    getNextInvertedValidCapture(toCoordinate, "w", gameState) ||
     getNextInvertedValidCapture(toCoordinate, "e", gameState) ||
     getNextInvertedValidCapture(toCoordinate, "nw", gameState) ||
     getNextInvertedValidCapture(toCoordinate, "ne", gameState) ||
     getNextInvertedValidCapture(toCoordinate, "sw", gameState) ||
-    getNextInvertedValidCapture(toCoordinate, "se", gameState))
+    getNextInvertedValidCapture(toCoordinate, "se", gameState)
+  );
 }
 
 export function getInvertedValidCaptures(
   toCoordinate: ValidCoordinate,
   gameState: typeof gameBoardState
 ) {
-  return List([
+  return [
     getNextInvertedValidCapture(toCoordinate, "w", gameState),
     getNextInvertedValidCapture(toCoordinate, "e", gameState),
     getNextInvertedValidCapture(toCoordinate, "nw", gameState),
     getNextInvertedValidCapture(toCoordinate, "ne", gameState),
     getNextInvertedValidCapture(toCoordinate, "sw", gameState),
     getNextInvertedValidCapture(toCoordinate, "se", gameState),
-  ]).filter((isValidMove) => isValidMove);
+  ].filter(Boolean) as ValidCoordinate[];
 }
 
 function getNextInvertedValidCapture(

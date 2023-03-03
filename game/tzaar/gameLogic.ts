@@ -262,7 +262,7 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
 
     drawGameBoardState();
 
-    const iterations = 1000000
+    const iterations = 1000000;
 
     // console.time(`getGameStateScore iterations: ${iterations}`)
 
