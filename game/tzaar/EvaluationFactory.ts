@@ -6,6 +6,9 @@ import {
   PLAYER_TWO,
   CORNER_COORDINATES,
   EDGE_COORDINATES,
+  EDGE_COORDINATES_AS_MAP,
+  CORNER_COORDINATES_AS_MAP,
+  PLAYABLE_VERTICES
 } from "./constants";
 import { gameBoardState } from "./gameState";
 import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
@@ -51,17 +54,15 @@ export default class EvaluationFactory {
   public getGameStateScore(
     gameState: typeof gameBoardState,
     playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO,
+    winner?: Player,
     debug = true
   ) {
-    const winner = getWinner(gameState);
 
     if (winner) {
       return winner !== playerToMaximize ? -Infinity : Infinity;
     }
 
-    // const scoringMap = this.buildScoringMap(gameState);
     const gameMetadata = this.getGameStateMetadata(gameState);
-
     let score = 0;
 
     const playerOneTotalScore = this.getTotalScore(gameMetadata, PLAYER_ONE);
@@ -73,21 +74,21 @@ export default class EvaluationFactory {
       score = playerTwoTotalScore - playerOneTotalScore;
     }
 
-    if (debug) {
-      console.log(
-        `Total score for maximizing player: ${playerToMaximize === PLAYER_ONE
-          ? playerOneTotalScore
-          : playerTwoTotalScore
-        }`
-      );
-      console.log(
-        `Total score for minimizing player: ${playerToMaximize === PLAYER_ONE
-          ? playerTwoTotalScore
-          : playerOneTotalScore
-        }`
-      );
-      console.log(`Score for game state: ${score}`);
-    }
+    // if (debug) {
+    //   console.log(
+    //     `Total score for maximizing player: ${playerToMaximize === PLAYER_ONE
+    //       ? playerOneTotalScore
+    //       : playerTwoTotalScore
+    //     }`
+    //   );
+    //   console.log(
+    //     `Total score for minimizing player: ${playerToMaximize === PLAYER_ONE
+    //       ? playerTwoTotalScore
+    //       : playerOneTotalScore
+    //     }`
+    //   );
+    //   console.log(`Score for game state: ${score}`);
+    // }
 
     return score;
   }
@@ -112,43 +113,48 @@ export default class EvaluationFactory {
     player: typeof PLAYER_ONE | typeof PLAYER_TWO
   ) {
     const key = player === PLAYER_ONE ? "player1Stacks" : "player2Stacks";
+    const stacksOnEdgeData = gameMetadata[`${key}OnEdge`]
+    const stacksOnCornerData = gameMetadata[`${key}OnCorner`]
+    const tottData = gameMetadata[key].TOTT
+    const tzaaraData = gameMetadata[key].TZARRA
+    const tzaarData = gameMetadata[key].TZAAR
 
-    let stacksOnEdgeScore = gameMetadata[`${key}OnEdge`].reduce(
-      (total, stackSize) => {
-        return stackSize * this.EDGE_PENALTY + total;
-      },
-      0
-    );
-    let stacksOnCornerScore = gameMetadata[`${key}OnCorner`].reduce(
-      (total, stackSize) => {
-        return stackSize * this.CORNER_PENALTY + total;
-      },
-      0
-    );
+    const tottTotal = tottData.length;
+    const tzaaraTotal = tzaaraData.length;
+    const tzaarTotal = tzaarData.length
 
-    let tottScore = gameMetadata[key].TOTT.reduce((total, stackSize) => {
-      return (
-        total + this.getScoreForStacks(gameMetadata[key].TOTT.length, stackSize)
-      );
-    });
-    let tzaaraScore = gameMetadata[key].TZARRA.reduce((total, stackSize) => {
-      return (
-        total +
-        this.getScoreForStacks(gameMetadata[key].TZARRA.length, stackSize)
-      );
-    });
-    let tzaarScore = gameMetadata[key].TZAAR.reduce((total, stackSize) => {
-      return (
-        total +
-        this.getScoreForStacks(gameMetadata[key].TZAAR.length, stackSize)
-      );
-    });
+    let stacksOnEdgeScore = 0;
+    let stacksOnCornerScore = 0;
+    let tottScore = 0;
+    let tzaaraScore = 0;
+    let tzaarScore = 0;
+
+
+    for (let i = 0; i < stacksOnEdgeData.length; i++) {
+      stacksOnEdgeScore += stacksOnEdgeData[i] * this.EDGE_PENALTY
+    }
+
+    for (let i = 0; i < stacksOnCornerData.length; i++) {
+      stacksOnCornerScore += stacksOnCornerData[i] * this.CORNER_PENALTY
+    }
+
+    for (let i = 0; i < tottTotal; i++) {
+      tottScore += this.getScoreForStacks(tottTotal, tottData[i])
+    }
+
+    for (let i = 0; i < tzaaraTotal; i++) {
+      tzaaraScore += this.getScoreForStacks(tzaaraTotal, tzaaraData[i])
+    }
+
+    for (let i = 0; i < tzaarTotal; i++) {
+      tzaarScore += this.getScoreForStacks(tzaarTotal, tzaarData[i])
+    }
+
     stacksOnEdgeScore = stacksOnEdgeScore * this.EDGE_PENALTY_MULTIPLIER;
     stacksOnCornerScore = stacksOnCornerScore * this.CORNER_PENALTY_MULTIPLIER;
     tottScore = tottScore * this.STACK_VALUE_BONUS_MULTIPLIER;
     tzaaraScore = tzaaraScore * this.STACK_VALUE_BONUS_MULTIPLIER;
     tzaarScore = tzaarScore * this.STACK_VALUE_BONUS_MULTIPLIER;
-
 
     return (
       stacksOnEdgeScore +
@@ -335,13 +341,15 @@ export default class EvaluationFactory {
     const player2StacksOnEdge: number[] = [];
     const player2StacksOnCorner: number[] = [];
 
-    gameState.map((piece, coordinate) => {
+    for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
+      const coordinate = PLAYABLE_VERTICES[i]
+      const piece = gameState[coordinate]
+
       if (piece && piece.type) {
         const { ownedBy, type, stackSize } = piece;
-        // @ts-expect-error fix
-        const isEdgePiece = EDGE_COORDINATES.includes(coordinate);
-        // @ts-expect-error fix
-        const isCornerPiece = CORNER_COORDINATES.includes(coordinate);
+        const isEdgePiece = EDGE_COORDINATES_AS_MAP[coordinate];
+        const isCornerPiece = CORNER_COORDINATES_AS_MAP[coordinate];
+
 
         if (ownedBy === PLAYER_ONE) {
           player1Stacks[type].push(stackSize);
@@ -363,7 +371,9 @@ export default class EvaluationFactory {
           }
         }
       }
-    });
+    }
+
+
 
     return {
       player1Stacks,

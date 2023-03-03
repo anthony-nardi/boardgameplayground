@@ -146,7 +146,9 @@ export function drawGamePiece(
 }
 
 export function drawGamePieces() {
-  gameBoardState.forEach(drawStaticGamePiece);
+  Object.keys(gameBoardState).forEach((key) => {
+    drawStaticGamePiece(gameBoardState[key], key)
+  })
 }
 
 export function clearCanvas() {
@@ -207,9 +209,10 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
     let index = 0;
     for (const coordinate in piecesToDraw) {
       const piece = piecesToDraw[coordinate];
-      setNewgameBoardState(
-        gameBoardState.set(coordinate as ValidCoordinate, piece)
-      );
+      gameBoardState[coordinate as ValidCoordinate] = piece
+      // setNewgameBoardState(
+      //   gameBoardState.set(coordinate as ValidCoordinate, piece)
+      // );
       index = index + 1;
     }
 

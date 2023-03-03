@@ -6,10 +6,11 @@ import {
   PLAYER_ONE,
   PLAYER_TWO,
   GamePieceRecordProps,
+  PLAYABLE_VERTICES,
 } from "./constants";
 import { gameBoardState, currentTurn } from "./gameState";
 import { PieceType, Player } from "./types/types";
-import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
+import { getInvertedValidCaptures, getValidCaptures, getAnyInvertedValidCaptures, getAnyCapture } from "./gameBoardHelpers";
 
 export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
   const playerPieces = {
@@ -27,7 +28,8 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
     },
   };
 
-  gameState.forEach((piece) => {
+  for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
+    const piece = gameState[PLAYABLE_VERTICES[i]]
     if (piece) {
       const { ownedBy, type } = piece;
       // @ts-expect-error fix
@@ -39,14 +41,17 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
 
         if (
           playerPieces[PLAYER_ONE].uniquePieces +
-            playerPieces[PLAYER_TWO].uniquePieces ===
+          playerPieces[PLAYER_TWO].uniquePieces ===
           6
         ) {
-          return false;
+          return {
+            [PLAYER_ONE]: playerPieces[PLAYER_ONE].uniquePieces === 3,
+            [PLAYER_TWO]: playerPieces[PLAYER_TWO].uniquePieces === 3,
+          };
         }
       }
     }
-  });
+  }
 
   return {
     [PLAYER_ONE]: playerPieces[PLAYER_ONE].uniquePieces === 3,
@@ -54,39 +59,52 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
   };
 }
 
-export function getPieces(gameState: typeof gameBoardState) {
-  return gameState.reduce(
-    (piecesByPlayer, piece) => {
-      if (!piece) {
-        return piecesByPlayer;
-      }
-      const { ownedBy, type } = piece;
-      return piecesByPlayer.updateIn([ownedBy, type], (pieces: any) =>
-        pieces.push(piece)
-      );
-    },
-    Map({
-      [PLAYER_ONE]: Map({
-        [TOTT]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZARRA]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZAAR]: List<RecordOf<GamePieceRecordProps>>(),
-      }),
-      [PLAYER_TWO]: Map({
-        [TOTT]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZARRA]: List<RecordOf<GamePieceRecordProps>>(),
-        [TZAAR]: List<RecordOf<GamePieceRecordProps>>(),
-      }),
-    })
-  );
-}
-
 export function getAllPlayerPieceCoordinates(
   gameState: typeof gameBoardState,
   player: Player
 ) {
-  return gameState
-    .filter((piece) => piece && piece.ownedBy === player)
-    .keySeq();
+  let coordinates = []
+
+  for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
+    const coordinate = PLAYABLE_VERTICES[i]
+    const piece = gameState[coordinate]
+    if (piece && piece.ownedBy === player) {
+      coordinates.push(coordinate)
+    }
+  }
+
+  return coordinates
+}
+
+export function isAnyPieceCapturable(
+  gameState: typeof gameBoardState,
+  player: Player
+) {
+  for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
+    const coordinate = PLAYABLE_VERTICES[i]
+    const piece = gameState[coordinate]
+    if (piece && piece.ownedBy === player && getAnyInvertedValidCaptures(coordinate, gameState)) {
+      return true
+    }
+
+  }
+  return false
+}
+
+export function canCaptureAnyPiece(
+  gameState: typeof gameBoardState,
+  player: Player
+) {
+
+  for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
+    const coordinate = PLAYABLE_VERTICES[i]
+    const piece = gameState[coordinate]
+    if (piece && piece.ownedBy === player && getAnyCapture(coordinate, gameState)) {
+      return true
+    }
+  }
+
+  return false
 }
 
 export function getAllPlayerPieceCoordinatesByType(
@@ -94,9 +112,18 @@ export function getAllPlayerPieceCoordinatesByType(
   player: Player,
   type: PieceType
 ) {
-  return gameState
-    .filter((piece) => piece && piece.ownedBy === player && piece.type === type)
-    .keySeq();
+
+  let coordinates = []
+
+  for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
+    const coordinate = PLAYABLE_VERTICES[i]
+    const piece = gameState[coordinate];
+    if (piece && piece.ownedBy === player && piece.type === type) {
+      coordinates.push(coordinate)
+    }
+  }
+
+  return coordinates
 }
 
 export function getWinner(
@@ -113,30 +140,13 @@ export function getWinner(
   }
 
   if (beforeTurnStart) {
-    let gameWillContinue = false;
+    const gameWillContinue = canCaptureAnyPiece(gameState, currentTurn)
 
-    getAllPlayerPieceCoordinates(gameState, currentTurn).forEach(
-      (fromCoordinate) => {
-        if (getValidCaptures(fromCoordinate, gameState).size) {
-          gameWillContinue = true;
-          return false;
-        }
-      }
-    );
     if (!gameWillContinue) {
       return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
     }
   } else {
-    let gameWillContinue = false;
-
-    getAllPlayerPieceCoordinates(gameState, currentTurn).forEach(
-      (fromCoordinate) => {
-        if (getInvertedValidCaptures(fromCoordinate, gameState).size) {
-          gameWillContinue = true;
-          return false;
-        }
-      }
-    );
+    const gameWillContinue = isAnyPieceCapturable(gameState, currentTurn)
 
     if (!gameWillContinue) {
       return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
