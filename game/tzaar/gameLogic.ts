@@ -263,24 +263,23 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
 
     drawGameBoardState();
 
-    const iterations = 1000;
+    // const iterations = 10000;
 
-    console.time(`getGameStateScore iterations: ${iterations}`)
+    // console.time(`getGameStateScore iterations: ${iterations}`);
 
-    for (let i = 0; i < iterations; i++) {
-      // getWinner(gameBoardState) // 3.8s per mil
+    // for (let i = 0; i < iterations; i++) {
+    //   // getWinner(gameBoardState) // 3.8s per mil
 
-      // botOne?.evaluation?.getGameStateScore(
-      //   gameBoardState,
-      //   PLAYER_TWO,
-      // ); // 9036.78125 ms per mil
+    //   // botOne?.evaluation?.getGameStateScore(
+    //   //   gameBoardState,
+    //   //   PLAYER_TWO,
+    //   // ); // 9036.78125 ms per mil
 
-      getPossibleMoveSequences(gameBoardState, PLAYER_TWO) //1k 4801.859130859375 ms
+    //   getPossibleMoveSequences(gameBoardState, PLAYER_TWO); //1k 4801.859130859375 ms
+    // }
+    // console.timeEnd(`getGameStateScore iterations: ${iterations}`);
 
-    }
-    console.timeEnd(`getGameStateScore iterations: ${iterations}`)
-
-    // moveAI();
+    moveAI();
 
     if (
       window.localStorage &&

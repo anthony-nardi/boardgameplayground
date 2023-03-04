@@ -277,9 +277,7 @@ export function isValidEmptyCoordinate(
   coordinate: ValidCoordinate,
   gameState: typeof gameBoardState
 ) {
-  return Boolean(
-    PLAYABLE_VERTICES_AS_MAP[coordinate] && !gameState[coordinate]
-  );
+  PLAYABLE_VERTICES_AS_MAP[coordinate] && !gameState[coordinate];
 }
 
 function getNextValidCapture(

@@ -272,20 +272,40 @@ export function getPossibleMoveSequences(
       const currentPieceOnFromCoordinate = gameState[fromCoordinate];
       const currentPieceOnToCoordinate = gameState[coordinateToCapture];
 
-      const fromToKey = fromCoordinate + "->" + coordinateToCapture; //`${fromCoordinate}->${coordinateToCapture}`;
+      const fromToKey = fromCoordinate + "->" + coordinateToCapture;
 
       // apply state
       gameState[fromCoordinate] = null;
       gameState[coordinateToCapture] = currentPieceOnFromCoordinate;
 
-      const allPlayerPiecesAfterFirstCapture = getAllPlayerPieceCoordinates(
-        gameState,
-        turn
+      // for the piece we just moved... lets find ITS moves... (this is optimization so it looks dumb)
+      const validMovesForPieceJustMoved = getValidStacksAndCaptures(
+        coordinateToCapture,
+        gameState
       );
 
-      for (let j = 0; j < allPlayerPiecesAfterFirstCapture.length; j++) {
-        const playerPieceCoordinateAfterCapture =
-          allPlayerPiecesAfterFirstCapture[j];
+      for (
+        let validMoveIndex = 0;
+        validMoveIndex < validMovesForPieceJustMoved.length;
+        validMoveIndex++
+      ) {
+        const moveString =
+          fromToKey +
+          "=>" +
+          coordinateToCapture +
+          "->" +
+          validMovesForPieceJustMoved[validMoveIndex];
+        moves[moveString] = null;
+      }
+
+      for (let j = 0; j < playerCoordinates.length; j++) {
+        const playerPieceCoordinateAfterCapture = playerCoordinates[j];
+
+        // This is where we moved from...
+        if (playerPieceCoordinateAfterCapture === fromCoordinate) {
+          continue;
+        }
+
         const validMoves = getValidStacksAndCaptures(
           playerPieceCoordinateAfterCapture,
           gameState
@@ -302,6 +322,7 @@ export function getPossibleMoveSequences(
             playerPieceCoordinateAfterCapture +
             "->" +
             validMoves[validMoveIndex];
+
           moves[moveString] = null;
         }
 
