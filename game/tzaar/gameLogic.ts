@@ -38,6 +38,7 @@ import {
   secondQuestionableMoveByAI,
 } from "./tests/QuestionableMoves";
 import { Record } from "immutable";
+import { getPossibleMoveSequences } from "./moves";
 
 let botOne: undefined | BotFactory;
 let botTwo: undefined | BotFactory;
@@ -262,22 +263,24 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
 
     drawGameBoardState();
 
-    const iterations = 1000000;
+    const iterations = 1000;
 
-    // console.time(`getGameStateScore iterations: ${iterations}`)
+    console.time(`getGameStateScore iterations: ${iterations}`)
 
-    // for (let i = 0; i < iterations; i++) {
-    //   // getWinner(gameBoardState) // 3.8s per mil
+    for (let i = 0; i < iterations; i++) {
+      // getWinner(gameBoardState) // 3.8s per mil
 
-    //   botOne?.evaluation?.getGameStateScore(
-    //     gameBoardState,
-    //     PLAYER_TWO,
-    //   ); // 9036.78125 ms per mil
+      // botOne?.evaluation?.getGameStateScore(
+      //   gameBoardState,
+      //   PLAYER_TWO,
+      // ); // 9036.78125 ms per mil
 
-    // }
-    // console.timeEnd(`getGameStateScore iterations: ${iterations}`)
+      getPossibleMoveSequences(gameBoardState, PLAYER_TWO) //1k 4801.859130859375 ms
 
-    moveAI();
+    }
+    console.timeEnd(`getGameStateScore iterations: ${iterations}`)
+
+    // moveAI();
 
     if (
       window.localStorage &&

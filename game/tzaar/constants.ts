@@ -107,6 +107,10 @@ export const CORNER_COORDINATES_AS_MAP = CORNER_COORDINATES.reduce((map: any, co
   map[coordinate] = true
   return map
 }, {})
+export const PLAYABLE_VERTICES_AS_MAP = PLAYABLE_VERTICES.reduce((map: any, coordinate) => {
+  map[coordinate] = true
+  return map
+}, {})
 
 export const TZAAR = "TZAAR";
 export const TOTT = "TOTT";

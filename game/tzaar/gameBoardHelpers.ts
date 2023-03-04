@@ -10,6 +10,7 @@ import {
   NUMBER_OF_TZAARS,
   PLAYER_TWO,
   PLAYER_ONE,
+  PLAYABLE_VERTICES_AS_MAP,
 } from "./constants";
 import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
@@ -83,6 +84,17 @@ export function getBoardCoordinatesFromPixelCoordinates(
   return `${xCoord},${yCoord}` as ValidCoordinate;
 }
 
+function memoize(f: Function) {
+  const cache: any = {}
+
+  return (coordinate: ValidCoordinate) => {
+    if (!cache[coordinate]) {
+      cache[coordinate] = f(coordinate)
+    }
+    return cache[coordinate]
+  }
+}
+
 export function goWest(coordinate: ValidCoordinate) {
   let [x, y] = coordinate.split(",");
   return `${+x - 1},${y}` as ValidCoordinate;
@@ -114,7 +126,7 @@ export function goSouthEast(coordinate: ValidCoordinate) {
 }
 
 export function isPlayableSpace(coordinate: ValidCoordinate) {
-  return PLAYABLE_VERTICES.includes(coordinate);
+  return PLAYABLE_VERTICES_AS_MAP[coordinate];
 }
 
 export function setupSymmetricalBoard() {
@@ -266,7 +278,7 @@ export function isValidEmptyCoordinate(
   gameState: typeof gameBoardState
 ) {
   return Boolean(
-    PLAYABLE_VERTICES.includes(coordinate) && !gameState[coordinate]
+    PLAYABLE_VERTICES_AS_MAP[coordinate] && !gameState[coordinate]
   );
 }
 
@@ -303,37 +315,81 @@ function getNextValidCapture(
   return nextMove;
 }
 
+export function getValidStacksAndCaptures(fromCoordinate: ValidCoordinate,
+  gameState: typeof gameBoardState) {
+  return [
+    getNextValidMove(fromCoordinate, "w", gameState),
+    getNextValidMove(fromCoordinate, "e", gameState),
+    getNextValidMove(fromCoordinate, "nw", gameState),
+    getNextValidMove(fromCoordinate, "ne", gameState),
+    getNextValidMove(fromCoordinate, "sw", gameState),
+    getNextValidMove(fromCoordinate, "se", gameState),
+  ].filter(Boolean) as ValidCoordinate[];
+}
+
+function getNextValidMove(
+  fromCoordinate: ValidCoordinate,
+  direction: Direction,
+  gameState: typeof gameBoardState
+) {
+  let coordinateToCheck = fromCoordinate;
+  const directionFunction = nextPiece[direction]
+
+  for (let i = 0; i < 7; i++) {
+    coordinateToCheck = directionFunction(coordinateToCheck);
+
+    // Not a space that we can play on
+    if (!PLAYABLE_VERTICES_AS_MAP[coordinateToCheck]) {
+      return false;
+    }
+
+    // This space is empty so we can continue  
+    if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
+      continue
+    }
+
+    // First piece we encounter can't be stacked
+    if (canStack(fromCoordinate, coordinateToCheck, gameState)) {
+      return coordinateToCheck
+    }
+    if (canCapture(fromCoordinate, coordinateToCheck, gameState)) {
+      return coordinateToCheck
+    }
+  }
+  return false
+}
+
 function getNextValidStack(
   fromCoordinate: ValidCoordinate,
   direction: Direction,
   gameState: typeof gameBoardState
 ) {
-  let nextMove = undefined;
   let coordinateToCheck = fromCoordinate;
+  const directionFunction = nextPiece[direction]
 
-  while (nextMove === undefined) {
-    coordinateToCheck = nextPiece[direction](coordinateToCheck);
+  for (let i = 0; i < 7; i++) {
+    coordinateToCheck = directionFunction(coordinateToCheck);
 
     // Not a space that we can play on
-    if (!isPlayableSpace(coordinateToCheck)) {
-      nextMove = false;
+    if (!PLAYABLE_VERTICES_AS_MAP[coordinateToCheck]) {
+      return false;
     }
 
-    // This space is empty so we can continue
-    else if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
-      nextMove = undefined;
+    // This space is empty so we can continue  
+    if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
+      continue
     }
 
     // First piece we encounter can't be stacked
-    else if (!canStack(fromCoordinate, coordinateToCheck, gameState)) {
-      nextMove = false;
+    if (!canStack(fromCoordinate, coordinateToCheck, gameState)) {
+      return false;
     }
     // Finally a piece we can stack on top of
     else {
-      nextMove = coordinateToCheck;
+      return coordinateToCheck;
     }
   }
-  return nextMove;
+  return false
 }
 
 export function getValidCaptures(
@@ -443,10 +499,10 @@ function getNextInvertedValidCapture(
 }
 
 export const nextPiece = {
-  w: goWest,
-  e: goEast,
-  nw: goNorthWest,
-  ne: goNorthEast,
-  sw: goSouthWest,
-  se: goSouthEast,
+  w: memoize(goWest),
+  e: memoize(goEast),
+  nw: memoize(goNorthWest),
+  ne: memoize(goNorthEast),
+  sw: memoize(goSouthWest),
+  se: memoize(goSouthEast),
 };

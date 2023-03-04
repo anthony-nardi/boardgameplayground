@@ -349,12 +349,11 @@ export default class BotFactory {
       gamestateToAnalyze,
       move
     );
-    // TODO: getWinner uses current turn, which seems wrong when analyzing a child
+
     const winner = getWinner(updatedBoardGameState);
 
     const nodeType = winner ? 2 : 1;
 
-    // TODO: We could pass winner to the node...
     const childNode = new minimaxer.Node(
       nodeType,
       updatedBoardGameState,

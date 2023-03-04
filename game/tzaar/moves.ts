@@ -12,6 +12,7 @@ import {
   getValidCaptures,
   getValidStacks,
   getInvertedValidCaptures,
+  getValidStacksAndCaptures,
 } from "./gameBoardHelpers";
 import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
 
@@ -229,17 +230,20 @@ function getAllCaptureStates(
 
   // For every piece, get all possible captures
   // for each and put the resulting game state into a list.
-  const allCaptureStates: { [key: string]: any } = {};
+  const allCaptureStates = [];
 
   for (let k = 0; k < validCaptures.length; k++) {
     const toCoordinate = validCaptures[k];
     const fromPiece = gameState[fromCoordinate];
-    const nextGameState = Object.assign({}, gameState);
-    nextGameState[fromCoordinate] = null;
-    nextGameState[toCoordinate] = Object.assign({}, fromPiece);
 
-    allCaptureStates[`${fromCoordinate}->${toCoordinate}`] = nextGameState;
+    const stateToApply = [
+      { coordinate: fromCoordinate, state: null },
+      { coordinate: toCoordinate, state: fromPiece },
+    ]
+    allCaptureStates.push(stateToApply)
   }
+
+  return allCaptureStates
 }
 
 export function getPossibleMoveSequences(
@@ -256,72 +260,51 @@ export function getPossibleMoveSequences(
       gameState
     );
 
-    // For every game state resulting from the above process,
-    // get all player pieces and return all game states
-    // for every valid stack you can make
-    // @ts-expect-error fix
-    allStatesAfterFirstCapture.forEach(
-      (stateAfterCapture: any, fromToKey: string) => {
-        const allPlayerPiecesAfterCapture = getAllPlayerPieceCoordinates(
-          stateAfterCapture,
-          turn
-        );
 
-        allPlayerPiecesAfterCapture.forEach(
-          (playerPieceCoordinateAfterCapture) => {
-            const validStacks = getValidStacks(
-              playerPieceCoordinateAfterCapture,
-              stateAfterCapture
-            );
-            const fromPiece =
-              stateAfterCapture[playerPieceCoordinateAfterCapture];
+    for (let y = 0; y < allStatesAfterFirstCapture.length; y++) {
+      const stateAfterCapture = allStatesAfterFirstCapture[y]
+      // save the previous state, apply stack, roll back state...
+      const from = stateAfterCapture[0]
+      const to = stateAfterCapture[1]
+      const previousCoordinateOne = from.coordinate;
+      const previousStateOne = from.state
+      const previousCoordinateTwo = to.coordinate;
+      const previousStateTwo = to.state
+      const fromToKey = `${from.coordinate}->${to.coordinate}`
 
-            // 2nd phase - stack
-            if (validStacks && validStacks.length) {
-              validStacks.forEach((toCoordinate) => {
-                const toPiece = stateAfterCapture[toCoordinate];
-                const updatedStateAfterCapture = Object.assign(
-                  {},
-                  stateAfterCapture
-                );
+      // save state
+      const actualStateOne = gameState[previousCoordinateOne]
+      const actualStateTwo = gameState[previousCoordinateTwo]
 
-                updatedStateAfterCapture[playerPieceCoordinateAfterCapture] =
-                  null;
-                updatedStateAfterCapture[toCoordinate] = Object.assign(
-                  {},
-                  fromPiece
-                );
-                updatedStateAfterCapture[toCoordinate].stackSize =
-                  fromPiece.stackSize + toPiece.stackSize;
+      // apply state
+      gameState[previousCoordinateOne] = previousStateOne;
+      gameState[previousCoordinateTwo] = previousStateTwo
 
-                const sequenceKey = `${fromToKey}=>${playerPieceCoordinateAfterCapture}->${toCoordinate}`;
-                allGameStatesAfterMoveSeq[sequenceKey] =
-                  updatedStateAfterCapture;
-              });
-            }
-            const validSecondTurnCaptures = getValidCaptures(
-              playerPieceCoordinateAfterCapture,
-              stateAfterCapture
-            );
+      const allPlayerPiecesAfterFirstCapture = getAllPlayerPieceCoordinates(
+        gameState,
+        turn
+      );
 
-            // 2nd phase - capture
-            if (validSecondTurnCaptures && validSecondTurnCaptures.length) {
-              validSecondTurnCaptures.forEach((toCoordinate) => {
-                const nextGameState = Object.assign({}, stateAfterCapture);
+      for (let j = 0; j < allPlayerPiecesAfterFirstCapture.length; j++) {
+        const playerPieceCoordinateAfterCapture = allPlayerPiecesAfterFirstCapture[j]
+        const validMoves = getValidStacksAndCaptures(
+          playerPieceCoordinateAfterCapture,
+          gameState
+        )
 
-                nextGameState[playerPieceCoordinateAfterCapture] = null;
-                nextGameState[toCoordinate] = Object.assign({}, fromPiece);
 
-                const sequenceKey = `${fromToKey}=>${playerPieceCoordinateAfterCapture}->${toCoordinate}`;
-                allGameStatesAfterMoveSeq[sequenceKey] = nextGameState;
-              });
-            }
-            // We can just capture, then pass
-            allGameStatesAfterMoveSeq[fromToKey] = stateAfterCapture;
-          }
-        );
+        for (let k = 0; k < validMoves.length; k++) {
+          allGameStatesAfterMoveSeq[`${fromToKey}=>${playerPieceCoordinateAfterCapture}->${validMoves[k]}`] = null
+        }
+
+        // We can just capture, then pass
+        allGameStatesAfterMoveSeq[fromToKey] = null;
       }
-    );
+
+      gameState[previousCoordinateOne] = actualStateOne;
+      gameState[previousCoordinateTwo] = actualStateTwo
+
+    }
   }
 
   return allGameStatesAfterMoveSeq;
