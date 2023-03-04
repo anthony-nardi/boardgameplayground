@@ -239,46 +239,44 @@ function getAllCaptureStates(
     const stateToApply = [
       { coordinate: fromCoordinate, state: null },
       { coordinate: toCoordinate, state: fromPiece },
-    ]
-    allCaptureStates.push(stateToApply)
+    ];
+    allCaptureStates.push(stateToApply);
   }
 
-  return allCaptureStates
+  return allCaptureStates;
 }
 
 export function getPossibleMoveSequences(
   gameState: typeof gameBoardState,
   turn: Player
 ) {
-  const allPlayerPieces = getAllPlayerPieceCoordinates(gameState, turn);
+  const moves: { [key: string]: any } = {};
+  const playerCoordinates = getAllPlayerPieceCoordinates(gameState, turn);
 
-  let allGameStatesAfterMoveSeq: { [key: string]: any } = {};
+  for (
+    let playerCoordinateIndex = 0;
+    playerCoordinateIndex < playerCoordinates.length;
+    playerCoordinateIndex++
+  ) {
+    const fromCoordinate = playerCoordinates[playerCoordinateIndex];
 
-  for (let i = 0; i < allPlayerPieces.length; i++) {
-    const allStatesAfterFirstCapture = getAllCaptureStates(
-      allPlayerPieces[i],
-      gameState
-    );
+    const captureCoordinates = getValidCaptures(fromCoordinate, gameState);
 
+    for (
+      let captureCoordinateIndex = 0;
+      captureCoordinateIndex < captureCoordinates.length;
+      captureCoordinateIndex++
+    ) {
+      const coordinateToCapture = captureCoordinates[captureCoordinateIndex];
 
-    for (let y = 0; y < allStatesAfterFirstCapture.length; y++) {
-      const stateAfterCapture = allStatesAfterFirstCapture[y]
-      // save the previous state, apply stack, roll back state...
-      const from = stateAfterCapture[0]
-      const to = stateAfterCapture[1]
-      const previousCoordinateOne = from.coordinate;
-      const previousStateOne = from.state
-      const previousCoordinateTwo = to.coordinate;
-      const previousStateTwo = to.state
-      const fromToKey = `${from.coordinate}->${to.coordinate}`
+      const currentPieceOnFromCoordinate = gameState[fromCoordinate];
+      const currentPieceOnToCoordinate = gameState[coordinateToCapture];
 
-      // save state
-      const actualStateOne = gameState[previousCoordinateOne]
-      const actualStateTwo = gameState[previousCoordinateTwo]
+      const fromToKey = fromCoordinate + "->" + coordinateToCapture; //`${fromCoordinate}->${coordinateToCapture}`;
 
       // apply state
-      gameState[previousCoordinateOne] = previousStateOne;
-      gameState[previousCoordinateTwo] = previousStateTwo
+      gameState[fromCoordinate] = null;
+      gameState[coordinateToCapture] = currentPieceOnFromCoordinate;
 
       const allPlayerPiecesAfterFirstCapture = getAllPlayerPieceCoordinates(
         gameState,
@@ -286,26 +284,36 @@ export function getPossibleMoveSequences(
       );
 
       for (let j = 0; j < allPlayerPiecesAfterFirstCapture.length; j++) {
-        const playerPieceCoordinateAfterCapture = allPlayerPiecesAfterFirstCapture[j]
+        const playerPieceCoordinateAfterCapture =
+          allPlayerPiecesAfterFirstCapture[j];
         const validMoves = getValidStacksAndCaptures(
           playerPieceCoordinateAfterCapture,
           gameState
-        )
+        );
 
-
-        for (let k = 0; k < validMoves.length; k++) {
-          allGameStatesAfterMoveSeq[`${fromToKey}=>${playerPieceCoordinateAfterCapture}->${validMoves[k]}`] = null
+        for (
+          let validMoveIndex = 0;
+          validMoveIndex < validMoves.length;
+          validMoveIndex++
+        ) {
+          const moveString =
+            fromToKey +
+            "=>" +
+            playerPieceCoordinateAfterCapture +
+            "->" +
+            validMoves[validMoveIndex];
+          moves[moveString] = null;
         }
 
         // We can just capture, then pass
-        allGameStatesAfterMoveSeq[fromToKey] = null;
+        moves[fromToKey] = null;
       }
 
-      gameState[previousCoordinateOne] = actualStateOne;
-      gameState[previousCoordinateTwo] = actualStateTwo
-
+      // rollback state
+      gameState[fromCoordinate] = currentPieceOnFromCoordinate;
+      gameState[coordinateToCapture] = currentPieceOnToCoordinate;
     }
   }
 
-  return allGameStatesAfterMoveSeq;
+  return moves;
 }

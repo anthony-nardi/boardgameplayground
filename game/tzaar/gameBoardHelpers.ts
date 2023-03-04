@@ -85,14 +85,14 @@ export function getBoardCoordinatesFromPixelCoordinates(
 }
 
 function memoize(f: Function) {
-  const cache: any = {}
+  const cache: any = {};
 
   return (coordinate: ValidCoordinate) => {
     if (!cache[coordinate]) {
-      cache[coordinate] = f(coordinate)
+      cache[coordinate] = f(coordinate);
     }
-    return cache[coordinate]
-  }
+    return cache[coordinate];
+  };
 }
 
 export function goWest(coordinate: ValidCoordinate) {
@@ -287,36 +287,36 @@ function getNextValidCapture(
   direction: Direction,
   gameState: typeof gameBoardState
 ) {
-  let nextMove = undefined;
   let coordinateToCheck = fromCoordinate;
+  const directionFunction = nextPiece[direction];
 
-  while (nextMove === undefined) {
-    coordinateToCheck = nextPiece[direction](coordinateToCheck);
+  for (let i = 0; i < 7; i++) {
+    coordinateToCheck = directionFunction(coordinateToCheck);
 
     // Not a space that we can play on
-    if (!isPlayableSpace(coordinateToCheck)) {
-      nextMove = false;
+    if (!PLAYABLE_VERTICES_AS_MAP[coordinateToCheck]) {
+      return false;
     }
 
     // This space is empty so we can continue
-    else if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
-      nextMove = undefined;
+    if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
+      continue;
     }
 
-    // First piece we encounter can't be captured
-    else if (!canCapture(fromCoordinate, coordinateToCheck, gameState)) {
-      nextMove = false;
-    }
-    // Finally a piece we can capture
-    else {
-      nextMove = coordinateToCheck;
+    // First piece we encounter can't be stacked
+    if (canCapture(fromCoordinate, coordinateToCheck, gameState)) {
+      return coordinateToCheck;
+    } else {
+      return false;
     }
   }
-  return nextMove;
+  return false;
 }
 
-export function getValidStacksAndCaptures(fromCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState) {
+export function getValidStacksAndCaptures(
+  fromCoordinate: ValidCoordinate,
+  gameState: typeof gameBoardState
+) {
   return [
     getNextValidMove(fromCoordinate, "w", gameState),
     getNextValidMove(fromCoordinate, "e", gameState),
@@ -333,7 +333,7 @@ function getNextValidMove(
   gameState: typeof gameBoardState
 ) {
   let coordinateToCheck = fromCoordinate;
-  const directionFunction = nextPiece[direction]
+  const directionFunction = nextPiece[direction];
 
   for (let i = 0; i < 7; i++) {
     coordinateToCheck = directionFunction(coordinateToCheck);
@@ -343,20 +343,20 @@ function getNextValidMove(
       return false;
     }
 
-    // This space is empty so we can continue  
+    // This space is empty so we can continue
     if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
-      continue
+      continue;
     }
 
     // First piece we encounter can't be stacked
     if (canStack(fromCoordinate, coordinateToCheck, gameState)) {
-      return coordinateToCheck
+      return coordinateToCheck;
     }
     if (canCapture(fromCoordinate, coordinateToCheck, gameState)) {
-      return coordinateToCheck
+      return coordinateToCheck;
     }
   }
-  return false
+  return false;
 }
 
 function getNextValidStack(
@@ -365,7 +365,7 @@ function getNextValidStack(
   gameState: typeof gameBoardState
 ) {
   let coordinateToCheck = fromCoordinate;
-  const directionFunction = nextPiece[direction]
+  const directionFunction = nextPiece[direction];
 
   for (let i = 0; i < 7; i++) {
     coordinateToCheck = directionFunction(coordinateToCheck);
@@ -375,9 +375,9 @@ function getNextValidStack(
       return false;
     }
 
-    // This space is empty so we can continue  
+    // This space is empty so we can continue
     if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
-      continue
+      continue;
     }
 
     // First piece we encounter can't be stacked
@@ -389,7 +389,7 @@ function getNextValidStack(
       return coordinateToCheck;
     }
   }
-  return false
+  return false;
 }
 
 export function getValidCaptures(
