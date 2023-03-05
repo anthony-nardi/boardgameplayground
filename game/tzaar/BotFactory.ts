@@ -18,7 +18,7 @@ import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
 import { getWinner } from "./evaluationHelpers";
 
-function applyMoveToGameState(gamestate: any, move: string) {
+export function applyMoveToGameState(gamestate: any, move: string) {
   // Single move only
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
@@ -30,16 +30,79 @@ function applyMoveToGameState(gamestate: any, move: string) {
     return newGameState;
   }
 
-  const [firstMove, secondMove] = move.split("=>");
-  const [firstFromCoordinate, firstToCoordinate] = firstMove.split("->");
-  const [secondFromCoordinate, secondToCoordinate] = secondMove.split("->");
-  const fromPiece = gamestate[firstFromCoordinate];
+  const firstFromCoordinate = move.slice(0, 3);
+  const firstToCoordinate = move.slice(5, 8);
+  const secondFromCoordinate = move.slice(10, 13);
+  const secondToCoordinate = move.slice(15, 18);
+
+  const firstFromPiece = gamestate[firstFromCoordinate];
 
   // dont render moving piece in the same spot...
-  const updatedBoardGameState = Object.assign({}, gamestate);
+  const updatedBoardGameState = {
+    "0,4": gamestate["0,4"],
+    "0,5": gamestate["0,5"],
+    "0,6": gamestate["0,6"],
+    "0,7": gamestate["0,7"],
+    "0,8": gamestate["0,8"],
+    "1,3": gamestate["1,3"],
+    "1,4": gamestate["1,4"],
+    "1,5": gamestate["1,5"],
+    "1,6": gamestate["1,6"],
+    "1,7": gamestate["1,7"],
+    "1,8": gamestate["1,8"],
+    "2,2": gamestate["2,2"],
+    "2,3": gamestate["2,3"],
+    "2,4": gamestate["2,4"],
+    "2,5": gamestate["2,5"],
+    "2,6": gamestate["2,6"],
+    "2,7": gamestate["2,7"],
+    "2,8": gamestate["2,8"],
+    "3,1": gamestate["3,1"],
+    "3,2": gamestate["3,2"],
+    "3,3": gamestate["3,3"],
+    "3,4": gamestate["3,4"],
+    "3,5": gamestate["3,5"],
+    "3,6": gamestate["3,6"],
+    "3,7": gamestate["3,7"],
+    "3,8": gamestate["3,8"],
+    "4,0": gamestate["4,0"],
+    "4,1": gamestate["4,1"],
+    "4,2": gamestate["4,2"],
+    "4,3": gamestate["4,3"],
+    "4,5": gamestate["4,5"],
+    "4,6": gamestate["4,6"],
+    "4,7": gamestate["4,7"],
+    "4,8": gamestate["4,8"],
+    "5,0": gamestate["5,0"],
+    "5,1": gamestate["5,1"],
+    "5,2": gamestate["5,2"],
+    "5,3": gamestate["5,3"],
+    "5,4": gamestate["5,4"],
+    "5,5": gamestate["5,5"],
+    "5,6": gamestate["5,6"],
+    "5,7": gamestate["5,7"],
+    "6,0": gamestate["6,0"],
+    "6,1": gamestate["6,1"],
+    "6,2": gamestate["6,2"],
+    "6,3": gamestate["6,3"],
+    "6,4": gamestate["6,4"],
+    "6,5": gamestate["6,5"],
+    "6,6": gamestate["6,6"],
+    "7,0": gamestate["7,0"],
+    "7,1": gamestate["7,1"],
+    "7,2": gamestate["7,2"],
+    "7,3": gamestate["7,3"],
+    "7,4": gamestate["7,4"],
+    "7,5": gamestate["7,5"],
+    "8,0": gamestate["8,0"],
+    "8,1": gamestate["8,1"],
+    "8,2": gamestate["8,2"],
+    "8,3": gamestate["8,3"],
+    "8,4": gamestate["8,4"],
+  };
   updatedBoardGameState[firstFromCoordinate] = false;
 
-  updatedBoardGameState[firstToCoordinate] = Object.assign({}, fromPiece);
+  updatedBoardGameState[firstToCoordinate] = Object.assign({}, firstFromPiece);
 
   const secondFromPiece = updatedBoardGameState[secondFromCoordinate];
 
