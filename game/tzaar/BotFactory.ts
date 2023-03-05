@@ -22,12 +22,12 @@ function applyMoveToGameState(gamestate: any, move: string) {
   // Single move only
   if (move.indexOf("=>") === -1) {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
-    const fromPiece = gamestate[firstFromCoordinate]
-    const newGameState = Object.assign({}, gamestate)
+    const fromPiece = gamestate[firstFromCoordinate];
+    const newGameState = Object.assign({}, gamestate);
     newGameState[firstFromCoordinate] = false;
-    newGameState[firstToCoordinate] = Object.assign({}, fromPiece)
+    newGameState[firstToCoordinate] = Object.assign({}, fromPiece);
 
-    return newGameState
+    return newGameState;
   }
 
   const [firstMove, secondMove] = move.split("=>");
@@ -36,27 +36,25 @@ function applyMoveToGameState(gamestate: any, move: string) {
   const fromPiece = gamestate[firstFromCoordinate];
 
   // dont render moving piece in the same spot...
-  const updatedBoardGameState = Object.assign({}, gamestate)
-  updatedBoardGameState[firstFromCoordinate] = false
+  const updatedBoardGameState = Object.assign({}, gamestate);
+  updatedBoardGameState[firstFromCoordinate] = false;
 
-  updatedBoardGameState[firstToCoordinate] = Object.assign({}, fromPiece)
-
-
+  updatedBoardGameState[firstToCoordinate] = Object.assign({}, fromPiece);
 
   const secondFromPiece = updatedBoardGameState[secondFromCoordinate];
 
-  updatedBoardGameState[secondFromCoordinate] = false
+  updatedBoardGameState[secondFromCoordinate] = false;
 
   const toPiece = updatedBoardGameState[secondToCoordinate];
 
   if (secondFromPiece.ownedBy === toPiece.ownedBy) {
-    const updatedSecondFromPiece = Object.assign({}, secondFromPiece)
-    updatedSecondFromPiece.stackSize = secondFromPiece.stackSize + toPiece.stackSize
+    const updatedSecondFromPiece = Object.assign({}, secondFromPiece);
+    updatedSecondFromPiece.stackSize =
+      secondFromPiece.stackSize + toPiece.stackSize;
 
-    updatedBoardGameState[secondToCoordinate] = updatedSecondFromPiece
-
+    updatedBoardGameState[secondToCoordinate] = updatedSecondFromPiece;
   } else {
-    updatedBoardGameState[secondToCoordinate] = secondFromPiece
+    updatedBoardGameState[secondToCoordinate] = secondFromPiece;
   }
 
   return updatedBoardGameState;
@@ -109,13 +107,9 @@ export default class BotFactory {
     const now = Date.now();
     const opts = new minimaxer.NegamaxOpts();
 
-    const allPossibleStatesAfterTurn = Object.keys(getGameStatesToAnalyze(
-      gameBoardState,
-      currentTurn,
-      isVeryFirstTurn
-    ))
-
-
+    const allPossibleStatesAfterTurn = Object.keys(
+      getGameStatesToAnalyze(gameBoardState, currentTurn, isVeryFirstTurn)
+    );
 
     console.log(
       `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
@@ -164,10 +158,12 @@ export default class BotFactory {
     tree.GetMoves = (node) => {
       const gamestateToAnalyze = node.gamestate;
 
-      const moves = Object.keys(getGameStatesToAnalyze(
-        gamestateToAnalyze,
-        node.data.nextPlayerToMaximize
-      ))
+      const moves = Object.keys(
+        getGameStatesToAnalyze(
+          gamestateToAnalyze,
+          node.data.nextPlayerToMaximize
+        )
+      );
 
       return moves;
     };
@@ -205,8 +201,8 @@ export default class BotFactory {
       const toCoordinate = firstToCoordinate as ValidCoordinate;
 
       const fromPiece = gameBoardState[fromCoordinate];
-      const updatedBoardGameState = Object.assign({}, gameBoardState)
-      updatedBoardGameState[fromCoordinate] = false
+      const updatedBoardGameState = Object.assign({}, gameBoardState);
+      updatedBoardGameState[fromCoordinate] = false;
       setNewgameBoardState(updatedBoardGameState);
       const fromFirstPixelCoodinate =
         getPixelCoordinatesFromBoardCoordinates(fromCoordinate);
@@ -224,8 +220,8 @@ export default class BotFactory {
         AI_ANIMATION_DURATION,
         Date.now(),
         () => {
-          const updatedGameBoardState = Object.assign({}, gameBoardState)
-          updatedGameBoardState[toCoordinate] = Object.assign({}, fromPiece)
+          const updatedGameBoardState = Object.assign({}, gameBoardState);
+          updatedGameBoardState[toCoordinate] = Object.assign({}, fromPiece);
           setNewgameBoardState(updatedGameBoardState);
           checkGameStateAndStartNextTurn();
           checkGameStateAndStartNextTurn();
@@ -254,8 +250,8 @@ export default class BotFactory {
 
     const fromPiece = gameBoardState[fromCoordinate];
 
-    let updatedBoardGameState = Object.assign({}, gameBoardState)
-    updatedBoardGameState[fromCoordinate] = false
+    let updatedBoardGameState = Object.assign({}, gameBoardState);
+    updatedBoardGameState[fromCoordinate] = false;
     setNewgameBoardState(updatedBoardGameState);
 
     const fromFirstPixelCoodinate =
@@ -278,18 +274,18 @@ export default class BotFactory {
       AI_ANIMATION_DURATION,
       Date.now(),
       () => {
-        updatedBoardGameState = Object.assign({}, updatedBoardGameState)
-        updatedBoardGameState[toCoordinate] = fromPiece
+        updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+        updatedBoardGameState[toCoordinate] = fromPiece;
 
         nextPhase();
 
-        const secondFromPiece = updatedBoardGameState[fromCoordinate2]
+        const secondFromPiece = updatedBoardGameState[fromCoordinate2];
 
         if (!secondFromPiece) {
           throw new Error("no secondFromPiece");
         }
-        updatedBoardGameState = Object.assign({}, updatedBoardGameState)
-        updatedBoardGameState[fromCoordinate2] = false
+        updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+        updatedBoardGameState[fromCoordinate2] = false;
         setNewgameBoardState(updatedBoardGameState);
 
         renderMovingPiece(
@@ -304,14 +300,15 @@ export default class BotFactory {
               throw new Error("no toPiece");
             }
             if (secondFromPiece.ownedBy === toPiece.ownedBy) {
-              updatedBoardGameState = Object.assign({}, updatedBoardGameState)
-              const secondFromPieceUpdated = Object.assign({}, secondFromPiece)
-              secondFromPieceUpdated.stackSize = secondFromPiece.stackSize + toPiece.stackSize
-              updatedBoardGameState[toCoordinate2] = secondFromPieceUpdated
+              updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+              const secondFromPieceUpdated = Object.assign({}, secondFromPiece);
+              secondFromPieceUpdated.stackSize =
+                secondFromPiece.stackSize + toPiece.stackSize;
+              updatedBoardGameState[toCoordinate2] = secondFromPieceUpdated;
               setNewgameBoardState(updatedBoardGameState);
             } else {
-              updatedBoardGameState = Object.assign({}, updatedBoardGameState)
-              updatedBoardGameState[toCoordinate2] = secondFromPiece
+              updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+              updatedBoardGameState[toCoordinate2] = secondFromPiece;
               setNewgameBoardState(updatedBoardGameState);
             }
 
