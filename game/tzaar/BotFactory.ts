@@ -84,7 +84,7 @@ export function applyMoveToGameState(gamestate: any, move: string) {
   } as any;
 
   // Single move only
-  if (move.indexOf("=>") === -1) {
+  if (move.slice(8, 10) !== "=>") {
     const [firstFromCoordinate, firstToCoordinate] = move.split("->");
     const fromPiece = gamestate[firstFromCoordinate];
 
@@ -124,12 +124,9 @@ export function applyMoveToGameState(gamestate: any, move: string) {
     const updatedSecondFromPiece = {
       isDragging: secondFromPiece.isDragging,
       ownedBy: secondFromPiece.ownedBy,
-      stackSize: secondFromPiece.stackSize,
+      stackSize: secondFromPiece.stackSize + toPiece.stackSize,
       type: secondFromPiece.type,
     };
-
-    updatedSecondFromPiece.stackSize =
-      secondFromPiece.stackSize + toPiece.stackSize;
 
     updatedBoardGameState[secondToCoordinate] = updatedSecondFromPiece;
   } else {
@@ -194,7 +191,7 @@ export default class BotFactory {
       `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
     );
     opts.depth =
-      allPossibleStatesAfterTurn.length < 1000 && !isVeryFirstTurn ? 2 : 1;
+      allPossibleStatesAfterTurn.length < 3000 && !isVeryFirstTurn ? 2 : 1;
     // opts.expireTime = 5000;
     opts.method = 2;
     // opts.method = 3;

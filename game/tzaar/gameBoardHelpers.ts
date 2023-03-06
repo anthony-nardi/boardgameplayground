@@ -541,9 +541,10 @@ function getNextValidMove(
     // First piece we encounter can't be stacked
     if (canStack(fromCoordinate, coordinateToCheck, gameState)) {
       return coordinateToCheck;
-    }
-    if (canCapture(fromCoordinate, coordinateToCheck, gameState)) {
+    } else if (canCapture(fromCoordinate, coordinateToCheck, gameState)) {
       return coordinateToCheck;
+    } else {
+      return false;
     }
   }
   return false;

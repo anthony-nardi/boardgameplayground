@@ -1,4 +1,3 @@
-import { List, Map, RecordOf } from "immutable";
 import {
   TZAAR,
   TOTT,
@@ -9,12 +8,7 @@ import {
 } from "./constants";
 import { gameBoardState, currentTurn } from "./gameState";
 import { PieceType, Player } from "./types/types";
-import {
-  getInvertedValidCaptures,
-  getValidCaptures,
-  getAnyInvertedValidCaptures,
-  getAnyCapture,
-} from "./gameBoardHelpers";
+import { getAnyInvertedValidCaptures, getAnyCapture } from "./gameBoardHelpers";
 
 export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
   const playerPieces = {
@@ -137,7 +131,7 @@ export function getAllPlayerPieceCoordinatesByType(
 
 export function getWinner(
   gameState: typeof gameBoardState,
-  beforeTurnStart = false
+  beforeTurnStart: boolean
 ) {
   const playersHaveAllPieces = getHasAllThreePieceTypes(gameState);
 
