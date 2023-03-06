@@ -25,7 +25,7 @@ export function getGameStatesToAnalyze(
 
   let allPossibleStatesAfterTurn = {};
 
-  if (!EARLY_GAME) {
+  if (true) {
     allPossibleStatesAfterTurn = getPossibleMoveSequences(gameState, turn);
   } else {
     allPossibleStatesAfterTurn = {
@@ -92,7 +92,7 @@ function getEarlyGamePossibleMoveSequences(
   gameState: typeof gameBoardState,
   PIECE_TYPE: PlayerPieces,
   turn: Player,
-  firstTurnOfGame?: Boolean
+  firstTurnOfGame?: boolean
 ) {
   const playerPiecesToCapture = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
   let trySecondCapture = false;
@@ -123,7 +123,7 @@ function getEarlyGamePossibleMoveSequences(
       const nextGameState = Object.assign({}, gameState);
       nextGameState[fromCoordinate] = null;
       nextGameState[toCoordinate] = fromPiece;
-      allCaptureStates[`${fromCoordinate}->${toCoordinate}`] = nextGameState;
+      allCaptureStates[`${fromCoordinate}->${toCoordinate}`] = null;
     }
 
     if (firstTurnOfGame) {

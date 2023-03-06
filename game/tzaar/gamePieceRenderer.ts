@@ -1,12 +1,4 @@
-import {
-  TOTT,
-  PLAYER_ONE,
-  PLAYER_TWO,
-  TZAAR,
-  TZARRA,
-  GamePieceRecord,
-  GamePieceRecordProps,
-} from "./constants";
+import { TOTT, PLAYER_ONE, PLAYER_TWO, TZAAR, TZARRA } from "./constants";
 import WindowHelper from "./WindowHelper";
 import { RecordOf } from "immutable";
 
@@ -112,31 +104,43 @@ class GamePieceRenderer {
       0
     );
 
-    const playerOneTott = new GamePieceRecord({
+    const playerOneTott = {
       type: TOTT,
       ownedBy: PLAYER_ONE,
-    });
-    const playerOneTzarra = new GamePieceRecord({
+      stackSize: 1,
+      isDragging: false,
+    };
+    const playerOneTzarra = {
       type: TZARRA,
       ownedBy: PLAYER_ONE,
-    });
-    const playerOneTzaar = new GamePieceRecord({
+      stackSize: 1,
+      isDragging: false,
+    };
+    const playerOneTzaar = {
       type: TZAAR,
       ownedBy: PLAYER_ONE,
-    });
+      stackSize: 1,
+      isDragging: false,
+    };
 
-    const playerTwoTott = new GamePieceRecord({
+    const playerTwoTott = {
       type: TOTT,
       ownedBy: PLAYER_TWO,
-    });
-    const playerTwoTzarra = new GamePieceRecord({
+      stackSize: 1,
+      isDragging: false,
+    };
+    const playerTwoTzarra = {
       type: TZARRA,
       ownedBy: PLAYER_TWO,
-    });
-    const playerTwoTzaar = new GamePieceRecord({
+      stackSize: 1,
+      isDragging: false,
+    };
+    const playerTwoTzaar = {
       type: TZAAR,
       ownedBy: PLAYER_TWO,
-    });
+      stackSize: 1,
+      isDragging: false,
+    };
 
     this.circleRadius = this.GAME_PIECE_RADIUS;
     this.smallerCircleRadius = this.GAME_PIECE_RADIUS / 2;
@@ -203,10 +207,7 @@ class GamePieceRenderer {
     ctx.fill();
   }
 
-  drawGamePiece(
-    gamePiece: RecordOf<GamePieceRecordProps>,
-    canvas: HTMLCanvasElement
-  ) {
+  drawGamePiece(gamePiece: any, canvas: HTMLCanvasElement) {
     const context = canvas.getContext("2d");
 
     if (!context) {

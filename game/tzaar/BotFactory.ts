@@ -19,24 +19,6 @@ import EvaluationFactory from "./EvaluationFactory";
 import { getWinner } from "./evaluationHelpers";
 
 export function applyMoveToGameState(gamestate: any, move: string) {
-  // Single move only
-  if (move.indexOf("=>") === -1) {
-    const [firstFromCoordinate, firstToCoordinate] = move.split("->");
-    const fromPiece = gamestate[firstFromCoordinate];
-    const newGameState = Object.assign({}, gamestate);
-    newGameState[firstFromCoordinate] = false;
-    newGameState[firstToCoordinate] = Object.assign({}, fromPiece);
-
-    return newGameState;
-  }
-
-  const firstFromCoordinate = move.slice(0, 3);
-  const firstToCoordinate = move.slice(5, 8);
-  const secondFromCoordinate = move.slice(10, 13);
-  const secondToCoordinate = move.slice(15, 18);
-
-  const firstFromPiece = gamestate[firstFromCoordinate];
-
   // dont render moving piece in the same spot...
   const updatedBoardGameState = {
     "0,4": gamestate["0,4"],
@@ -99,10 +81,38 @@ export function applyMoveToGameState(gamestate: any, move: string) {
     "8,2": gamestate["8,2"],
     "8,3": gamestate["8,3"],
     "8,4": gamestate["8,4"],
-  };
+  } as any;
+
+  // Single move only
+  if (move.indexOf("=>") === -1) {
+    const [firstFromCoordinate, firstToCoordinate] = move.split("->");
+    const fromPiece = gamestate[firstFromCoordinate];
+
+    updatedBoardGameState[firstFromCoordinate] = false;
+    updatedBoardGameState[firstToCoordinate] = {
+      isDragging: fromPiece.isDragging,
+      ownedBy: fromPiece.ownedBy,
+      stackSize: fromPiece.stackSize,
+      type: fromPiece.type,
+    };
+    return updatedBoardGameState;
+  }
+
+  const firstFromCoordinate = move.slice(0, 3);
+  const firstToCoordinate = move.slice(5, 8);
+  const secondFromCoordinate = move.slice(10, 13);
+  const secondToCoordinate = move.slice(15, 18);
+
+  const firstFromPiece = gamestate[firstFromCoordinate];
+
   updatedBoardGameState[firstFromCoordinate] = false;
 
-  updatedBoardGameState[firstToCoordinate] = Object.assign({}, firstFromPiece);
+  updatedBoardGameState[firstToCoordinate] = {
+    isDragging: firstFromPiece.isDragging,
+    ownedBy: firstFromPiece.ownedBy,
+    stackSize: firstFromPiece.stackSize,
+    type: firstFromPiece.type,
+  };
 
   const secondFromPiece = updatedBoardGameState[secondFromCoordinate];
 
@@ -111,7 +121,13 @@ export function applyMoveToGameState(gamestate: any, move: string) {
   const toPiece = updatedBoardGameState[secondToCoordinate];
 
   if (secondFromPiece.ownedBy === toPiece.ownedBy) {
-    const updatedSecondFromPiece = Object.assign({}, secondFromPiece);
+    const updatedSecondFromPiece = {
+      isDragging: secondFromPiece.isDragging,
+      ownedBy: secondFromPiece.ownedBy,
+      stackSize: secondFromPiece.stackSize,
+      type: secondFromPiece.type,
+    };
+
     updatedSecondFromPiece.stackSize =
       secondFromPiece.stackSize + toPiece.stackSize;
 

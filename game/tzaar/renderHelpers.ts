@@ -6,7 +6,6 @@ import {
   TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
-  GamePieceRecordProps,
 } from "./constants";
 import WindowHelper from "./WindowHelper";
 import { drawCachedBoard } from "./cachedBoard";
@@ -78,7 +77,7 @@ export function drawGameBoardState() {
 }
 
 export function drawStaticGamePiece(
-  gamePiece: RecordOf<GamePieceRecordProps> | false,
+  gamePiece: any,
   coordinate: ValidCoordinate
 ) {
   if (!gamePiece || gamePiece.isDragging) {
@@ -91,11 +90,7 @@ export function drawStaticGamePiece(
   drawGamePiece(gamePiece, Number(xPos), Number(yPos));
 }
 
-export function drawGamePiece(
-  gamePiece: RecordOf<GamePieceRecordProps>,
-  xPos: number,
-  yPos: number
-) {
+export function drawGamePiece(gamePiece: any, xPos: number, yPos: number) {
   const context = getContext();
 
   if (!context) {
@@ -147,8 +142,8 @@ export function drawGamePiece(
 
 export function drawGamePieces() {
   Object.keys(gameBoardState).forEach((key) => {
-    drawStaticGamePiece(gameBoardState[key], key)
-  })
+    drawStaticGamePiece(gameBoardState[key], key);
+  });
 }
 
 export function clearCanvas() {
@@ -209,7 +204,7 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
     let index = 0;
     for (const coordinate in piecesToDraw) {
       const piece = piecesToDraw[coordinate];
-      gameBoardState[coordinate as ValidCoordinate] = piece
+      gameBoardState[coordinate as ValidCoordinate] = piece;
       // setNewgameBoardState(
       //   gameBoardState.set(coordinate as ValidCoordinate, piece)
       // );
@@ -247,7 +242,7 @@ function renderMovingPieces(
       to,
       delay,
     }: {
-      piece: RecordOf<GamePieceRecordProps>;
+      piece: any;
       from: string;
       to: string;
       delay: number;
@@ -280,7 +275,7 @@ function renderMovingPieces(
 }
 
 export function renderMovingPiece(
-  piece: RecordOf<GamePieceRecordProps>,
+  piece: any,
   from: string,
   to: string,
   duration: number,

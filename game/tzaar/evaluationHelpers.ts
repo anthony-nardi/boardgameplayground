@@ -5,12 +5,16 @@ import {
   TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
-  GamePieceRecordProps,
   PLAYABLE_VERTICES,
 } from "./constants";
 import { gameBoardState, currentTurn } from "./gameState";
 import { PieceType, Player } from "./types/types";
-import { getInvertedValidCaptures, getValidCaptures, getAnyInvertedValidCaptures, getAnyCapture } from "./gameBoardHelpers";
+import {
+  getInvertedValidCaptures,
+  getValidCaptures,
+  getAnyInvertedValidCaptures,
+  getAnyCapture,
+} from "./gameBoardHelpers";
 
 export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
   const playerPieces = {
@@ -29,7 +33,7 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
   };
 
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-    const piece = gameState[PLAYABLE_VERTICES[i]]
+    const piece = gameState[PLAYABLE_VERTICES[i]];
     if (piece) {
       const { ownedBy, type } = piece;
       // @ts-expect-error fix
@@ -41,7 +45,7 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
 
         if (
           playerPieces[PLAYER_ONE].uniquePieces +
-          playerPieces[PLAYER_TWO].uniquePieces ===
+            playerPieces[PLAYER_TWO].uniquePieces ===
           6
         ) {
           return {
@@ -63,17 +67,17 @@ export function getAllPlayerPieceCoordinates(
   gameState: typeof gameBoardState,
   player: Player
 ) {
-  let coordinates = []
+  let coordinates = [];
 
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-    const coordinate = PLAYABLE_VERTICES[i]
-    const piece = gameState[coordinate]
+    const coordinate = PLAYABLE_VERTICES[i];
+    const piece = gameState[coordinate];
     if (piece && piece.ownedBy === player) {
-      coordinates.push(coordinate)
+      coordinates.push(coordinate);
     }
   }
 
-  return coordinates
+  return coordinates;
 }
 
 export function isAnyPieceCapturable(
@@ -81,30 +85,36 @@ export function isAnyPieceCapturable(
   player: Player
 ) {
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-    const coordinate = PLAYABLE_VERTICES[i]
-    const piece = gameState[coordinate]
-    if (piece && piece.ownedBy === player && getAnyInvertedValidCaptures(coordinate, gameState)) {
-      return true
+    const coordinate = PLAYABLE_VERTICES[i];
+    const piece = gameState[coordinate];
+    if (
+      piece &&
+      piece.ownedBy === player &&
+      getAnyInvertedValidCaptures(coordinate, gameState)
+    ) {
+      return true;
     }
-
   }
-  return false
+  return false;
 }
 
 export function canCaptureAnyPiece(
   gameState: typeof gameBoardState,
   player: Player
 ) {
-
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-    const coordinate = PLAYABLE_VERTICES[i]
-    const piece = gameState[coordinate]
-    if (piece && piece.ownedBy === player && getAnyCapture(coordinate, gameState)) {
-      return true
+    const coordinate = PLAYABLE_VERTICES[i];
+    const piece = gameState[coordinate];
+    if (
+      piece &&
+      piece.ownedBy === player &&
+      getAnyCapture(coordinate, gameState)
+    ) {
+      return true;
     }
   }
 
-  return false
+  return false;
 }
 
 export function getAllPlayerPieceCoordinatesByType(
@@ -112,18 +122,17 @@ export function getAllPlayerPieceCoordinatesByType(
   player: Player,
   type: PieceType
 ) {
-
-  let coordinates = []
+  let coordinates = [];
 
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-    const coordinate = PLAYABLE_VERTICES[i]
+    const coordinate = PLAYABLE_VERTICES[i];
     const piece = gameState[coordinate];
     if (piece && piece.ownedBy === player && piece.type === type) {
-      coordinates.push(coordinate)
+      coordinates.push(coordinate);
     }
   }
 
-  return coordinates
+  return coordinates;
 }
 
 export function getWinner(
@@ -140,13 +149,13 @@ export function getWinner(
   }
 
   if (beforeTurnStart) {
-    const gameWillContinue = canCaptureAnyPiece(gameState, currentTurn)
+    const gameWillContinue = canCaptureAnyPiece(gameState, currentTurn);
 
     if (!gameWillContinue) {
       return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
     }
   } else {
-    const gameWillContinue = isAnyPieceCapturable(gameState, currentTurn)
+    const gameWillContinue = isAnyPieceCapturable(gameState, currentTurn);
 
     if (!gameWillContinue) {
       return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;

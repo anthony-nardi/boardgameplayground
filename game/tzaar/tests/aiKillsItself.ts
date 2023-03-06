@@ -1,4 +1,3 @@
-import { GamePieceRecord } from "../constants";
 
 export default function aiKillsItself() {
   return {

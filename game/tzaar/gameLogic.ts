@@ -32,7 +32,7 @@ import {
 } from "./coordinateHelpers";
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import BotFactory, { applyMoveToGameState } from "./BotFactory";
-import { getWinner } from "./evaluationHelpers";
+import { getWinner, isAnyPieceCapturable } from "./evaluationHelpers";
 import {
   firstQuestionableMoveByAI,
   secondQuestionableMoveByAI,
@@ -217,9 +217,8 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  // const piecesToSetup =
-  //   SETUP_STYLE !== "RANDOM" ? setupSymmetricalBoard() : setupRandomBoard();
-  const piecesToSetup = firstQuestionableMoveByAI();
+  const piecesToSetup = setupSymmetricalBoard();
+  // const piecesToSetup = firstQuestionableMoveByAI();
   drawInitialGrid();
 
   const matchesToPlay = setupSurvivalOfTheFittest(2);
@@ -259,26 +258,27 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   console.log(`Bot two weights`, botTwoParameters);
 
   renderInitializingBoard(piecesToSetup, () => {
-    setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
+    // setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
 
     drawGameBoardState();
 
-    const iterations = 1000000;
+    // const iterations = 10000000;
 
-    console.time(`getGameStateScore iterations: ${iterations}`);
+    // console.time(`getGameStateScore iterations: ${iterations}`);
 
-    for (let i = 0; i < iterations; i++) {
-      // getWinner(gameBoardState) // 3.8s per mil
-      // botOne?.evaluation?.getGameStateScore(
-      //   gameBoardState,
-      //   PLAYER_TWO,
-      // ); // 9036.78125 ms per mil
-      // getPossibleMoveSequences(gameBoardState, PLAYER_TWO); //1k 4801.859130859375 ms
-      applyMoveToGameState(gameBoardState, "5,7->4,7=>5,6->4,7");
-    }
-    console.timeEnd(`getGameStateScore iterations: ${iterations}`);
+    // for (let i = 0; i < iterations; i++) {
+    // getWinner(gameBoardState) // 3.8s per mil
+    // botOne?.evaluation?.getGameStateScore(
+    //   gameBoardState,
+    //   PLAYER_TWO,
+    // ); // 9036.78125 ms per mil
+    // getPossibleMoveSequences(gameBoardState, PLAYER_TWO); //1k 4801.859130859375 ms
+    // applyMoveToGameState(gameBoardState, "5,7->4,7=>5,6->4,7"); // 1000000 1.931s
+    // isAnyPieceCapturable(gameBoardState, PLAYER_ONE); // 10000000 3s
+    // }
+    // console.timeEnd(`getGameStateScore iterations: ${iterations}`);
 
-    // moveAI();
+    moveAI();
 
     if (
       window.localStorage &&

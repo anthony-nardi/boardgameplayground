@@ -1,13 +1,11 @@
 import {
   PLAYABLE_VERTICES,
-  GamePieceRecord,
-  GamePieceRecordProps,
-  TZAAR,
   TOTT,
   TZARRA,
   NUMBER_OF_TOTTS,
   NUMBER_OF_TZARRAS,
   NUMBER_OF_TZAARS,
+  TZAAR,
   PLAYER_TWO,
   PLAYER_ONE,
   PLAYABLE_VERTICES_AS_MAP,
@@ -17,6 +15,8 @@ import WindowHelper from "./WindowHelper";
 import { Direction, ValidCoordinate } from "./types/types";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { gameBoardState } from "./gameState";
+
+const isTruthy = (arg: any) => arg;
 
 export function getPixelCoordinatesFromBoardCoordinates(
   coordinate: ValidCoordinate
@@ -131,113 +131,305 @@ export function isPlayableSpace(coordinate: ValidCoordinate) {
 
 export function setupSymmetricalBoard() {
   let piecesToDraw: {
-    [key in ValidCoordinate]: RecordOf<GamePieceRecordProps>;
+    [key in ValidCoordinate]: any;
   } = {
-    "0,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "0,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "0,6": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "0,7": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "0,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "1,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "1,4": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "1,5": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "1,6": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "1,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "1,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "2,2": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "2,3": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "2,4": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "2,5": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "2,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "2,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "2,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "3,1": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "3,2": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "3,3": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "3,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "3,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "3,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "3,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "3,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "4,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "4,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "4,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "4,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "4,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "4,6": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "4,7": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "4,8": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "5,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "5,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "5,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "5,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "5,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "5,5": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "5,6": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "5,7": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "6,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "6,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "6,2": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "6,3": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_TWO }),
-    "6,4": new GamePieceRecord({ type: TZAAR, ownedBy: PLAYER_ONE }),
-    "6,5": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "6,6": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "7,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "7,1": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "7,2": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "7,3": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_TWO }),
-    "7,4": new GamePieceRecord({ type: TZARRA, ownedBy: PLAYER_ONE }),
-    "7,5": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
-    "8,0": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "8,1": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "8,2": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "8,3": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_TWO }),
-    "8,4": new GamePieceRecord({ type: TOTT, ownedBy: PLAYER_ONE }),
+    "0,4": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "0,5": { type: TOTT, ownedBy: PLAYER_ONE, stackSize: 1, isDragging: false },
+    "0,6": { type: TOTT, ownedBy: PLAYER_ONE, stackSize: 1, isDragging: false },
+    "0,7": { type: TOTT, ownedBy: PLAYER_ONE, stackSize: 1, isDragging: false },
+    "0,8": { type: TOTT, ownedBy: PLAYER_ONE, stackSize: 1, isDragging: false },
+    "1,3": { type: TOTT, ownedBy: PLAYER_TWO, stackSize: 1, isDragging: false },
+    "1,4": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "1,5": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "1,6": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "1,7": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "1,8": { type: TOTT, ownedBy: PLAYER_TWO, stackSize: 1, isDragging: false },
+    "2,2": { type: TOTT, ownedBy: PLAYER_TWO, stackSize: 1, isDragging: false },
+    "2,3": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "2,4": {
+      type: TZAAR,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "2,5": {
+      type: TZAAR,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "2,6": {
+      type: TZAAR,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "2,7": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "2,8": { type: TOTT, ownedBy: PLAYER_TWO, stackSize: 1, isDragging: false },
+    "3,1": { type: TOTT, ownedBy: PLAYER_TWO, stackSize: 1, isDragging: false },
+    "3,2": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "3,3": {
+      type: TZAAR,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "3,4": { type: TOTT, ownedBy: PLAYER_TWO, stackSize: 1, isDragging: false },
+    "3,5": { type: TOTT, ownedBy: PLAYER_ONE, stackSize: 1, isDragging: false },
+    "3,6": {
+      type: TZAAR,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "3,7": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "3,8": { type: TOTT, ownedBy: PLAYER_TWO, stackSize: 1, isDragging: false },
+    "4,0": { type: TOTT, ownedBy: PLAYER_ONE, stackSize: 1, isDragging: false },
+    "4,1": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "4,2": {
+      type: TZAAR,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "4,3": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "4,5": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "4,6": {
+      type: TZAAR,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "4,7": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "4,8": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,0": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,1": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,2": {
+      type: TZAAR,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,3": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,4": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,5": {
+      type: TZAAR,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,6": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "5,7": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "6,0": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "6,1": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "6,2": {
+      type: TZAAR,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "6,3": {
+      type: TZAAR,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "6,4": {
+      type: TZAAR,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "6,5": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "6,6": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "7,0": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "7,1": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "7,2": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "7,3": {
+      type: TZARRA,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "7,4": {
+      type: TZARRA,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "7,5": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "8,0": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "8,1": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "8,2": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "8,3": {
+      type: TOTT,
+      ownedBy: PLAYER_TWO,
+      stackSize: 1,
+      isDragging: false,
+    },
+    "8,4": {
+      type: TOTT,
+      ownedBy: PLAYER_ONE,
+      stackSize: 1,
+      isDragging: false,
+    },
   };
   return piecesToDraw;
-}
-
-export function setupRandomBoard() {
-  let piecesToDraw = Map();
-  let PLAYER_ONE_PIECES = List();
-  let PLAYER_TWO_PIECES = List();
-
-  for (let i = 0; i < NUMBER_OF_TOTTS; i++) {
-    PLAYER_ONE_PIECES = PLAYER_ONE_PIECES.push(
-      new GamePieceRecord({ type: TOTT, ownedBy: "PLAYER_ONE" })
-    );
-    PLAYER_TWO_PIECES = PLAYER_TWO_PIECES.push(
-      new GamePieceRecord({ type: TOTT, ownedBy: "PLAYER_TWO" })
-    );
-  }
-
-  for (let i = 0; i < NUMBER_OF_TZARRAS; i++) {
-    PLAYER_ONE_PIECES = PLAYER_ONE_PIECES.push(
-      new GamePieceRecord({ type: TZARRA, ownedBy: "PLAYER_ONE" })
-    );
-    PLAYER_TWO_PIECES = PLAYER_TWO_PIECES.push(
-      new GamePieceRecord({ type: TZARRA, ownedBy: "PLAYER_TWO" })
-    );
-  }
-
-  for (let i = 0; i < NUMBER_OF_TZAARS; i++) {
-    PLAYER_ONE_PIECES = PLAYER_ONE_PIECES.push(
-      new GamePieceRecord({ type: TZAAR, ownedBy: "PLAYER_ONE" })
-    );
-    PLAYER_TWO_PIECES = PLAYER_TWO_PIECES.push(
-      new GamePieceRecord({ type: TZAAR, ownedBy: "PLAYER_TWO" })
-    );
-  }
-
-  const allGamePieces = PLAYER_ONE_PIECES.concat(PLAYER_TWO_PIECES);
-
-  const shuffledPieces = allGamePieces.sortBy(Math.random);
-
-  shuffledPieces.forEach((piece, index) => {
-    piecesToDraw = piecesToDraw.set(PLAYABLE_VERTICES[index], piece);
-  });
-
-  return piecesToDraw.sortBy(Math.random);
 }
 
 export function canCapture(
@@ -322,7 +514,7 @@ export function getValidStacksAndCaptures(
     getNextValidMove(fromCoordinate, "ne", gameState),
     getNextValidMove(fromCoordinate, "sw", gameState),
     getNextValidMove(fromCoordinate, "se", gameState),
-  ].filter(Boolean) as ValidCoordinate[];
+  ].filter(isTruthy) as ValidCoordinate[];
 }
 
 function getNextValidMove(
@@ -401,7 +593,7 @@ export function getValidCaptures(
     getNextValidCapture(fromCoordinate, "ne", gameState),
     getNextValidCapture(fromCoordinate, "sw", gameState),
     getNextValidCapture(fromCoordinate, "se", gameState),
-  ].filter(Boolean) as ValidCoordinate[];
+  ].filter(isTruthy) as ValidCoordinate[];
 }
 
 export function getAnyCapture(
@@ -429,7 +621,7 @@ export function getValidStacks(
     getNextValidStack(fromCoordinate, "ne", gameState),
     getNextValidStack(fromCoordinate, "sw", gameState),
     getNextValidStack(fromCoordinate, "se", gameState),
-  ].filter(Boolean) as ValidCoordinate[];
+  ].filter(isTruthy) as ValidCoordinate[];
 }
 
 export function getAnyInvertedValidCaptures(
@@ -457,7 +649,7 @@ export function getInvertedValidCaptures(
     getNextInvertedValidCapture(toCoordinate, "ne", gameState),
     getNextInvertedValidCapture(toCoordinate, "sw", gameState),
     getNextInvertedValidCapture(toCoordinate, "se", gameState),
-  ].filter(Boolean) as ValidCoordinate[];
+  ].filter(isTruthy) as ValidCoordinate[];
 }
 
 function getNextInvertedValidCapture(
@@ -465,35 +657,27 @@ function getNextInvertedValidCapture(
   direction: Direction,
   gameState: typeof gameBoardState
 ) {
-  let nextMove = undefined;
   let coordinateToCheck = toCoordinate;
+  const directionFunction = nextPiece[direction];
 
-  while (nextMove === undefined) {
-    coordinateToCheck = nextPiece[direction](coordinateToCheck);
+  for (let i = 0; i < 7; i++) {
+    coordinateToCheck = directionFunction(coordinateToCheck);
 
     // Not a space that we can play on
-    if (!isPlayableSpace(coordinateToCheck)) {
-      nextMove = false;
-      continue;
+    if (!PLAYABLE_VERTICES_AS_MAP[coordinateToCheck]) {
+      return false;
     }
 
     // This space is empty so we can continue
-    else if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
-      nextMove = undefined;
+    if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
       continue;
     }
 
-    // First piece we encounter can't be captured
-    else if (!canCapture(coordinateToCheck, toCoordinate, gameState)) {
-      nextMove = false;
-      continue;
-    }
-    // Finally a piece we can capture
-    else {
-      nextMove = coordinateToCheck;
+    if (canCapture(coordinateToCheck, toCoordinate, gameState)) {
+      return coordinateToCheck;
     }
   }
-  return nextMove;
+  return false;
 }
 
 export const nextPiece = {
