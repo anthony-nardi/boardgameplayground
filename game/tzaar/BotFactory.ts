@@ -9,6 +9,7 @@ import {
   isFirstPlayerAI,
   isSecondPlayerAI,
   isVeryFirstTurn,
+  numberOfTurnsIntoGame,
 } from "./gameState";
 import { getGameStatesToAnalyze } from "./moves";
 import * as minimaxer from "minimaxer";
@@ -183,9 +184,7 @@ export default class BotFactory {
     const now = Date.now();
     const opts = new minimaxer.NegamaxOpts();
 
-    const allPossibleStatesAfterTurn = Object.keys(
-      getGameStatesToAnalyze(gameBoardState, currentTurn, isVeryFirstTurn)
-    );
+    const allPossibleStatesAfterTurn = getGameStatesToAnalyze(gameBoardState, currentTurn)
 
     console.log(
       `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
@@ -201,6 +200,7 @@ export default class BotFactory {
     opts.optimal = false;
     // opts.timeout = 10000;
     // console.log("DEPTH is " + opts.depth);
+
 
     let aim = 1;
     let data = { nextPlayerToMaximize: currentTurn, winner: undefined };
@@ -221,10 +221,19 @@ export default class BotFactory {
 
     tree.EvaluateNode = (node) => {
       const gamestateToAnalyze = node.gamestate;
+      let playerToMaximize
+
+
+      if (node.parent.type === 0) {
+        playerToMaximize = node.parent?.data.nextPlayerToMaximize;
+      } else {
+        playerToMaximize = node.data.nextPlayerToMaximize
+      }
+
 
       const score = evalFunction(
         gamestateToAnalyze,
-        node.data.nextPlayerToMaximize,
+        playerToMaximize,
         node.data.winner,
         false
       );
@@ -233,13 +242,11 @@ export default class BotFactory {
 
     tree.GetMoves = (node) => {
       const gamestateToAnalyze = node.gamestate;
-
-      const moves = Object.keys(
-        getGameStatesToAnalyze(
-          gamestateToAnalyze,
-          node.data.nextPlayerToMaximize
-        )
-      );
+      const moves = getGameStatesToAnalyze(
+        gamestateToAnalyze,
+        node.data.nextPlayerToMaximize,
+        true
+      )
 
       return moves;
     };
@@ -410,8 +417,8 @@ export default class BotFactory {
     let aim;
 
     if (!node.parent) {
-      turn = node.data.nextPlayerToMaximize;
-      aim = 1;
+      turn = currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+      aim = -1;
     } else {
       turn =
         node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;

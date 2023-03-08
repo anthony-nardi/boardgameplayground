@@ -39,7 +39,7 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
 
         if (
           playerPieces[PLAYER_ONE].uniquePieces +
-            playerPieces[PLAYER_TWO].uniquePieces ===
+          playerPieces[PLAYER_TWO].uniquePieces ===
           6
         ) {
           return {
@@ -55,23 +55,6 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
     [PLAYER_ONE]: playerPieces[PLAYER_ONE].uniquePieces === 3,
     [PLAYER_TWO]: playerPieces[PLAYER_TWO].uniquePieces === 3,
   };
-}
-
-export function getAllPlayerPieceCoordinates(
-  gameState: typeof gameBoardState,
-  player: Player
-) {
-  let coordinates = [];
-
-  for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-    const coordinate = PLAYABLE_VERTICES[i];
-    const piece = gameState[coordinate];
-    if (piece && piece.ownedBy === player) {
-      coordinates.push(coordinate);
-    }
-  }
-
-  return coordinates;
 }
 
 export function isAnyPieceCapturable(
@@ -111,23 +94,6 @@ export function canCaptureAnyPiece(
   return false;
 }
 
-export function getAllPlayerPieceCoordinatesByType(
-  gameState: typeof gameBoardState,
-  player: Player,
-  type: PieceType
-) {
-  let coordinates = [];
-
-  for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-    const coordinate = PLAYABLE_VERTICES[i];
-    const piece = gameState[coordinate];
-    if (piece && piece.ownedBy === player && piece.type === type) {
-      coordinates.push(coordinate);
-    }
-  }
-
-  return coordinates;
-}
 
 export function getWinner(
   gameState: typeof gameBoardState,
