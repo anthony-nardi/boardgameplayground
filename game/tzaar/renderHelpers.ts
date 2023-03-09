@@ -198,16 +198,11 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
     });
   }
 
-  // piecesToRenderList = piecesToRenderList.sortBy(Math.random)
-
   renderMovingPieces(piecesToRenderList, 500, Date.now(), () => {
     let index = 0;
     for (const coordinate in piecesToDraw) {
       const piece = piecesToDraw[coordinate];
       gameBoardState[coordinate as ValidCoordinate] = piece;
-      // setNewgameBoardState(
-      //   gameBoardState.set(coordinate as ValidCoordinate, piece)
-      // );
       index = index + 1;
     }
 

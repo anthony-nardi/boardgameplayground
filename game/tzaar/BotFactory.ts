@@ -187,10 +187,28 @@ export default class BotFactory {
     const allPossibleStatesAfterTurn = getGameStatesToAnalyze(gameBoardState, currentTurn)
 
     console.log(
-      `All possible starting moves: ${allPossibleStatesAfterTurn.length}`
+      `All possible starting moves: ${allPossibleStatesAfterTurn.length} for ${currentTurn}`
     );
-    opts.depth =
-      allPossibleStatesAfterTurn.length < 3000 && !isVeryFirstTurn ? 2 : 1;
+    const EARLY_GAME = numberOfTurnsIntoGame < 10;
+
+    let depth = 1;
+    if (!isVeryFirstTurn) {
+      if (allPossibleStatesAfterTurn.length < 3000) {
+        depth = 2
+      }
+      if (allPossibleStatesAfterTurn.length < 500 && !EARLY_GAME) {
+        depth = 3
+      }
+      if (allPossibleStatesAfterTurn.length < 200 && !EARLY_GAME) {
+        depth = 4
+      }
+    }
+
+    if (allPossibleStatesAfterTurn.length === 104) {
+      debugger
+    }
+
+    opts.depth = depth
     // opts.expireTime = 5000;
     opts.method = 2;
     // opts.method = 3;
@@ -247,6 +265,15 @@ export default class BotFactory {
         node.data.nextPlayerToMaximize,
         true
       )
+
+      if (moves.length === 0) {
+        debugger
+        const moves = getGameStatesToAnalyze(
+          gamestateToAnalyze,
+          node.data.nextPlayerToMaximize,
+          true
+        )
+      }
 
       return moves;
     };
@@ -423,6 +450,10 @@ export default class BotFactory {
       turn =
         node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
       aim = node.parent.aim * -1;
+    }
+
+    if (move === "4,3->2,3=>6,6->4,8") {
+      debugger
     }
 
     const updatedBoardGameState = applyMoveToGameState(

@@ -168,9 +168,6 @@ export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: Pl
         2
       );
 
-      if (allOpponentPlayerPiecesWithHighStacks.length) {
-        debugger
-      }
 
       for (let highStackIndex = 0; highStackIndex < allOpponentPlayerPiecesWithHighStacks.length; highStackIndex++) {
         const toCoordinate = allOpponentPlayerPiecesWithHighStacks[highStackIndex]

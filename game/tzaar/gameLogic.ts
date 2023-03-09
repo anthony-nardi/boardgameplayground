@@ -8,14 +8,12 @@ import {
 } from "./renderHelpers";
 import {
   setupSymmetricalBoard,
-  setupRandomBoard,
   getValidCaptures,
   getValidStacks,
 } from "./gameBoardHelpers";
 import {
   movingPiece,
   gameBoardState,
-  setNewgameBoardState,
   setMovingPiece,
   nextPhase,
   currentTurn,
@@ -66,7 +64,7 @@ function moveAI() {
 }
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
-  return gameBoardState.getIn([boardCoordinate, "ownedBy"]) === currentTurn;
+  return gameBoardState[boardCoordinate] && gameBoardState[boardCoordinate].ownedBy === currentTurn
 }
 
 export function passTurn() {
@@ -97,9 +95,7 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
     return;
   }
 
-  setNewgameBoardState(
-    gameBoardState.setIn([boardCoordinate, "isDragging"], true)
-  );
+  gameBoardState[boardCoordinate].isDragging = true
 
   setMovingPiece(boardCoordinate);
 }
@@ -109,7 +105,15 @@ export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
     return;
   }
 
-  const gamePiece = gameBoardState.get(movingPiece);
+  if (currentTurn === PLAYER_TWO && isSecondPlayerAI) {
+    return;
+  }
+
+  if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
+    return;
+  }
+
+  const gamePiece = gameBoardState[movingPiece];
 
   if (!gamePiece) {
     throw new Error("gamepiece not here");
@@ -129,11 +133,9 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
 
   const toCoordinates = getBoardCoordinatesFromUserInteraction(event);
 
-  setNewgameBoardState(
-    gameBoardState.setIn([movingPiece, "isDragging"], false)
-  );
+  gameBoardState[movingPiece].isDragging = false
 
-  if (!gameBoardState.get(toCoordinates)) {
+  if (!gameBoardState[toCoordinates]) {
     setMovingPiece(null);
     drawGameBoardState();
     return;
@@ -166,9 +168,9 @@ function capturePiece(
     throw new Error("fromPiece not there.");
   }
 
-  setNewgameBoardState(
-    gameBoardState.set(fromCoordinates, false).set(toCoordinates, fromPiece)
-  );
+  gameBoardState[fromCoordinates] = false;
+  gameBoardState[toCoordinates] = fromPiece
+
   checkGameStateAndStartNextTurn(true);
 }
 
@@ -183,15 +185,10 @@ function stackPiece(
     throw new Error("Stacking broken");
   }
 
-  setNewgameBoardState(
-    gameBoardState
-      .set(fromCoordinates, false)
-      .set(toCoordinates, fromPiece)
-      .setIn(
-        [toCoordinates, "stackSize"],
-        fromPiece.stackSize + toPiece.stackSize
-      )
-  );
+  gameBoardState[fromCoordinates] = false;
+  gameBoardState[toCoordinates] = fromPiece;
+  gameBoardState[toCoordinates].stackSize = fromPiece.stackSize + toPiece.stackSize
+
   checkGameStateAndStartNextTurn();
 }
 
