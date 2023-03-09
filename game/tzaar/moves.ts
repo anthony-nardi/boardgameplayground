@@ -14,7 +14,12 @@ import {
   getInvertedValidCaptures,
   getValidStacksAndCaptures,
 } from "./gameBoardHelpers";
-import { PieceType, Player, PlayerPieces, ValidCoordinate } from "./types/types";
+import {
+  PieceType,
+  Player,
+  PlayerPieces,
+  ValidCoordinate,
+} from "./types/types";
 
 export function getGameStatesToAnalyze(
   gameState: typeof gameBoardState,
@@ -26,34 +31,33 @@ export function getGameStatesToAnalyze(
   if (!EARLY_GAME || getAllPossibleMoves) {
     return getPossibleMoveSequences(gameState, turn);
   } else if (numberOfTurnsIntoGame === 0) {
-    return getFirstTurnMoveSequence(gameState, turn)
+    return getFirstTurnMoveSequence(gameState, turn);
   } else {
-
-    let moves = getEarlyGameMoveSequences(gameState, turn, TZAAR)
-    console.log(`EARLY GAME: ${moves.length} possible moves selected for TZAAR pieces.`)
-
+    let moves = getEarlyGameMoveSequences(gameState, turn, TZAAR);
+    console.log(
+      `EARLY GAME: ${moves.length} possible moves selected for TZAAR pieces.`
+    );
 
     if (!moves.length) {
-      moves = getEarlyGameMoveSequences(gameState, turn, TZARRA)
-      console.log(`EARLY GAME: ${moves.length} possible moves selected for TZARRA pieces.`)
-
+      moves = getEarlyGameMoveSequences(gameState, turn, TZARRA);
+      console.log(
+        `EARLY GAME: ${moves.length} possible moves selected for TZARRA pieces.`
+      );
     }
 
     if (!moves.length) {
-      moves = getEarlyGameMoveSequences(gameState, turn, TOTT)
-      console.log(`EARLY GAME: ${moves.length} possible moves selected for TOTT pieces.`)
-
+      moves = getEarlyGameMoveSequences(gameState, turn, TOTT);
+      console.log(
+        `EARLY GAME: ${moves.length} possible moves selected for TOTT pieces.`
+      );
     }
 
-    return moves
-
+    return moves;
   }
-
 }
 
-
 function getFirstTurnMoveSequence(gameState: any, turn: Player) {
-  const moves: string[] = []
+  const moves: string[] = [];
 
   const playerPiecesToCapture = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
   const allOpponentPlayerPieces = getAllPlayerPieceCoordinatesByType(
@@ -76,9 +80,11 @@ function getFirstTurnMoveSequence(gameState: any, turn: Player) {
     opponentCoordinateIndex < allOpponentPlayerPieces.length;
     opponentCoordinateIndex++
   ) {
-    const toCoordinate = allOpponentPlayerPieces[opponentCoordinateIndex]
-    const captureCoordinates = getInvertedValidCaptures(toCoordinate, gameState)
-
+    const toCoordinate = allOpponentPlayerPieces[opponentCoordinateIndex];
+    const captureCoordinates = getInvertedValidCaptures(
+      toCoordinate,
+      gameState
+    );
 
     for (
       let captureCoordinateIndex = 0;
@@ -86,15 +92,19 @@ function getFirstTurnMoveSequence(gameState: any, turn: Player) {
       captureCoordinateIndex++
     ) {
       const fromCoordinate = captureCoordinates[captureCoordinateIndex];
-      const sequenceKey = fromCoordinate + '->' + toCoordinate
-      moves.push(sequenceKey)
+      const sequenceKey = fromCoordinate + "->" + toCoordinate;
+      moves.push(sequenceKey);
     }
   }
 
   return moves;
 }
 
-export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: PlayerPieces) {
+export function getEarlyGameMoveSequences(
+  gameState: any,
+  turn: Player,
+  type: PlayerPieces
+) {
   const moves: string[] = [];
 
   const playerPiecesToCapture = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
@@ -115,7 +125,6 @@ export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: Pl
 
   // Always stack unless above conditions are satisfied
 
-
   // For every valuable opponent piece, get the move required to capture those pieces.
   // From there we can figure out our next move (stack or capture valuable pieces).
   for (
@@ -123,8 +132,11 @@ export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: Pl
     opponentCoordinateIndex < allOpponentPlayerPieces.length;
     opponentCoordinateIndex++
   ) {
-    const toCoordinate = allOpponentPlayerPieces[opponentCoordinateIndex]
-    const captureCoordinates = getInvertedValidCaptures(toCoordinate, gameState)
+    const toCoordinate = allOpponentPlayerPieces[opponentCoordinateIndex];
+    const captureCoordinates = getInvertedValidCaptures(
+      toCoordinate,
+      gameState
+    );
 
     for (
       let captureCoordinateIndex = 0;
@@ -132,13 +144,13 @@ export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: Pl
       captureCoordinateIndex++
     ) {
       const fromCoordinate = captureCoordinates[captureCoordinateIndex];
-      const sequenceKey = fromCoordinate + '->' + toCoordinate
+      const sequenceKey = fromCoordinate + "->" + toCoordinate;
 
       const currentPieceOnFromCoordinate = gameState[fromCoordinate];
       const currentPieceOnToCoordinate = gameState[toCoordinate];
 
       gameState[fromCoordinate] = null;
-      gameState[toCoordinate] = currentPieceOnFromCoordinate
+      gameState[toCoordinate] = currentPieceOnFromCoordinate;
 
       // for the piece we just moved... lets find ITS moves... (this is optimization so it looks dumb)
       // if its not obvious, only 2 coordinates on the board changed so we can reuse most of the previous results from getAllPlayerPieceCoordinates
@@ -161,17 +173,25 @@ export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: Pl
         moves.push(moveString);
       }
 
-      const allOpponentPlayerPiecesWithHighStacks = getAllPlayerPieceCoordinatesByType(
-        gameState,
-        playerPiecesToCapture,
-        type,
-        2
-      );
+      const allOpponentPlayerPiecesWithHighStacks =
+        getAllPlayerPieceCoordinatesByType(
+          gameState,
+          playerPiecesToCapture,
+          type,
+          2
+        );
 
-
-      for (let highStackIndex = 0; highStackIndex < allOpponentPlayerPiecesWithHighStacks.length; highStackIndex++) {
-        const toCoordinate = allOpponentPlayerPiecesWithHighStacks[highStackIndex]
-        const captureCoordinates = getInvertedValidCaptures(toCoordinate, gameState)
+      for (
+        let highStackIndex = 0;
+        highStackIndex < allOpponentPlayerPiecesWithHighStacks.length;
+        highStackIndex++
+      ) {
+        const toCoordinate =
+          allOpponentPlayerPiecesWithHighStacks[highStackIndex];
+        const captureCoordinates = getInvertedValidCaptures(
+          toCoordinate,
+          gameState
+        );
 
         for (
           let captureCoordinateIndex = 0;
@@ -179,18 +199,25 @@ export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: Pl
           captureCoordinateIndex++
         ) {
           const fromCoordinate = captureCoordinates[captureCoordinateIndex];
-          const secondCaptureMoveSequence = fromCoordinate + '->' + toCoordinate
+          const secondCaptureMoveSequence =
+            fromCoordinate + "->" + toCoordinate;
           const moveString = sequenceKey + "=>" + secondCaptureMoveSequence;
-          moves.push(moveString)
+          moves.push(moveString);
         }
-
       }
 
-      const allPlayerPiecesOfType = getAllPlayerPieceCoordinatesByType(gameState, turn, type)
+      const allPlayerPiecesOfType = getAllPlayerPieceCoordinatesByType(
+        gameState,
+        turn,
+        type
+      );
       // TODO: Really we should stack our most valuable pieces or try to capture the opponent high stacks...
       for (let j = 0; j < allPlayerPiecesOfType.length; j++) {
-        const playerPieceCoordinateAfterCapture = allPlayerPiecesOfType[j]
-        const validMoves = getValidStacks(playerPieceCoordinateAfterCapture, gameState)
+        const playerPieceCoordinateAfterCapture = allPlayerPiecesOfType[j];
+        const validMoves = getValidStacks(
+          playerPieceCoordinateAfterCapture,
+          gameState
+        );
 
         for (
           let validMoveIndex = 0;
@@ -206,20 +233,15 @@ export function getEarlyGameMoveSequences(gameState: any, turn: Player, type: Pl
 
           moves.push(moveString);
         }
-
       }
-
-
 
       // rollback state
       gameState[fromCoordinate] = currentPieceOnFromCoordinate;
       gameState[toCoordinate] = currentPieceOnToCoordinate;
-
     }
   }
 
   return moves;
-
 }
 
 export function getAllPlayerPieceCoordinates(
@@ -236,7 +258,7 @@ export function getAllPlayerPieceCoordinates(
     }
   }
 
-  return coordinates
+  return coordinates;
 }
 
 export function getAllPlayerPieceCoordinatesByType(
@@ -250,7 +272,12 @@ export function getAllPlayerPieceCoordinatesByType(
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
     const coordinate = PLAYABLE_VERTICES[i];
     const piece = gameState[coordinate];
-    if (piece && piece.ownedBy === player && piece.type === type && piece.stackSize >= stackSize) {
+    if (
+      piece &&
+      piece.ownedBy === player &&
+      piece.type === type &&
+      piece.stackSize >= stackSize
+    ) {
       coordinates.push(coordinate);
     }
   }
@@ -262,7 +289,7 @@ export function getPossibleMoveSequences(
   gameState: typeof gameBoardState,
   turn: Player
 ) {
-  const moves: string[] = []
+  const moves: string[] = [];
   const playerCoordinates = getAllPlayerPieceCoordinates(gameState, turn);
 
   for (
@@ -308,7 +335,7 @@ export function getPossibleMoveSequences(
           coordinateToCapture +
           "->" +
           validMovesForPieceJustMoved[validMoveIndex];
-        moves.push(moveString)
+        moves.push(moveString);
       }
 
       for (let j = 0; j < playerCoordinates.length; j++) {
@@ -336,11 +363,11 @@ export function getPossibleMoveSequences(
             "->" +
             validMoves[validMoveIndex];
 
-          moves.push(moveString)
+          moves.push(moveString);
         }
 
         // We can just capture, then pass
-        moves.push(fromToKey)
+        moves.push(fromToKey);
       }
 
       // rollback state

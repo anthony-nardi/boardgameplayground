@@ -184,7 +184,10 @@ export default class BotFactory {
     const now = Date.now();
     const opts = new minimaxer.NegamaxOpts();
 
-    const allPossibleStatesAfterTurn = getGameStatesToAnalyze(gameBoardState, currentTurn)
+    const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
+      gameBoardState,
+      currentTurn
+    );
 
     console.log(
       `All possible starting moves: ${allPossibleStatesAfterTurn.length} for ${currentTurn}`
@@ -194,21 +197,21 @@ export default class BotFactory {
     let depth = 1;
     if (!isVeryFirstTurn) {
       if (allPossibleStatesAfterTurn.length < 3000) {
-        depth = 2
+        depth = 2;
       }
       if (allPossibleStatesAfterTurn.length < 500 && !EARLY_GAME) {
-        depth = 3
+        depth = 3;
       }
       if (allPossibleStatesAfterTurn.length < 200 && !EARLY_GAME) {
-        depth = 4
+        depth = 4;
       }
     }
 
     if (allPossibleStatesAfterTurn.length === 104) {
-      debugger
+      debugger;
     }
 
-    opts.depth = depth
+    opts.depth = depth;
     // opts.expireTime = 5000;
     opts.method = 2;
     // opts.method = 3;
@@ -218,7 +221,6 @@ export default class BotFactory {
     opts.optimal = false;
     // opts.timeout = 10000;
     // console.log("DEPTH is " + opts.depth);
-
 
     let aim = 1;
     let data = { nextPlayerToMaximize: currentTurn, winner: undefined };
@@ -239,15 +241,13 @@ export default class BotFactory {
 
     tree.EvaluateNode = (node) => {
       const gamestateToAnalyze = node.gamestate;
-      let playerToMaximize
-
+      let playerToMaximize;
 
       if (node.parent.type === 0) {
         playerToMaximize = node.parent?.data.nextPlayerToMaximize;
       } else {
-        playerToMaximize = node.data.nextPlayerToMaximize
+        playerToMaximize = node.data.nextPlayerToMaximize;
       }
-
 
       const score = evalFunction(
         gamestateToAnalyze,
@@ -259,20 +259,23 @@ export default class BotFactory {
     };
 
     tree.GetMoves = (node) => {
+      // if (node.parent && node.parent.move === "4,3->2,3=>6,6->4,8") {
+      //   debugger;
+      // }
+
+      const turn =
+        node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+
       const gamestateToAnalyze = node.gamestate;
       const moves = getGameStatesToAnalyze(
         gamestateToAnalyze,
         node.data.nextPlayerToMaximize,
         true
-      )
+      );
 
       if (moves.length === 0) {
-        debugger
-        const moves = getGameStatesToAnalyze(
-          gamestateToAnalyze,
-          node.data.nextPlayerToMaximize,
-          true
-        )
+        debugger;
+        const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn, true);
       }
 
       return moves;
@@ -453,7 +456,7 @@ export default class BotFactory {
     }
 
     if (move === "4,3->2,3=>6,6->4,8") {
-      debugger
+      debugger;
     }
 
     const updatedBoardGameState = applyMoveToGameState(
