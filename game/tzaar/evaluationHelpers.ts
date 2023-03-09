@@ -97,7 +97,8 @@ export function canCaptureAnyPiece(
 
 export function getWinner(
   gameState: typeof gameBoardState,
-  beforeTurnStart: boolean
+  beforeTurnStart: boolean,
+  turn: Player
 ) {
   const playersHaveAllPieces = getHasAllThreePieceTypes(gameState);
 
@@ -109,16 +110,16 @@ export function getWinner(
   }
 
   if (beforeTurnStart) {
-    const gameWillContinue = canCaptureAnyPiece(gameState, currentTurn);
+    const gameWillContinue = canCaptureAnyPiece(gameState, turn);
 
     if (!gameWillContinue) {
-      return currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+      return turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
     }
   } else {
-    const gameWillContinue = isAnyPieceCapturable(gameState, currentTurn);
+    const gameWillContinue = isAnyPieceCapturable(gameState, turn);
 
     if (!gameWillContinue) {
-      return currentTurn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
+      return turn === PLAYER_ONE ? PLAYER_ONE : PLAYER_TWO;
     }
   }
 }

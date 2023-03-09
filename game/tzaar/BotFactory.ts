@@ -157,7 +157,7 @@ export default class BotFactory {
   public evaluation: EvaluationFactory;
 
   public moveAI(moveAiCallback: Function) {
-    const winner = getWinner(gameBoardState);
+    const winner = getWinner(gameBoardState, true, currentTurn);
 
     if (winner) {
       let message = winner === PLAYER_TWO ? "You lost." : "You won!";
@@ -207,9 +207,6 @@ export default class BotFactory {
       }
     }
 
-    if (allPossibleStatesAfterTurn.length === 104) {
-      debugger;
-    }
 
     opts.depth = depth;
     // opts.expireTime = 5000;
@@ -259,9 +256,6 @@ export default class BotFactory {
     };
 
     tree.GetMoves = (node) => {
-      // if (node.parent && node.parent.move === "4,3->2,3=>6,6->4,8") {
-      //   debugger;
-      // }
 
       const turn =
         node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
@@ -269,13 +263,12 @@ export default class BotFactory {
       const gamestateToAnalyze = node.gamestate;
       const moves = getGameStatesToAnalyze(
         gamestateToAnalyze,
-        node.data.nextPlayerToMaximize,
+        turn,
         true
       );
 
       if (moves.length === 0) {
-        debugger;
-        const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn, true);
+        throw new Error('THis shouldnt happen... moves is 0 so it should be a terminal game for minimax')
       }
 
       return moves;
@@ -455,16 +448,12 @@ export default class BotFactory {
       aim = node.parent.aim * -1;
     }
 
-    if (move === "4,3->2,3=>6,6->4,8") {
-      debugger;
-    }
-
     const updatedBoardGameState = applyMoveToGameState(
       gamestateToAnalyze,
       move
     );
 
-    const winner = getWinner(updatedBoardGameState);
+    const winner = getWinner(updatedBoardGameState, false, turn);
 
     const nodeType = winner ? 2 : 1;
 

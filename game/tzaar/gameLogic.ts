@@ -37,6 +37,7 @@ import {
 } from "./tests/QuestionableMoves";
 import { Record } from "immutable";
 import { getEarlyGameMoveSequences, getPossibleMoveSequences } from "./moves";
+import breakingState from "./tests/breakingState";
 
 let botOne: undefined | BotFactory;
 let botTwo: undefined | BotFactory;
@@ -51,7 +52,7 @@ function moveAI() {
     return;
   }
 
-  if (getWinner(gameBoardState, true)) {
+  if (getWinner(gameBoardState, true, currentTurn)) {
     return null;
   }
 
@@ -197,7 +198,7 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
   let winner;
 
   if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
-    winner = getWinner(gameBoardState, true);
+    winner = getWinner(gameBoardState, true, currentTurn);
   }
 
   let message = winner === PLAYER_TWO ? "You lost." : "You won!";
@@ -214,8 +215,8 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  const piecesToSetup = setupSymmetricalBoard();
-  // const piecesToSetup = firstQuestionableMoveByAI();
+  // const piecesToSetup = setupSymmetricalBoard();
+  const piecesToSetup = breakingState();
   drawInitialGrid();
 
   const matchesToPlay = setupSurvivalOfTheFittest(2);
@@ -255,7 +256,7 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   console.log(`Bot two weights`, botTwoParameters);
 
   renderInitializingBoard(piecesToSetup, () => {
-    // setInitialGameState(null, PLAYER_TWO, TURN_PHASES.CAPTURE, 10);
+    setInitialGameState(null, PLAYER_ONE, TURN_PHASES.CAPTURE, 15);
 
     drawGameBoardState();
 
@@ -278,7 +279,7 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
     }
     console.timeEnd(`getGameStateScore iterations: ${iterations}`);
 
-    moveAI();
+    setTimeout(moveAI)
 
     if (
       window.localStorage &&
