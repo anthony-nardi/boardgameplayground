@@ -71,7 +71,7 @@ export let gameBoardState: { [K in ValidCoordinate]: any } = {
   "2,8": false,
   "3,8": false,
   "4,8": false,
-}
+};
 export let isVeryFirstTurn = true;
 export let currentTurn: Player = PLAYER_ONE;
 export let turnPhase: typeof CAPTURE | typeof STACK_OR_CAPTURE_OR_PASS =
@@ -131,7 +131,7 @@ export function nextPhase(maybeMoveAI?: Function) {
     document.getElementById("phaseDiv").innerHTML = "Phase: CAPTURE";
     // @ts-expect-error todo
     document.getElementById("turnDiv").innerHTML = "Turn: AI";
-    maybeMoveAI && maybeMoveAI()
+    maybeMoveAI && maybeMoveAI();
     return;
   }
 
@@ -163,7 +163,7 @@ export function nextPhase(maybeMoveAI?: Function) {
     document.getElementById("phaseDiv").innerHTML = "Phase: CAPTURE";
     // @ts-expect-error todo
     document.getElementById("turnDiv").innerHTML = "Turn: AI";
-    maybeMoveAI && maybeMoveAI()
+    maybeMoveAI && maybeMoveAI();
 
     return;
   }
@@ -178,7 +178,7 @@ export function nextPhase(maybeMoveAI?: Function) {
     document.getElementById("phaseDiv").innerHTML = "Phase: CAPTURE";
     // @ts-expect-error todo
     document.getElementById("turnDiv").innerHTML = "Turn: PLAYER";
-    maybeMoveAI && maybeMoveAI()
+    maybeMoveAI && maybeMoveAI();
 
     return;
   }

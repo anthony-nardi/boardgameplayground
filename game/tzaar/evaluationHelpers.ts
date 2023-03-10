@@ -39,7 +39,7 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
 
         if (
           playerPieces[PLAYER_ONE].uniquePieces +
-          playerPieces[PLAYER_TWO].uniquePieces ===
+            playerPieces[PLAYER_TWO].uniquePieces ===
           6
         ) {
           return {
@@ -93,7 +93,6 @@ export function canCaptureAnyPiece(
 
   return false;
 }
-
 
 export function getWinner(
   gameState: typeof gameBoardState,

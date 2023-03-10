@@ -8,7 +8,7 @@ import {
   EDGE_COORDINATES,
   EDGE_COORDINATES_AS_MAP,
   CORNER_COORDINATES_AS_MAP,
-  PLAYABLE_VERTICES
+  PLAYABLE_VERTICES,
 } from "./constants";
 import { currentTurn, gameBoardState } from "./gameState";
 import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
@@ -54,23 +54,24 @@ export default class EvaluationFactory {
   public getGameStateScore(
     gameState: typeof gameBoardState,
     turn: typeof PLAYER_ONE | typeof PLAYER_TWO,
-    winner?: Player,
+    winner?: Player
   ) {
-
     if (winner) {
       return winner !== currentTurn ? -Infinity : Infinity;
     }
 
     const gameMetadata = this.getGameStateMetadata(gameState);
     let score = 0;
-    const minimizingPlayer = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE
+    const minimizingPlayer = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
 
     const maximizingPlayerScore = this.getTotalScore(gameMetadata, turn);
-    const minimizingPlayerScore = this.getTotalScore(gameMetadata, minimizingPlayer);
+    const minimizingPlayerScore = this.getTotalScore(
+      gameMetadata,
+      minimizingPlayer
+    );
 
     if (currentTurn === turn) {
       score = maximizingPlayerScore - minimizingPlayerScore;
-
     } else {
       score = -(maximizingPlayerScore - minimizingPlayerScore);
     }
@@ -98,15 +99,15 @@ export default class EvaluationFactory {
     player: typeof PLAYER_ONE | typeof PLAYER_TWO
   ) {
     const key = player === PLAYER_ONE ? "player1Stacks" : "player2Stacks";
-    const stacksOnEdgeData = gameMetadata[`${key}OnEdge`]
-    const stacksOnCornerData = gameMetadata[`${key}OnCorner`]
-    const tottData = gameMetadata[key].TOTT
-    const tzaaraData = gameMetadata[key].TZARRA
-    const tzaarData = gameMetadata[key].TZAAR
+    const stacksOnEdgeData = gameMetadata[`${key}OnEdge`];
+    const stacksOnCornerData = gameMetadata[`${key}OnCorner`];
+    const tottData = gameMetadata[key].TOTT;
+    const tzaaraData = gameMetadata[key].TZARRA;
+    const tzaarData = gameMetadata[key].TZAAR;
 
     const tottTotal = tottData.length;
     const tzaaraTotal = tzaaraData.length;
-    const tzaarTotal = tzaarData.length
+    const tzaarTotal = tzaarData.length;
 
     let stacksOnEdgeScore = 0;
     let stacksOnCornerScore = 0;
@@ -114,25 +115,24 @@ export default class EvaluationFactory {
     let tzaaraScore = 0;
     let tzaarScore = 0;
 
-
     for (let i = 0; i < stacksOnEdgeData.length; i++) {
-      stacksOnEdgeScore += stacksOnEdgeData[i] * this.EDGE_PENALTY
+      stacksOnEdgeScore += stacksOnEdgeData[i] * this.EDGE_PENALTY;
     }
 
     for (let i = 0; i < stacksOnCornerData.length; i++) {
-      stacksOnCornerScore += stacksOnCornerData[i] * this.CORNER_PENALTY
+      stacksOnCornerScore += stacksOnCornerData[i] * this.CORNER_PENALTY;
     }
 
     for (let i = 0; i < tottTotal; i++) {
-      tottScore += this.getScoreForStacks(tottTotal, tottData[i])
+      tottScore += this.getScoreForStacks(tottTotal, tottData[i]);
     }
 
     for (let i = 0; i < tzaaraTotal; i++) {
-      tzaaraScore += this.getScoreForStacks(tzaaraTotal, tzaaraData[i])
+      tzaaraScore += this.getScoreForStacks(tzaaraTotal, tzaaraData[i]);
     }
 
     for (let i = 0; i < tzaarTotal; i++) {
-      tzaarScore += this.getScoreForStacks(tzaarTotal, tzaarData[i])
+      tzaarScore += this.getScoreForStacks(tzaarTotal, tzaarData[i]);
     }
 
     stacksOnEdgeScore = stacksOnEdgeScore * this.EDGE_PENALTY_MULTIPLIER;
@@ -248,14 +248,13 @@ export default class EvaluationFactory {
     const player2StacksOnCorner: number[] = [];
 
     for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-      const coordinate = PLAYABLE_VERTICES[i]
-      const piece = gameState[coordinate]
+      const coordinate = PLAYABLE_VERTICES[i];
+      const piece = gameState[coordinate];
 
       if (piece && piece.type) {
         const { ownedBy, type, stackSize } = piece;
         const isEdgePiece = EDGE_COORDINATES_AS_MAP[coordinate];
         const isCornerPiece = CORNER_COORDINATES_AS_MAP[coordinate];
-
 
         if (ownedBy === PLAYER_ONE) {
           // @ts-expect-error fix
@@ -280,8 +279,6 @@ export default class EvaluationFactory {
         }
       }
     }
-
-
 
     return {
       player1Stacks,

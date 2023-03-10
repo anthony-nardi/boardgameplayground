@@ -677,7 +677,7 @@ function getNextInvertedValidCapture(
     if (canCapture(coordinateToCheck, toCoordinate, gameState)) {
       return coordinateToCheck;
     } else {
-      return false
+      return false;
     }
   }
   return false;
