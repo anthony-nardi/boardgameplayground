@@ -6,6 +6,7 @@ import {
   STACK_OR_CAPTURE_OR_PASS,
   GameBoardRecord,
 } from "./constants";
+import { moveAI } from "./gameLogic";
 import { Player, ValidCoordinate } from "./types/types";
 
 export let movingPiece: null | ValidCoordinate = null;
@@ -76,7 +77,7 @@ export let currentTurn: Player = PLAYER_ONE;
 export let turnPhase: typeof CAPTURE | typeof STACK_OR_CAPTURE_OR_PASS =
   TURN_PHASES.CAPTURE;
 export let numberOfTurnsIntoGame = 0;
-export let isFirstPlayerAI = true;
+export let isFirstPlayerAI = false;
 export let isSecondPlayerAI = true;
 
 export function logGameState() {
@@ -113,7 +114,7 @@ export function setMovingPiece(coordinate: ValidCoordinate | null) {
   movingPiece = coordinate;
 }
 
-export function nextPhase() {
+export function nextPhase(maybeMoveAI?: Function) {
   const skipTurnButton = document.getElementById("skipTurnButton");
 
   if (skipTurnButton) {
@@ -130,7 +131,7 @@ export function nextPhase() {
     document.getElementById("phaseDiv").innerHTML = "Phase: CAPTURE";
     // @ts-expect-error todo
     document.getElementById("turnDiv").innerHTML = "Turn: AI";
-
+    maybeMoveAI && maybeMoveAI()
     return;
   }
 
@@ -162,6 +163,8 @@ export function nextPhase() {
     document.getElementById("phaseDiv").innerHTML = "Phase: CAPTURE";
     // @ts-expect-error todo
     document.getElementById("turnDiv").innerHTML = "Turn: AI";
+    maybeMoveAI && maybeMoveAI()
+
     return;
   }
   if (
@@ -175,6 +178,8 @@ export function nextPhase() {
     document.getElementById("phaseDiv").innerHTML = "Phase: CAPTURE";
     // @ts-expect-error todo
     document.getElementById("turnDiv").innerHTML = "Turn: PLAYER";
+    maybeMoveAI && maybeMoveAI()
+
     return;
   }
 }

@@ -44,7 +44,7 @@ let botTwo: undefined | BotFactory;
 
 let matchIndex = 0;
 
-function moveAI() {
+export function moveAI() {
   if (
     (currentTurn === PLAYER_ONE && !isFirstPlayerAI) ||
     (currentTurn === PLAYER_TWO && !isSecondPlayerAI)
@@ -83,6 +83,10 @@ export function passTurn() {
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
+
+  if (getWinner(gameBoardState)) {
+    return;
+  }
 
   if (!isCurrentPlayerPiece(boardCoordinate)) {
     return;
@@ -163,7 +167,7 @@ function capturePiece(
   fromCoordinates: ValidCoordinate,
   toCoordinates: ValidCoordinate
 ) {
-  const fromPiece = gameBoardState.get(fromCoordinates);
+  const fromPiece = gameBoardState[fromCoordinates];
 
   if (!fromPiece) {
     throw new Error("fromPiece not there.");
@@ -172,15 +176,15 @@ function capturePiece(
   gameBoardState[fromCoordinates] = false;
   gameBoardState[toCoordinates] = fromPiece
 
-  checkGameStateAndStartNextTurn(true);
+  checkGameStateAndStartNextTurn(true, moveAI);
 }
 
 function stackPiece(
   fromCoordinates: ValidCoordinate,
   toCoordinates: ValidCoordinate
 ) {
-  const fromPiece = gameBoardState.get(fromCoordinates);
-  const toPiece = gameBoardState.get(toCoordinates);
+  const fromPiece = gameBoardState[fromCoordinates];
+  const toPiece = gameBoardState[toCoordinates];
 
   if (!fromPiece || !toPiece) {
     throw new Error("Stacking broken");
@@ -190,10 +194,10 @@ function stackPiece(
   gameBoardState[toCoordinates] = fromPiece;
   gameBoardState[toCoordinates].stackSize = fromPiece.stackSize + toPiece.stackSize
 
-  checkGameStateAndStartNextTurn();
+  checkGameStateAndStartNextTurn(false, moveAI);
 }
 
-export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
+export function checkGameStateAndStartNextTurn(shouldCheckWinner = false, maybeMoveAI?: Function) {
   nextPhase();
   let winner;
 
@@ -212,9 +216,11 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
       initGame();
     }
   }
+
+  maybeMoveAI && setTimeout(maybeMoveAI)
 }
 
-export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
+export function initGame() {
   const piecesToSetup = setupSymmetricalBoard();
   // const piecesToSetup = breakingState();
   drawInitialGrid();

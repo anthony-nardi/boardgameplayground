@@ -434,7 +434,6 @@ export default class BotFactory {
       turn = node.data.turn
       aim = node.aim
     } else {
-      debugger
       turn =
         node.parent.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
       aim = node.parent.aim * -1;
