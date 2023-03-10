@@ -1,13 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "../.."
-		}
-	],
-	"settings": {
-		"search.exclude": {
-			"": true,
-			"**/node_modules": false
-		}
-	}
+  "folders": [
+    {
+      "path": "../.."
+    }
+  ],
+  "settings": {
+    "search.exclude": {
+      "": true,
+      "**/node_modules": false
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

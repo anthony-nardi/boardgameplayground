@@ -61,7 +61,10 @@ export function moveAI() {
 }
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
-  return gameBoardState[boardCoordinate] && gameBoardState[boardCoordinate].ownedBy === currentTurn
+  return (
+    gameBoardState[boardCoordinate] &&
+    gameBoardState[boardCoordinate].ownedBy === currentTurn
+  );
 }
 
 export function passTurn() {
@@ -96,7 +99,7 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
     return;
   }
 
-  gameBoardState[boardCoordinate].isDragging = true
+  gameBoardState[boardCoordinate].isDragging = true;
 
   setMovingPiece(boardCoordinate);
 }
@@ -134,7 +137,7 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
 
   const toCoordinates = getBoardCoordinatesFromUserInteraction(event);
 
-  gameBoardState[movingPiece].isDragging = false
+  gameBoardState[movingPiece].isDragging = false;
 
   if (!gameBoardState[toCoordinates]) {
     setMovingPiece(null);
@@ -170,7 +173,7 @@ function capturePiece(
   }
 
   gameBoardState[fromCoordinates] = false;
-  gameBoardState[toCoordinates] = fromPiece
+  gameBoardState[toCoordinates] = fromPiece;
 
   checkGameStateAndStartNextTurn(true, moveAI);
 }
@@ -188,12 +191,16 @@ function stackPiece(
 
   gameBoardState[fromCoordinates] = false;
   gameBoardState[toCoordinates] = fromPiece;
-  gameBoardState[toCoordinates].stackSize = fromPiece.stackSize + toPiece.stackSize
+  gameBoardState[toCoordinates].stackSize =
+    fromPiece.stackSize + toPiece.stackSize;
 
   checkGameStateAndStartNextTurn(false, moveAI);
 }
 
-export function checkGameStateAndStartNextTurn(shouldCheckWinner = false, maybeMoveAI?: Function) {
+export function checkGameStateAndStartNextTurn(
+  shouldCheckWinner = false,
+  maybeMoveAI?: Function
+) {
   nextPhase();
   let winner;
 
@@ -213,7 +220,7 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false, maybeM
     }
   }
 
-  maybeMoveAI && setTimeout(maybeMoveAI)
+  maybeMoveAI && setTimeout(maybeMoveAI);
 }
 
 export function initGame() {
@@ -275,13 +282,12 @@ export function initGame() {
       // getPossibleMoveSequences(gameBoardState, PLAYER_TWO); //1k 4801.859130859375 ms
       // applyMoveToGameState(gameBoardState, "5,7->4,7=>5,6->4,7"); // 1000000 1.931s
       // isAnyPieceCapturable(gameBoardState, PLAYER_ONE); // 10000000 3s
-
       // let moves = getEarlyGameMoveSequences(gameBoardState, PLAYER_ONE)
       // console.log(Object.keys(moves).length)
     }
     console.timeEnd(`getGameStateScore iterations: ${iterations}`);
 
-    setTimeout(moveAI)
+    setTimeout(moveAI);
 
     if (
       window.localStorage &&

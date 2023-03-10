@@ -170,14 +170,9 @@ export default class BotFactory {
     const evalFunction = (
       gameState: typeof gameBoardState,
       turn: typeof PLAYER_ONE | typeof PLAYER_TWO,
-      winner?: Player,
+      winner?: Player
     ) => {
-      return this.evaluation.getGameStateScore(
-        gameState,
-        turn,
-        winner,
-
-      );
+      return this.evaluation.getGameStateScore(gameState, turn, winner);
     };
 
     const now = Date.now();
@@ -205,7 +200,6 @@ export default class BotFactory {
         depth = 4;
       }
     }
-
 
     opts.depth = depth;
     // opts.expireTime = 5000;
@@ -238,13 +232,9 @@ export default class BotFactory {
     tree.EvaluateNode = (node) => {
       const gamestateToAnalyze = node.gamestate;
 
-      let turn = node.data.turn
+      let turn = node.data.turn;
 
-      const score = evalFunction(
-        gamestateToAnalyze,
-        turn,
-        node.data.winner,
-      );
+      const score = evalFunction(gamestateToAnalyze, turn, node.data.winner);
       return score;
     };
 
@@ -252,14 +242,12 @@ export default class BotFactory {
       const turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
 
       const gamestateToAnalyze = node.gamestate;
-      const moves = getGameStatesToAnalyze(
-        gamestateToAnalyze,
-        turn,
-        true
-      );
+      const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn, true);
 
       if (moves.length === 0) {
-        throw new Error('THis shouldnt happen... moves is 0 so it should be a terminal game for minimax')
+        throw new Error(
+          "THis shouldnt happen... moves is 0 so it should be a terminal game for minimax"
+        );
       }
 
       return moves;
@@ -431,11 +419,10 @@ export default class BotFactory {
     let aim;
 
     if (node.type === 0) {
-      turn = node.data.turn
-      aim = node.aim
+      turn = node.data.turn;
+      aim = node.aim;
     } else {
-      turn =
-        node.parent.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+      turn = node.parent.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
       aim = node.parent.aim * -1;
     }
 
