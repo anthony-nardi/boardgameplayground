@@ -10,7 +10,7 @@ import {
   CORNER_COORDINATES_AS_MAP,
   PLAYABLE_VERTICES
 } from "./constants";
-import { gameBoardState } from "./gameState";
+import { currentTurn, gameBoardState } from "./gameState";
 import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
 import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
 import { getWinner } from "./evaluationHelpers";
@@ -53,42 +53,27 @@ export default class EvaluationFactory {
 
   public getGameStateScore(
     gameState: typeof gameBoardState,
-    playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO,
+    turn: typeof PLAYER_ONE | typeof PLAYER_TWO,
     winner?: Player,
-    debug = true
   ) {
 
     if (winner) {
-      return winner !== playerToMaximize ? -Infinity : Infinity;
+      return winner !== currentTurn ? -Infinity : Infinity;
     }
 
     const gameMetadata = this.getGameStateMetadata(gameState);
     let score = 0;
+    const minimizingPlayer = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE
 
-    const playerOneTotalScore = this.getTotalScore(gameMetadata, PLAYER_ONE);
-    const playerTwoTotalScore = this.getTotalScore(gameMetadata, PLAYER_TWO);
+    const maximizingPlayerScore = this.getTotalScore(gameMetadata, turn);
+    const minimizingPlayerScore = this.getTotalScore(gameMetadata, minimizingPlayer);
 
-    if (playerToMaximize === PLAYER_ONE) {
-      score = playerOneTotalScore - playerTwoTotalScore;
+    if (currentTurn === turn) {
+      score = maximizingPlayerScore - minimizingPlayerScore;
+
     } else {
-      score = playerTwoTotalScore - playerOneTotalScore;
+      score = -(maximizingPlayerScore - minimizingPlayerScore);
     }
-
-    // if (debug) {
-    //   console.log(
-    //     `Total score for maximizing player: ${playerToMaximize === PLAYER_ONE
-    //       ? playerOneTotalScore
-    //       : playerTwoTotalScore
-    //     }`
-    //   );
-    //   console.log(
-    //     `Total score for minimizing player: ${playerToMaximize === PLAYER_ONE
-    //       ? playerTwoTotalScore
-    //       : playerOneTotalScore
-    //     }`
-    //   );
-    //   console.log(`Score for game state: ${score}`);
-    // }
 
     return score;
   }

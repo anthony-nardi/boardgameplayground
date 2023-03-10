@@ -215,8 +215,8 @@ export function checkGameStateAndStartNextTurn(shouldCheckWinner = false) {
 }
 
 export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
-  // const piecesToSetup = setupSymmetricalBoard();
-  const piecesToSetup = breakingState();
+  const piecesToSetup = setupSymmetricalBoard();
+  // const piecesToSetup = breakingState();
   drawInitialGrid();
 
   const matchesToPlay = setupSurvivalOfTheFittest(2);
@@ -256,7 +256,7 @@ export function initGame(SETUP_STYLE: "RANDOM" | "SYMMETRIC" = "SYMMETRIC") {
   console.log(`Bot two weights`, botTwoParameters);
 
   renderInitializingBoard(piecesToSetup, () => {
-    setInitialGameState(null, PLAYER_ONE, TURN_PHASES.CAPTURE, 15);
+    // setInitialGameState(null, PLAYER_ONE, TURN_PHASES.CAPTURE, 15);
 
     drawGameBoardState();
 

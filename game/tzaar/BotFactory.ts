@@ -169,15 +169,14 @@ export default class BotFactory {
 
     const evalFunction = (
       gameState: typeof gameBoardState,
-      playerToMaximize: typeof PLAYER_ONE | typeof PLAYER_TWO,
+      turn: typeof PLAYER_ONE | typeof PLAYER_TWO,
       winner?: Player,
-      debug?: boolean
     ) => {
       return this.evaluation.getGameStateScore(
         gameState,
-        playerToMaximize,
+        turn,
         winner,
-        debug
+
       );
     };
 
@@ -220,7 +219,7 @@ export default class BotFactory {
     // console.log("DEPTH is " + opts.depth);
 
     let aim = 1;
-    let data = { nextPlayerToMaximize: currentTurn, winner: undefined };
+    let data = { turn: currentTurn, winner: undefined };
     let move = null;
     const nodeType = 0;
     const root = new minimaxer.Node(
@@ -238,27 +237,19 @@ export default class BotFactory {
 
     tree.EvaluateNode = (node) => {
       const gamestateToAnalyze = node.gamestate;
-      let playerToMaximize;
 
-      if (node.parent.type === 0) {
-        playerToMaximize = node.parent?.data.nextPlayerToMaximize;
-      } else {
-        playerToMaximize = node.data.nextPlayerToMaximize;
-      }
+      let turn = node.data.turn
 
       const score = evalFunction(
         gamestateToAnalyze,
-        playerToMaximize,
+        turn,
         node.data.winner,
-        false
       );
       return score;
     };
 
     tree.GetMoves = (node) => {
-
-      const turn =
-        node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+      const turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
 
       const gamestateToAnalyze = node.gamestate;
       const moves = getGameStatesToAnalyze(
@@ -439,12 +430,13 @@ export default class BotFactory {
     let turn;
     let aim;
 
-    if (!node.parent) {
-      turn = currentTurn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-      aim = -1;
+    if (node.type === 0) {
+      turn = node.data.turn
+      aim = node.aim
     } else {
+      debugger
       turn =
-        node.data.nextPlayerToMaximize === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+        node.parent.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
       aim = node.parent.aim * -1;
     }
 
@@ -461,7 +453,7 @@ export default class BotFactory {
       nodeType,
       updatedBoardGameState,
       move,
-      { nextPlayerToMaximize: turn, winner },
+      { turn, winner },
       aim
     );
 
