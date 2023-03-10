@@ -31,10 +31,6 @@ import {
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
 import BotFactory, { applyMoveToGameState } from "./BotFactory";
 import { getWinner, isAnyPieceCapturable } from "./evaluationHelpers";
-import {
-  firstQuestionableMoveByAI,
-  secondQuestionableMoveByAI,
-} from "./tests/QuestionableMoves";
 import { Record } from "immutable";
 import { getEarlyGameMoveSequences, getPossibleMoveSequences } from "./moves";
 import breakingState from "./tests/breakingState";
@@ -83,7 +79,7 @@ export function passTurn() {
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
-
+  // @ts-expect-error fix
   if (getWinner(gameBoardState)) {
     return;
   }

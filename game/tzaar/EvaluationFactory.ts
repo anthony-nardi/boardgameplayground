@@ -178,7 +178,7 @@ export default class EvaluationFactory {
     coordinate: ValidCoordinate,
     gameState: typeof gameBoardState
   ) {
-    return Boolean(getInvertedValidCaptures(coordinate, gameState).size);
+    return Boolean(getInvertedValidCaptures(coordinate, gameState).length);
   }
 
   private getScoreForEdgesAndCorners(edges: number, corners: number) {
@@ -258,6 +258,7 @@ export default class EvaluationFactory {
 
 
         if (ownedBy === PLAYER_ONE) {
+          // @ts-expect-error fix
           player1Stacks[type].push(stackSize);
           if (isEdgePiece) {
             player1StacksOnEdge.push(stackSize);
@@ -268,6 +269,7 @@ export default class EvaluationFactory {
         }
 
         if (ownedBy === PLAYER_TWO) {
+          // @ts-expect-error fix
           player2Stacks[type].push(stackSize);
           if (isEdgePiece) {
             player2StacksOnEdge.push(stackSize);

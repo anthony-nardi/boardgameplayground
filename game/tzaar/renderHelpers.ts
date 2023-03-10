@@ -142,6 +142,7 @@ export function drawGamePiece(gamePiece: any, xPos: number, yPos: number) {
 
 export function drawGamePieces() {
   Object.keys(gameBoardState).forEach((key) => {
+    // @ts-expect-error fix
     drawStaticGamePiece(gameBoardState[key], key);
   });
 }
