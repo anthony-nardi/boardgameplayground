@@ -11,6 +11,7 @@ import {
   numberOfTurnsIntoGame,
   copyBoardGameState,
   getWinnerMessage,
+  addAIMoveToCurrentGame,
 } from "./gameState";
 import { getGameStatesToAnalyze } from "./moves";
 import * as minimaxer from "minimaxer";
@@ -20,6 +21,7 @@ import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
 import { getWinner } from "./evaluationHelpers";
 import { isDebug } from "./utils";
+import { addMoveToCurrentGame } from "./gameState";
 
 export function applyMoveToGameState(gamestate: any, move: string) {
   // dont render moving piece in the same spot...
@@ -224,6 +226,7 @@ export default class BotFactory {
       console.log(`Number of turns into game: ${numberOfTurnsIntoGame}`);
       console.log(`Current turn: ${currentTurn} is making the move: ${move}`);
       console.log(gameBoardState);
+      addAIMoveToCurrentGame(move);
     }
     // Single move only
     if (move.indexOf("=>") === -1) {

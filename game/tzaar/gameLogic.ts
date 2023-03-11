@@ -1,4 +1,4 @@
-import { PLAYER_TWO, PLAYER_ONE, TURN_PHASES } from "./constants";
+import { PLAYER_TWO, PLAYER_ONE, TURN_PHASES, CAPTURE } from "./constants";
 import { drawInitialGrid } from "./cachedBoard";
 import {
   drawCoordinates,
@@ -22,6 +22,11 @@ import {
   isFirstPlayerAI,
   numberOfTurnsIntoGame,
   getWinnerMessage,
+  setInitialGameState,
+  game_id,
+  setGameId,
+  addFirstHumanMoveToCurrentGame,
+  addSecondHumanMoveToCurrentGame,
 } from "./gameState";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
@@ -34,6 +39,7 @@ import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
 import { isDebug } from "./utils";
 import EvaluationFactory from "./EvaluationFactory";
+import { aiDoesntKill } from "./tests/aiDoesntKill";
 
 let botOne: undefined | BotFactory;
 let botTwo: undefined | BotFactory;
@@ -184,6 +190,14 @@ function capturePiece(
     throw new Error("fromPiece not there.");
   }
 
+  if (isDebug()) {
+    if (turnPhase === CAPTURE) {
+      addFirstHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
+    } else {
+      addSecondHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
+    }
+  }
+
   gameBoardState[fromCoordinates] = false;
   gameBoardState[toCoordinates] = fromPiece;
 
@@ -199,6 +213,10 @@ function stackPiece(
 
   if (!fromPiece || !toPiece) {
     throw new Error("Stacking broken");
+  }
+
+  if (isDebug()) {
+    addSecondHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
   }
 
   gameBoardState[fromCoordinates] = false;
@@ -238,8 +256,12 @@ export function checkGameStateAndStartNextTurn(
 }
 
 export function initGame() {
+  if (isDebug()) {
+    setGameId(Date.now());
+  }
+
   const piecesToSetup = setupSymmetricalBoard();
-  // const piecesToSetup = breakingState();
+  // const piecesToSetup = aiDoesntKill();
   drawInitialGrid();
 
   const matchesToPlay = setupSurvivalOfTheFittest(2);
@@ -312,7 +334,7 @@ export function initGame() {
     }
     console.timeEnd(`getGameStateScore iterations: ${iterations}`);
 
-    // setTimeout(moveAI);
+    setTimeout(moveAI);
 
     if (isDebug()) {
       drawCoordinates();

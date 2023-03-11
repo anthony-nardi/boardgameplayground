@@ -18,6 +18,7 @@ export type GameBoardState = {
       };
 };
 
+export let game_id: number | string = 0;
 export let movingPiece: null | ValidCoordinate = null;
 export let gameBoardState: GameBoardState = {
   "4,0": false,
@@ -88,6 +89,63 @@ export let turnPhase: typeof CAPTURE | typeof STACK_OR_CAPTURE_OR_PASS =
 export let numberOfTurnsIntoGame = 0;
 export let isFirstPlayerAI = false;
 export let isSecondPlayerAI = true;
+
+export function setGameId(id: number | string) {
+  game_id = id;
+  // @ts-expect-error fix
+  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
+
+  if (!existingGames) {
+    existingGames = {};
+  }
+
+  const gameIds = Object.keys(existingGames);
+
+  for (let i = 0; i < gameIds.length; i++) {
+    if (existingGames[gameIds[i]].length === 0) {
+      delete existingGames[gameIds[i]];
+    }
+  }
+
+  existingGames[game_id] = [];
+
+  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
+}
+
+export function getGameId() {
+  return game_id;
+}
+
+export function addFirstHumanMoveToCurrentGame(move: string) {
+  // @ts-expect-error fix
+  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
+  if (!existingGames || !existingGames[game_id]) {
+    throw new Error("Game doesnt exist");
+  }
+  existingGames[game_id].push(move);
+  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
+}
+
+export function addSecondHumanMoveToCurrentGame(move: string) {
+  // @ts-expect-error fix
+  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
+  if (!existingGames || !existingGames[game_id]) {
+    throw new Error("Game doesnt exist");
+  }
+  const moveToAddTo = existingGames[game_id].pop();
+  existingGames[game_id].push(`${moveToAddTo}=>${move}`);
+  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
+}
+
+export function addAIMoveToCurrentGame(move: string) {
+  // @ts-expect-error fix
+  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
+  if (!existingGames || !existingGames[game_id]) {
+    throw new Error("Game doesnt exist");
+  }
+  existingGames[game_id].push(move);
+  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
+}
 
 export function logGameState() {
   console.log(
