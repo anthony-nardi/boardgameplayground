@@ -21,7 +21,6 @@ import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
 import { getWinner } from "./evaluationHelpers";
 import { isDebug } from "./utils";
-import { addMoveToCurrentGame } from "./gameState";
 
 export function applyMoveToGameState(gamestate: any, move: string) {
   // dont render moving piece in the same spot...

@@ -314,6 +314,7 @@ export function getPossibleMoveSequences(
       const fromToKey = fromCoordinate + "->" + coordinateToCapture;
 
       // apply state
+      // @ts-expect-error fix
       gameState[fromCoordinate] = null;
       gameState[coordinateToCapture] = currentPieceOnFromCoordinate;
 
