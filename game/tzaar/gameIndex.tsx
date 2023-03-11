@@ -10,21 +10,19 @@ import WindowHelper from "./WindowHelper";
 import gamePieceRenderer from "./gamePieceRenderer";
 import { Button } from "@mantine/core";
 
-
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
-  const isGameInitializedRef = useRef(false)
+  const isGameInitializedRef = useRef(false);
 
   useEffect(() => {
     if (Canvas.current && !isGameInitializedRef.current) {
-
       if (window.localStorage.getItem("DEBUG_TZAAR") === "true") {
-        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "true"`)
+        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "true"`);
       } else {
-        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "false"`)
+        console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "false"`);
       }
 
-      isGameInitializedRef.current = true
+      isGameInitializedRef.current = true;
       window.GAME_STATE_BOARD_CANVAS = Canvas.current;
       WindowHelper.setHeight();
       WindowHelper.setWidth();
@@ -33,8 +31,6 @@ export default function () {
       gamePieceRenderer.init();
       initGame();
     }
-
-
   }, [Canvas]);
 
   return (
