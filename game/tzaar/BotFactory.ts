@@ -8,8 +8,9 @@ import {
   currentTurn,
   isFirstPlayerAI,
   isSecondPlayerAI,
-  isVeryFirstTurn,
   numberOfTurnsIntoGame,
+  copyBoardGameState,
+  getWinnerMessage,
 } from "./gameState";
 import { getGameStatesToAnalyze } from "./moves";
 import * as minimaxer from "minimaxer";
@@ -18,75 +19,15 @@ import { hideLoadingSpinner } from "./domHelpers";
 import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
 import { getWinner } from "./evaluationHelpers";
+import { isDebug } from "./utils";
 
 export function applyMoveToGameState(gamestate: any, move: string) {
   // dont render moving piece in the same spot...
-  const updatedBoardGameState = {
-    "0,4": gamestate["0,4"],
-    "0,5": gamestate["0,5"],
-    "0,6": gamestate["0,6"],
-    "0,7": gamestate["0,7"],
-    "0,8": gamestate["0,8"],
-    "1,3": gamestate["1,3"],
-    "1,4": gamestate["1,4"],
-    "1,5": gamestate["1,5"],
-    "1,6": gamestate["1,6"],
-    "1,7": gamestate["1,7"],
-    "1,8": gamestate["1,8"],
-    "2,2": gamestate["2,2"],
-    "2,3": gamestate["2,3"],
-    "2,4": gamestate["2,4"],
-    "2,5": gamestate["2,5"],
-    "2,6": gamestate["2,6"],
-    "2,7": gamestate["2,7"],
-    "2,8": gamestate["2,8"],
-    "3,1": gamestate["3,1"],
-    "3,2": gamestate["3,2"],
-    "3,3": gamestate["3,3"],
-    "3,4": gamestate["3,4"],
-    "3,5": gamestate["3,5"],
-    "3,6": gamestate["3,6"],
-    "3,7": gamestate["3,7"],
-    "3,8": gamestate["3,8"],
-    "4,0": gamestate["4,0"],
-    "4,1": gamestate["4,1"],
-    "4,2": gamestate["4,2"],
-    "4,3": gamestate["4,3"],
-    "4,5": gamestate["4,5"],
-    "4,6": gamestate["4,6"],
-    "4,7": gamestate["4,7"],
-    "4,8": gamestate["4,8"],
-    "5,0": gamestate["5,0"],
-    "5,1": gamestate["5,1"],
-    "5,2": gamestate["5,2"],
-    "5,3": gamestate["5,3"],
-    "5,4": gamestate["5,4"],
-    "5,5": gamestate["5,5"],
-    "5,6": gamestate["5,6"],
-    "5,7": gamestate["5,7"],
-    "6,0": gamestate["6,0"],
-    "6,1": gamestate["6,1"],
-    "6,2": gamestate["6,2"],
-    "6,3": gamestate["6,3"],
-    "6,4": gamestate["6,4"],
-    "6,5": gamestate["6,5"],
-    "6,6": gamestate["6,6"],
-    "7,0": gamestate["7,0"],
-    "7,1": gamestate["7,1"],
-    "7,2": gamestate["7,2"],
-    "7,3": gamestate["7,3"],
-    "7,4": gamestate["7,4"],
-    "7,5": gamestate["7,5"],
-    "8,0": gamestate["8,0"],
-    "8,1": gamestate["8,1"],
-    "8,2": gamestate["8,2"],
-    "8,3": gamestate["8,3"],
-    "8,4": gamestate["8,4"],
-  } as any;
-
+  const updatedBoardGameState = copyBoardGameState(gamestate);
   // Single move only
   if (move.slice(8, 10) !== "=>") {
-    const [firstFromCoordinate, firstToCoordinate] = move.split("->");
+    const firstFromCoordinate = move.slice(0, 3) as ValidCoordinate;
+    const firstToCoordinate = move.slice(5, 9) as ValidCoordinate;
     const fromPiece = gamestate[firstFromCoordinate];
 
     updatedBoardGameState[firstFromCoordinate] = false;
@@ -99,10 +40,10 @@ export function applyMoveToGameState(gamestate: any, move: string) {
     return updatedBoardGameState;
   }
 
-  const firstFromCoordinate = move.slice(0, 3);
-  const firstToCoordinate = move.slice(5, 8);
-  const secondFromCoordinate = move.slice(10, 13);
-  const secondToCoordinate = move.slice(15, 18);
+  const firstFromCoordinate = move.slice(0, 3) as ValidCoordinate;
+  const firstToCoordinate = move.slice(5, 8) as ValidCoordinate;
+  const secondFromCoordinate = move.slice(10, 13) as ValidCoordinate;
+  const secondToCoordinate = move.slice(15, 18) as ValidCoordinate;
 
   const firstFromPiece = gamestate[firstFromCoordinate];
 
@@ -115,11 +56,11 @@ export function applyMoveToGameState(gamestate: any, move: string) {
     type: firstFromPiece.type,
   };
 
-  const secondFromPiece = updatedBoardGameState[secondFromCoordinate];
+  const secondFromPiece = updatedBoardGameState[secondFromCoordinate] as any;
 
   updatedBoardGameState[secondFromCoordinate] = false;
 
-  const toPiece = updatedBoardGameState[secondToCoordinate];
+  const toPiece = updatedBoardGameState[secondToCoordinate] as any;
 
   if (secondFromPiece.ownedBy === toPiece.ownedBy) {
     const updatedSecondFromPiece = {
@@ -156,66 +97,43 @@ export default class BotFactory {
   private VERSION: number;
   public evaluation: EvaluationFactory;
 
-  public moveAI(moveAiCallback: Function) {
-    const winner = getWinner(gameBoardState, true, currentTurn);
+  private getScore(node: any) {
+    return this.evaluation.getGameStateScore(node);
+  }
 
-    if (winner) {
-      let message = winner === PLAYER_TWO ? "You lost." : "You won!";
-      // alert(`${message}`);
-      console.log("WINNER ", winner);
-
-      return null;
-    }
-
-    const evalFunction = (
-      gameState: typeof gameBoardState,
-      turn: typeof PLAYER_ONE | typeof PLAYER_TWO,
-      winner?: Player
-    ) => {
-      return this.evaluation.getGameStateScore(gameState, turn, winner);
-    };
-
-    const now = Date.now();
+  private getOpts(totalStartingMoveCount: number) {
     const opts = new minimaxer.NegamaxOpts();
-
-    const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
-      gameBoardState,
-      currentTurn
-    );
-
-    console.log(
-      `All possible starting moves: ${allPossibleStatesAfterTurn.length} for ${currentTurn}`
-    );
     const EARLY_GAME = numberOfTurnsIntoGame < 10;
 
     let depth = 1;
-    if (!isVeryFirstTurn) {
-      if (allPossibleStatesAfterTurn.length < 3000) {
+    if (numberOfTurnsIntoGame > 1) {
+      if (totalStartingMoveCount < 3000) {
         depth = 2;
       }
-      if (allPossibleStatesAfterTurn.length < 500 && !EARLY_GAME) {
+      if (totalStartingMoveCount < 500 && !EARLY_GAME) {
         depth = 3;
       }
-      if (allPossibleStatesAfterTurn.length < 200 && !EARLY_GAME) {
+      if (totalStartingMoveCount < 200 && !EARLY_GAME) {
         depth = 4;
       }
     }
 
     opts.depth = depth;
-    // opts.expireTime = 5000;
     opts.method = 2;
-    // opts.method = 3;
     opts.pruning = 1;
     opts.sortMethod = 0;
     opts.genBased = false;
     opts.optimal = false;
-    // opts.timeout = 10000;
-    // console.log("DEPTH is " + opts.depth);
 
-    let aim = 1;
-    let data = { turn: currentTurn, winner: undefined };
-    let move = null;
+    return opts;
+  }
+
+  private getRootNode(allPossibleStatesAfterTurn: string[]) {
+    const aim = 1;
+    const data = { turn: currentTurn, winner: undefined };
+    const move = null;
     const nodeType = 0;
+
     const root = new minimaxer.Node(
       nodeType,
       gameBoardState,
@@ -224,42 +142,72 @@ export default class BotFactory {
       aim,
       allPossibleStatesAfterTurn
     );
+
+    return root;
+  }
+
+  private firstCheckIfWinner() {
+    const winner = getWinner(gameBoardState, true, currentTurn);
+
+    if (winner) {
+      const message = getWinnerMessage(winner);
+      console.log(
+        message,
+        `Number of turns into game: ${numberOfTurnsIntoGame}`
+      );
+      return true;
+    }
+  }
+
+  private getMovesCallback(node: any) {
+    const turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+
+    const gamestateToAnalyze = node.gamestate;
+    const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn, true);
+
+    if (moves.length === 0) {
+      throw new Error(
+        "THis shouldnt happen... moves is 0 so it should be a terminal game for minimax"
+      );
+    }
+
+    return moves;
+  }
+
+  public moveAI(moveAiCallback: Function) {
+    const winner = this.firstCheckIfWinner();
+
+    if (winner) {
+      return;
+    }
+
+    const now = Date.now();
+
+    const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
+      gameBoardState,
+      currentTurn
+    );
+
+    console.log(
+      `All possible starting moves: ${allPossibleStatesAfterTurn.length} for ${currentTurn} on turn ${numberOfTurnsIntoGame}`
+    );
+
+    const opts = this.getOpts(allPossibleStatesAfterTurn.length);
+    const root = this.getRootNode(allPossibleStatesAfterTurn);
     const tree = new minimaxer.Negamax(root, opts);
 
     // @ts-expect-error Figure out. TODO
-    tree.CreateChildNode = this.createChildCallback;
-
-    tree.EvaluateNode = (node) => {
-      const gamestateToAnalyze = node.gamestate;
-
-      let turn = node.data.turn;
-
-      const score = evalFunction(gamestateToAnalyze, turn, node.data.winner);
-      return score;
-    };
-
-    tree.GetMoves = (node) => {
-      const turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-
-      const gamestateToAnalyze = node.gamestate;
-      const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn, true);
-
-      if (moves.length === 0) {
-        throw new Error(
-          "THis shouldnt happen... moves is 0 so it should be a terminal game for minimax"
-        );
-      }
-
-      return moves;
-    };
+    tree.CreateChildNode = this.createChildCallback.bind(this);
+    tree.EvaluateNode = this.getScore.bind(this);
+    tree.GetMoves = this.getMovesCallback.bind(this);
 
     const result = tree.evaluate();
 
     console.log(result);
     const elapsed = Date.now() - now;
+
     console.log("Took %d ms", elapsed);
     // @ts-expect-error fix TODO
-
     this.playMove(result.move, moveAiCallback);
 
     hideLoadingSpinner();
@@ -272,11 +220,10 @@ export default class BotFactory {
     if (currentTurn === PLAYER_TWO && !isSecondPlayerAI) {
       throw new Error("playMove should not happen for a human player");
     }
-    if (
-      window.localStorage &&
-      window.localStorage.getItem("DEBUG_TZAAR") === "true"
-    ) {
-      // console.log(gameBoardState.toJS());
+    if (isDebug()) {
+      console.log(`Number of turns into game: ${numberOfTurnsIntoGame}`);
+      console.log(`Current turn: ${currentTurn} is making the move: ${move}`);
+      console.log(gameBoardState);
     }
     // Single move only
     if (move.indexOf("=>") === -1) {

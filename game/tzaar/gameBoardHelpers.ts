@@ -437,6 +437,13 @@ export function canCapture(
   toCoordinate: ValidCoordinate,
   gameState: typeof gameBoardState
 ) {
+  // return (
+  //   gameState[fromCoordinate] &&
+  //   gameState[toCoordinate] &&
+  //   gameState[fromCoordinate].ownedBy !== gameState[toCoordinate].ownedBy &&
+  //   gameState[fromCoordinate].stackSize >= gameState[toCoordinate].stackSize
+  // );
+
   const fromPiece = gameState[fromCoordinate];
   const toPiece = gameState[toCoordinate];
 

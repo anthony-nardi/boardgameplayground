@@ -4,16 +4,13 @@ import {
   TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
-  CORNER_COORDINATES,
-  EDGE_COORDINATES,
   EDGE_COORDINATES_AS_MAP,
   CORNER_COORDINATES_AS_MAP,
   PLAYABLE_VERTICES,
 } from "./constants";
 import { currentTurn, gameBoardState } from "./gameState";
-import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
-import { getInvertedValidCaptures, getValidCaptures } from "./gameBoardHelpers";
-import { getWinner } from "./evaluationHelpers";
+import { Player, ValidCoordinate } from "./types/types";
+import { getInvertedValidCaptures } from "./gameBoardHelpers";
 
 export default class EvaluationFactory {
   constructor(props: {
@@ -51,11 +48,11 @@ export default class EvaluationFactory {
   CORNER_PENALTY = -2;
   LARGEST_STACK_BONUS = 1;
 
-  public getGameStateScore(
-    gameState: typeof gameBoardState,
-    turn: typeof PLAYER_ONE | typeof PLAYER_TWO,
-    winner?: Player
-  ) {
+  public getGameStateScore(node: any) {
+    const gameState = node.gamestate;
+    const turn = node.data.turn;
+    const winner = node.data.winner;
+
     if (winner) {
       return winner !== currentTurn ? -Infinity : Infinity;
     }
@@ -81,16 +78,12 @@ export default class EvaluationFactory {
 
   private getTotalScore(
     gameMetadata: {
-      player1Stacks: {
-        TOTT: number[];
-        TZARRA: number[];
-        TZAAR: number[];
-      };
-      player2Stacks: {
-        TOTT: number[];
-        TZARRA: number[];
-        TZAAR: number[];
-      };
+      PLAYER_ONE_TOTT_STACKS: number[];
+      PLAYER_ONE_TZARRA_STACKS: number[];
+      PLAYER_ONE_TZAAR_STACKS: number[];
+      PLAYER_TWO_TOTT_STACKS: number[];
+      PLAYER_TWO_TZARRA_STACKS: number[];
+      PLAYER_TWO_TZAAR_STACKS: number[];
       player1StacksOnEdge: number[];
       player1StacksOnCorner: number[];
       player2StacksOnEdge: number[];
@@ -98,12 +91,25 @@ export default class EvaluationFactory {
     },
     player: typeof PLAYER_ONE | typeof PLAYER_TWO
   ) {
-    const key = player === PLAYER_ONE ? "player1Stacks" : "player2Stacks";
-    const stacksOnEdgeData = gameMetadata[`${key}OnEdge`];
-    const stacksOnCornerData = gameMetadata[`${key}OnCorner`];
-    const tottData = gameMetadata[key].TOTT;
-    const tzaaraData = gameMetadata[key].TZARRA;
-    const tzaarData = gameMetadata[key].TZAAR;
+    let stacksOnEdgeData;
+    let stacksOnCornerData;
+    let tottData;
+    let tzaaraData;
+    let tzaarData;
+
+    if (player === PLAYER_ONE) {
+      stacksOnEdgeData = gameMetadata.player1StacksOnEdge;
+      stacksOnCornerData = gameMetadata.player1StacksOnCorner;
+      tottData = gameMetadata.PLAYER_ONE_TOTT_STACKS;
+      tzaaraData = gameMetadata.PLAYER_ONE_TZARRA_STACKS;
+      tzaarData = gameMetadata.PLAYER_ONE_TZAAR_STACKS;
+    } else {
+      stacksOnEdgeData = gameMetadata.player2StacksOnEdge;
+      stacksOnCornerData = gameMetadata.player2StacksOnCorner;
+      tottData = gameMetadata.PLAYER_TWO_TOTT_STACKS;
+      tzaaraData = gameMetadata.PLAYER_TWO_TZARRA_STACKS;
+      tzaarData = gameMetadata.PLAYER_TWO_TZAAR_STACKS;
+    }
 
     const tottTotal = tottData.length;
     const tzaaraTotal = tzaaraData.length;
@@ -231,58 +237,70 @@ export default class EvaluationFactory {
     return 0;
   }
 
-  private getGameStateMetadata(gameState: typeof gameBoardState) {
-    const player1Stacks = {
-      [TOTT]: [] as number[],
-      [TZARRA]: [] as number[],
-      [TZAAR]: [] as number[],
-    };
-    const player2Stacks = {
-      [TOTT]: [] as number[],
-      [TZARRA]: [] as number[],
-      [TZAAR]: [] as number[],
-    };
+  public getGameStateMetadata(gameState: typeof gameBoardState) {
+    const PLAYER_ONE_TOTT_STACKS = [];
+    const PLAYER_ONE_TZARRA_STACKS = [];
+    const PLAYER_ONE_TZAAR_STACKS = [];
+    const PLAYER_TWO_TOTT_STACKS = [];
+    const PLAYER_TWO_TZARRA_STACKS = [];
+    const PLAYER_TWO_TZAAR_STACKS = [];
+
     const player1StacksOnEdge: number[] = [];
     const player1StacksOnCorner: number[] = [];
     const player2StacksOnEdge: number[] = [];
     const player2StacksOnCorner: number[] = [];
 
     for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
-      const coordinate = PLAYABLE_VERTICES[i];
-      const piece = gameState[coordinate];
+      const piece = gameState[PLAYABLE_VERTICES[i]];
+      const isEdgePiece = EDGE_COORDINATES_AS_MAP[PLAYABLE_VERTICES[i]];
+      const isCornerPiece = CORNER_COORDINATES_AS_MAP[PLAYABLE_VERTICES[i]];
 
       if (piece && piece.type) {
-        const { ownedBy, type, stackSize } = piece;
-        const isEdgePiece = EDGE_COORDINATES_AS_MAP[coordinate];
-        const isCornerPiece = CORNER_COORDINATES_AS_MAP[coordinate];
-
-        if (ownedBy === PLAYER_ONE) {
-          // @ts-expect-error fix
-          player1Stacks[type].push(stackSize);
+        if (piece.ownedBy === PLAYER_ONE) {
+          if (piece.type === TOTT) {
+            PLAYER_ONE_TOTT_STACKS.push(piece.stackSize);
+          }
+          if (piece.type === TZARRA) {
+            PLAYER_ONE_TZARRA_STACKS.push(piece.stackSize);
+          }
+          if (piece.type === TZAAR) {
+            PLAYER_ONE_TZAAR_STACKS.push(piece.stackSize);
+          }
           if (isEdgePiece) {
-            player1StacksOnEdge.push(stackSize);
+            player1StacksOnEdge.push(piece.stackSize);
           }
           if (isCornerPiece) {
-            player1StacksOnCorner.push(stackSize);
+            player1StacksOnCorner.push(piece.stackSize);
           }
         }
 
-        if (ownedBy === PLAYER_TWO) {
-          // @ts-expect-error fix
-          player2Stacks[type].push(stackSize);
+        if (piece.ownedBy === PLAYER_TWO) {
+          if (piece.type === TOTT) {
+            PLAYER_TWO_TOTT_STACKS.push(piece.stackSize);
+          }
+          if (piece.type === TZARRA) {
+            PLAYER_TWO_TZARRA_STACKS.push(piece.stackSize);
+          }
+          if (piece.type === TZAAR) {
+            PLAYER_TWO_TZAAR_STACKS.push(piece.stackSize);
+          }
           if (isEdgePiece) {
-            player2StacksOnEdge.push(stackSize);
+            player2StacksOnEdge.push(piece.stackSize);
           }
           if (isCornerPiece) {
-            player2StacksOnCorner.push(stackSize);
+            player2StacksOnCorner.push(piece.stackSize);
           }
         }
       }
     }
 
     return {
-      player1Stacks,
-      player2Stacks,
+      PLAYER_ONE_TOTT_STACKS,
+      PLAYER_ONE_TZARRA_STACKS,
+      PLAYER_ONE_TZAAR_STACKS,
+      PLAYER_TWO_TOTT_STACKS,
+      PLAYER_TWO_TZARRA_STACKS,
+      PLAYER_TWO_TZAAR_STACKS,
       player1StacksOnEdge,
       player1StacksOnCorner,
       player2StacksOnEdge,

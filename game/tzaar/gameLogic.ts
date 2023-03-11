@@ -20,7 +20,8 @@ import {
   turnPhase,
   isSecondPlayerAI,
   isFirstPlayerAI,
-  setInitialGameState,
+  numberOfTurnsIntoGame,
+  getWinnerMessage,
 } from "./gameState";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
@@ -29,11 +30,10 @@ import {
   getBoardCoordinatesFromUserInteraction,
 } from "./coordinateHelpers";
 import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
-import BotFactory, { applyMoveToGameState } from "./BotFactory";
-import { getWinner, isAnyPieceCapturable } from "./evaluationHelpers";
-import { Record } from "immutable";
-import { getEarlyGameMoveSequences, getPossibleMoveSequences } from "./moves";
-import breakingState from "./tests/breakingState";
+import BotFactory from "./BotFactory";
+import { getWinner } from "./evaluationHelpers";
+import { isDebug } from "./utils";
+import EvaluationFactory from "./EvaluationFactory";
 
 let botOne: undefined | BotFactory;
 let botTwo: undefined | BotFactory;
@@ -52,19 +52,23 @@ export function moveAI() {
     return null;
   }
 
+  showLoadingSpinner();
+
   if (currentTurn === PLAYER_ONE) {
-    botOne?.moveAI(moveAI);
+    setTimeout(() => {
+      botOne?.moveAI(moveAI);
+    }, 200);
   }
   if (currentTurn === PLAYER_TWO) {
-    botTwo?.moveAI(moveAI);
+    setTimeout(() => {
+      botTwo?.moveAI(moveAI);
+    }, 200);
   }
 }
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
-  return (
-    gameBoardState[boardCoordinate] &&
-    gameBoardState[boardCoordinate].ownedBy === currentTurn
-  );
+  const piece = gameBoardState[boardCoordinate];
+  return piece && piece.ownedBy === currentTurn;
 }
 
 export function passTurn() {
@@ -82,10 +86,6 @@ export function passTurn() {
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
-  // @ts-expect-error fix
-  if (getWinner(gameBoardState)) {
-    return;
-  }
 
   if (!isCurrentPlayerPiece(boardCoordinate)) {
     return;
@@ -99,7 +99,15 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
     return;
   }
 
-  gameBoardState[boardCoordinate].isDragging = true;
+  if (getWinner(gameBoardState, true, currentTurn)) {
+    return;
+  }
+
+  const piece = gameBoardState[boardCoordinate];
+
+  if (piece) {
+    piece.isDragging = true;
+  }
 
   setMovingPiece(boardCoordinate);
 }
@@ -137,7 +145,11 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
 
   const toCoordinates = getBoardCoordinatesFromUserInteraction(event);
 
-  gameBoardState[movingPiece].isDragging = false;
+  const piece = gameBoardState[movingPiece];
+
+  if (piece) {
+    piece.isDragging = false;
+  }
 
   if (!gameBoardState[toCoordinates]) {
     setMovingPiece(null);
@@ -191,8 +203,7 @@ function stackPiece(
 
   gameBoardState[fromCoordinates] = false;
   gameBoardState[toCoordinates] = fromPiece;
-  gameBoardState[toCoordinates].stackSize =
-    fromPiece.stackSize + toPiece.stackSize;
+  fromPiece.stackSize = fromPiece.stackSize + toPiece.stackSize;
 
   checkGameStateAndStartNextTurn(false, moveAI);
 }
@@ -208,15 +219,18 @@ export function checkGameStateAndStartNextTurn(
     winner = getWinner(gameBoardState, true, currentTurn);
   }
 
-  let message = winner === PLAYER_TWO ? "You lost." : "You won!";
   if (winner) {
-    console.log("WINNER ", winner, message);
+    const message = getWinnerMessage(winner);
+
+    console.log(message, `Number of turns taken: ${numberOfTurnsIntoGame}`);
     // @ts-expect-error fix
     const matchesToPlay = setupSurvivalOfTheFittest();
 
     if (matchIndex < Object.keys(matchesToPlay).length) {
       matchIndex += 1;
       initGame();
+    } else {
+      alert(message);
     }
   }
 
@@ -269,11 +283,22 @@ export function initGame() {
 
     drawGameBoardState();
 
-    const iterations = 1000;
+    const iterations = 1000000;
 
     console.time(`getGameStateScore iterations: ${iterations}`);
-
+    const evalThing = new EvaluationFactory({
+      CORNER_PENALTY_MULTIPLIER: 1,
+      COUNT_SCORE_MULTIPLIER: 1,
+      EDGE_PENALTY_MULTIPLIER: 1,
+      LARGEST_STACK_BONUS_MULTIPLIER: 1,
+      SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1,
+      STACK_SIZE_SCORE_MULTIPLIER: 1,
+      STACK_VALUE_BONUS_MULTIPLIER: 1,
+      VERSION: 1,
+    });
     for (let i = 0; i < iterations; i++) {
+      // evalThing.getGameStateMetadata(gameBoardState);
+      // getHasAllThreePieceTypes(gameBoardState); //1000000  800ms (now 430ms)
       // getWinner(gameBoardState) // 3.8s per mil
       // botOne?.evaluation?.getGameStateScore(
       //   gameBoardState,
@@ -287,12 +312,9 @@ export function initGame() {
     }
     console.timeEnd(`getGameStateScore iterations: ${iterations}`);
 
-    setTimeout(moveAI);
+    // setTimeout(moveAI);
 
-    if (
-      window.localStorage &&
-      window.localStorage.getItem("DEBUG_TZAAR") === "true"
-    ) {
+    if (isDebug()) {
       drawCoordinates();
     }
   });
