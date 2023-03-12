@@ -1,4 +1,4 @@
-import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
+import { getPixelCoordinatesFromBoardCoordinates } from "../logic/gameBoardHelpers";
 import {
   PLAYABLE_VERTICES,
   TOTT,
@@ -6,14 +6,15 @@ import {
   TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
-} from "./constants";
+} from "../constants";
 import WindowHelper from "./WindowHelper";
 import { drawCachedBoard } from "./cachedBoard";
-import GameState from "./gameState";
-import { List, RecordOf } from "immutable";
+import GameState from "../logic/gameState";
+import { List } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
-import { ValidCoordinate } from "./types/types";
-import { circlePatternInsideOut } from "./initialSetupOptions";
+import { ValidCoordinate } from "../types/types";
+import { circlePatternInsideOut } from "../logic/initialSetupOptions";
+
 function getContext() {
   if (!window.GAME_STATE_BOARD_CANVAS) {
     throw new Error("GAME_STATE_BOARD_CANVAS not ready");

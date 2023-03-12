@@ -6,8 +6,8 @@ import {
   handleMovePiece,
   passTurn,
 } from "./gameLogic";
-import WindowHelper from "./WindowHelper";
-import gamePieceRenderer from "./gamePieceRenderer";
+import WindowHelper from "../rendering/WindowHelper";
+import gamePieceRenderer from "../rendering/gamePieceRenderer";
 import { Button } from "@mantine/core";
 
 export default function () {

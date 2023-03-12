@@ -1,20 +1,15 @@
 import {
-  PLAYABLE_VERTICES,
   TOTT,
   TZARRA,
-  NUMBER_OF_TOTTS,
-  NUMBER_OF_TZARRAS,
-  NUMBER_OF_TZAARS,
   TZAAR,
   PLAYER_TWO,
   PLAYER_ONE,
   PLAYABLE_VERTICES_AS_MAP,
-} from "./constants";
-import { List, Map, RecordOf } from "immutable";
-import WindowHelper from "./WindowHelper";
-import { Direction, ValidCoordinate } from "./types/types";
-import GamePieceRenderer from "./gamePieceRenderer";
-import GameState, { GameBoardState } from "./gameState";
+} from "../constants";
+import WindowHelper from "../rendering/WindowHelper";
+import { Direction, ValidCoordinate } from "../types/types";
+import GamePieceRenderer from "../rendering/gamePieceRenderer";
+import { GameBoardState } from "./gameState";
 
 const isTruthy = (arg: any) => arg;
 

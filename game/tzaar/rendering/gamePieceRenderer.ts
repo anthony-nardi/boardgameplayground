@@ -1,4 +1,4 @@
-import { TOTT, PLAYER_ONE, PLAYER_TWO, TZAAR, TZARRA } from "./constants";
+import { TOTT, PLAYER_ONE, PLAYER_TWO, TZAAR, TZARRA } from "../constants";
 import WindowHelper from "./WindowHelper";
 import { RecordOf } from "immutable";
 

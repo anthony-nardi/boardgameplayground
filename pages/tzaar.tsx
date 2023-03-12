@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-const DynamicHeader = dynamic(() => import("game/tzaar/gameIndex"), {
+const DynamicHeader = dynamic(() => import("game/tzaar/logic/gameIndex"), {
   loading: () => null,
   ssr: false,
 });
