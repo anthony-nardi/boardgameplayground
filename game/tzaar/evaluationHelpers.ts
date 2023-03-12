@@ -10,6 +10,8 @@ import GameState, { GameBoardState } from "./gameState";
 import { Player } from "./types/types";
 import { getAnyInvertedValidCaptures, getAnyCapture } from "./gameBoardHelpers";
 
+// Returns 1 if player 1 is missing a type
+// Returns 2 if player 2 is missing a type
 export function getHasAllThreePieceTypes(gameState: GameBoardState) {
   let PLAYER_ONE_TOTT = false;
   let PLAYER_ONE_TZARRA = false;
@@ -21,26 +23,24 @@ export function getHasAllThreePieceTypes(gameState: GameBoardState) {
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
     const piece = gameState[PLAYABLE_VERTICES[i]];
     if (piece) {
-      const { ownedBy, type } = piece;
-
-      if (ownedBy === PLAYER_ONE) {
-        if (type === TOTT) {
+      if (piece.ownedBy === PLAYER_ONE) {
+        if (piece.type === TOTT) {
           PLAYER_ONE_TOTT = true;
         }
-        if (type === TZARRA) {
+        if (piece.type === TZARRA) {
           PLAYER_ONE_TZARRA = true;
         }
-        if (type === TZAAR) {
+        if (piece.type === TZAAR) {
           PLAYER_ONE_TZAAR = true;
         }
       } else {
-        if (type === TOTT) {
+        if (piece.type === TOTT) {
           PLAYER_TWO_TOTT = true;
         }
-        if (type === TZARRA) {
+        if (piece.type === TZARRA) {
           PLAYER_TWO_TZARRA = true;
         }
-        if (type === TZAAR) {
+        if (piece.type === TZAAR) {
           PLAYER_TWO_TZAAR = true;
         }
       }
@@ -53,18 +53,18 @@ export function getHasAllThreePieceTypes(gameState: GameBoardState) {
         PLAYER_TWO_TZARRA &&
         PLAYER_TWO_TZAAR
       ) {
-        return {
-          PLAYER_ONE: true,
-          PLAYER_TWO: true,
-        };
+        return;
       }
     }
   }
 
-  return {
-    PLAYER_ONE: PLAYER_ONE_TOTT && PLAYER_ONE_TZARRA && PLAYER_ONE_TZAAR,
-    PLAYER_TWO: PLAYER_TWO_TOTT && PLAYER_TWO_TZARRA && PLAYER_TWO_TZAAR,
-  };
+  if (!(PLAYER_ONE_TOTT && PLAYER_ONE_TZARRA && PLAYER_ONE_TZAAR)) {
+    return 1;
+  }
+
+  if (!(PLAYER_TWO_TOTT && PLAYER_TWO_TZARRA && PLAYER_TWO_TZAAR)) {
+    return 2;
+  }
 }
 
 export function isAnyPieceCapturable(
@@ -108,10 +108,10 @@ export function getWinner(
 ) {
   const playersHaveAllPieces = getHasAllThreePieceTypes(gameState);
 
-  if (!playersHaveAllPieces[PLAYER_ONE]) {
+  if (playersHaveAllPieces === 1) {
     return PLAYER_TWO;
   }
-  if (!playersHaveAllPieces[PLAYER_TWO]) {
+  if (playersHaveAllPieces === 2) {
     return PLAYER_ONE;
   }
 
