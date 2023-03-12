@@ -1,12 +1,15 @@
-import { PLAYER_TWO, PLAYER_ONE, AI_ANIMATION_DURATION } from "./constants";
-import { drawGameBoardState, renderMovingPiece } from "./renderHelpers";
+import { PLAYER_TWO, PLAYER_ONE, AI_ANIMATION_DURATION } from "../constants";
+import {
+  drawGameBoardState,
+  renderMovingPiece,
+} from "../rendering/renderHelpers";
 import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
 import GameState from "./gameState";
 import { addAIMoveToCurrentGame } from "./gameHistory";
 import { getGameStatesToAnalyze } from "./moves";
 import * as minimaxer from "minimaxer";
-import { ValidCoordinate } from "./types/types";
-import { hideLoadingSpinner } from "./domHelpers";
+import { ValidCoordinate } from "../types/types";
+import { hideLoadingSpinner } from "../rendering/domHelpers";
 import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
 import { getWinner } from "./evaluationHelpers";

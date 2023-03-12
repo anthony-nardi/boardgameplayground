@@ -5,9 +5,9 @@ import {
   PLAYER_ONE,
   PLAYER_TWO,
   PLAYABLE_VERTICES,
-} from "./constants";
+} from "../constants";
 import GameState, { GameBoardState } from "./gameState";
-import { Player } from "./types/types";
+import { Player } from "../types/types";
 import { getAnyInvertedValidCaptures, getAnyCapture } from "./gameBoardHelpers";
 
 // Returns 1 if player 1 is missing a type

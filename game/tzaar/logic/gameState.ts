@@ -4,8 +4,8 @@ import {
   TURN_PHASES,
   CAPTURE,
   STACK_OR_CAPTURE_OR_PASS,
-} from "./constants";
-import { Player, PlayerPieces, ValidCoordinate } from "./types/types";
+} from "../constants";
+import { Player, PlayerPieces, ValidCoordinate } from "../types/types";
 
 export type PieceState = {
   isDragging: boolean;

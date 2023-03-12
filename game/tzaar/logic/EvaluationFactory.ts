@@ -7,9 +7,9 @@ import {
   EDGE_COORDINATES_AS_MAP,
   CORNER_COORDINATES_AS_MAP,
   PLAYABLE_VERTICES,
-} from "./constants";
+} from "../constants";
 import GameState, { GameBoardState } from "./gameState";
-import { ValidCoordinate } from "./types/types";
+import { ValidCoordinate } from "../types/types";
 import { getInvertedValidCaptures } from "./gameBoardHelpers";
 
 export default class EvaluationFactory {

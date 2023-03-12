@@ -1,4 +1,3 @@
-import { List, Map } from "immutable";
 import {
   TZAAR,
   TOTT,
@@ -6,7 +5,7 @@ import {
   PLAYER_ONE,
   PLAYER_TWO,
   PLAYABLE_VERTICES,
-} from "./constants";
+} from "../constants";
 import GameState, { GameBoardState } from "./gameState";
 import {
   getValidCaptures,
@@ -14,12 +13,7 @@ import {
   getInvertedValidCaptures,
   getValidStacksAndCaptures,
 } from "./gameBoardHelpers";
-import {
-  PieceType,
-  Player,
-  PlayerPieces,
-  ValidCoordinate,
-} from "./types/types";
+import { Player, PlayerPieces, ValidCoordinate } from "../types/types";
 
 export function getGameStatesToAnalyze(
   gameState: GameBoardState,

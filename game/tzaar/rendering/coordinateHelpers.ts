@@ -1,4 +1,4 @@
-import { getBoardCoordinatesFromPixelCoordinates } from "./gameBoardHelpers";
+import { getBoardCoordinatesFromPixelCoordinates } from "../logic/gameBoardHelpers";
 
 export function getPixelCoordinatesFromTouchInteraction(
   event: React.TouchEvent<HTMLCanvasElement>

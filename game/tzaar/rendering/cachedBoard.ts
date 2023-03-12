@@ -3,7 +3,7 @@ import GamePieceRenderer, {
   NUMBER_OF_COLS,
   NUMBER_OF_ROWS,
 } from "./gamePieceRenderer";
-import { AllCoordinates } from "./types/types";
+import { AllCoordinates } from "../types/types";
 
 const CACHED_CANVAS = document.createElement("canvas");
 

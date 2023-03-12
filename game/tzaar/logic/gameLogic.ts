@@ -1,11 +1,11 @@
-import { PLAYER_TWO, PLAYER_ONE, TURN_PHASES, CAPTURE } from "./constants";
-import { drawInitialGrid } from "./cachedBoard";
+import { PLAYER_TWO, PLAYER_ONE, TURN_PHASES, CAPTURE } from "../constants";
+import { drawInitialGrid } from "../rendering/cachedBoard";
 import {
   drawCoordinates,
   drawGameBoardState,
   drawGamePiece,
   renderInitializingBoard,
-} from "./renderHelpers";
+} from "../rendering/renderHelpers";
 import {
   setupSymmetricalBoard,
   getValidCaptures,
@@ -18,12 +18,12 @@ import {
   addSecondHumanMoveToCurrentGame,
 } from "./gameHistory";
 import React from "react";
-import { ValidCoordinate } from "./types/types";
+import { ValidCoordinate } from "../types/types";
 import {
   getPixelCoordinatesFromUserInteraction,
   getBoardCoordinatesFromUserInteraction,
-} from "./coordinateHelpers";
-import { hideSkipButton, showLoadingSpinner } from "./domHelpers";
+} from "../rendering/coordinateHelpers";
+import { hideSkipButton, showLoadingSpinner } from "../rendering/domHelpers";
 import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
 import { isDebug } from "./utils";
