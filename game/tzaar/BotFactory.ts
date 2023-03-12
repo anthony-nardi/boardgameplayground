@@ -1,21 +1,11 @@
 import { PLAYER_TWO, PLAYER_ONE, AI_ANIMATION_DURATION } from "./constants";
 import { drawGameBoardState, renderMovingPiece } from "./renderHelpers";
 import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
-import {
-  gameBoardState,
-  setNewgameBoardState,
-  nextPhase,
-  currentTurn,
-  isFirstPlayerAI,
-  isSecondPlayerAI,
-  numberOfTurnsIntoGame,
-  copyBoardGameState,
-  getWinnerMessage,
-  addAIMoveToCurrentGame,
-} from "./gameState";
+import GameState from "./gameState";
+import { addAIMoveToCurrentGame } from "./gameHistory";
 import { getGameStatesToAnalyze } from "./moves";
 import * as minimaxer from "minimaxer";
-import { Player, ValidCoordinate } from "./types/types";
+import { ValidCoordinate } from "./types/types";
 import { hideLoadingSpinner } from "./domHelpers";
 import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
@@ -24,7 +14,7 @@ import { isDebug } from "./utils";
 
 export function applyMoveToGameState(gamestate: any, move: string) {
   // dont render moving piece in the same spot...
-  const updatedBoardGameState = copyBoardGameState(gamestate);
+  const updatedBoardGameState = GameState.getBoardGameStateCopy(gamestate);
   // Single move only
   if (move.slice(8, 10) !== "=>") {
     const firstFromCoordinate = move.slice(0, 3) as ValidCoordinate;
@@ -104,10 +94,10 @@ export default class BotFactory {
 
   private getOpts(totalStartingMoveCount: number) {
     const opts = new minimaxer.NegamaxOpts();
-    const EARLY_GAME = numberOfTurnsIntoGame < 10;
+    const EARLY_GAME = GameState.getNumberOfTurnsIntoGame() < 10;
 
     let depth = 1;
-    if (numberOfTurnsIntoGame > 1) {
+    if (GameState.getNumberOfTurnsIntoGame() > 1) {
       if (totalStartingMoveCount < 3000) {
         depth = 2;
       }
@@ -131,13 +121,13 @@ export default class BotFactory {
 
   private getRootNode(allPossibleStatesAfterTurn: string[]) {
     const aim = 1;
-    const data = { turn: currentTurn, winner: undefined };
+    const data = { turn: GameState.getCurrentTurn(), winner: undefined };
     const move = null;
     const nodeType = 0;
 
     const root = new minimaxer.Node(
       nodeType,
-      gameBoardState,
+      GameState.getGameBoardState(),
       move,
       data,
       aim,
@@ -148,13 +138,17 @@ export default class BotFactory {
   }
 
   private firstCheckIfWinner() {
-    const winner = getWinner(gameBoardState, true, currentTurn);
+    const winner = getWinner(
+      GameState.getGameBoardState(),
+      true,
+      GameState.getCurrentTurn()
+    );
 
     if (winner) {
-      const message = getWinnerMessage(winner);
+      const message = GameState.getWinnerMessage(winner);
       console.log(
         message,
-        `Number of turns into game: ${numberOfTurnsIntoGame}`
+        `Number of turns into game: ${GameState.getNumberOfTurnsIntoGame()}`
       );
       return true;
     }
@@ -185,12 +179,14 @@ export default class BotFactory {
     const now = Date.now();
 
     const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
-      gameBoardState,
-      currentTurn
+      GameState.getGameBoardState(),
+      GameState.getCurrentTurn()
     );
 
     console.log(
-      `All possible starting moves: ${allPossibleStatesAfterTurn.length} for ${currentTurn} on turn ${numberOfTurnsIntoGame}`
+      `All possible starting moves: ${
+        allPossibleStatesAfterTurn.length
+      } for ${GameState.getCurrentTurn()} on turn ${GameState.getNumberOfTurnsIntoGame()}`
     );
 
     const opts = this.getOpts(allPossibleStatesAfterTurn.length);
@@ -215,16 +211,26 @@ export default class BotFactory {
   }
 
   private playMove(move: string, moveAiCallback: Function) {
-    if (currentTurn === PLAYER_ONE && !isFirstPlayerAI) {
+    if (
+      GameState.getCurrentTurn() === PLAYER_ONE &&
+      !GameState.getIsFirstPlayerAI()
+    ) {
       throw new Error("playMove should not happen for a human player");
     }
-    if (currentTurn === PLAYER_TWO && !isSecondPlayerAI) {
+    if (
+      GameState.getCurrentTurn() === PLAYER_TWO &&
+      !GameState.getIsSecondPlayerAI()
+    ) {
       throw new Error("playMove should not happen for a human player");
     }
     if (isDebug()) {
-      console.log(`Number of turns into game: ${numberOfTurnsIntoGame}`);
-      console.log(`Current turn: ${currentTurn} is making the move: ${move}`);
-      console.log(gameBoardState);
+      console.log(
+        `Number of turns into game: ${GameState.getNumberOfTurnsIntoGame()}`
+      );
+      console.log(
+        `Current turn: ${GameState.getCurrentTurn()} is making the move: ${move}`
+      );
+      console.log(GameState.getGameBoardState());
       addAIMoveToCurrentGame(move);
     }
     // Single move only
@@ -234,10 +240,13 @@ export default class BotFactory {
       const fromCoordinate = firstFromCoordinate as ValidCoordinate;
       const toCoordinate = firstToCoordinate as ValidCoordinate;
 
-      const fromPiece = gameBoardState[fromCoordinate];
-      const updatedBoardGameState = Object.assign({}, gameBoardState);
+      const fromPiece = GameState.getGameBoardState()[fromCoordinate];
+      const updatedBoardGameState = Object.assign(
+        {},
+        GameState.getGameBoardState()
+      );
       updatedBoardGameState[fromCoordinate] = false;
-      setNewgameBoardState(updatedBoardGameState);
+      GameState.setGameBoardState(updatedBoardGameState);
       const fromFirstPixelCoodinate =
         getPixelCoordinatesFromBoardCoordinates(fromCoordinate);
       const toFirstPixelCoordinate =
@@ -254,16 +263,21 @@ export default class BotFactory {
         AI_ANIMATION_DURATION,
         Date.now(),
         () => {
-          const updatedGameBoardState = Object.assign({}, gameBoardState);
+          const updatedGameBoardState = Object.assign(
+            {},
+            GameState.getGameBoardState()
+          );
           updatedGameBoardState[toCoordinate] = Object.assign({}, fromPiece);
-          setNewgameBoardState(updatedGameBoardState);
+          GameState.setGameBoardState(updatedGameBoardState);
           checkGameStateAndStartNextTurn();
           checkGameStateAndStartNextTurn();
           drawGameBoardState();
 
           const shouldAIMakeNextMove =
-            (currentTurn === PLAYER_TWO && isSecondPlayerAI) ||
-            (currentTurn === PLAYER_ONE && isFirstPlayerAI);
+            (GameState.getCurrentTurn() === PLAYER_TWO &&
+              GameState.getIsSecondPlayerAI()) ||
+            (GameState.getCurrentTurn() === PLAYER_ONE &&
+              GameState.getIsFirstPlayerAI());
 
           if (shouldAIMakeNextMove) {
             setTimeout(moveAiCallback, 50);
@@ -282,11 +296,14 @@ export default class BotFactory {
     const fromCoordinate2 = secondFromCoordinate as ValidCoordinate;
     const toCoordinate2 = secondToCoordinate as ValidCoordinate;
 
-    const fromPiece = gameBoardState[fromCoordinate];
+    const fromPiece = GameState.getGameBoardState()[fromCoordinate];
 
-    let updatedBoardGameState = Object.assign({}, gameBoardState);
+    let updatedBoardGameState = Object.assign(
+      {},
+      GameState.getGameBoardState()
+    );
     updatedBoardGameState[fromCoordinate] = false;
-    setNewgameBoardState(updatedBoardGameState);
+    GameState.setGameBoardState(updatedBoardGameState);
 
     const fromFirstPixelCoodinate =
       getPixelCoordinatesFromBoardCoordinates(fromCoordinate);
@@ -311,7 +328,7 @@ export default class BotFactory {
         updatedBoardGameState = Object.assign({}, updatedBoardGameState);
         updatedBoardGameState[toCoordinate] = fromPiece;
 
-        nextPhase();
+        GameState.nextPhase();
 
         const secondFromPiece = updatedBoardGameState[fromCoordinate2];
 
@@ -320,7 +337,7 @@ export default class BotFactory {
         }
         updatedBoardGameState = Object.assign({}, updatedBoardGameState);
         updatedBoardGameState[fromCoordinate2] = false;
-        setNewgameBoardState(updatedBoardGameState);
+        GameState.setGameBoardState(updatedBoardGameState);
 
         renderMovingPiece(
           secondFromPiece,
@@ -339,18 +356,20 @@ export default class BotFactory {
               secondFromPieceUpdated.stackSize =
                 secondFromPiece.stackSize + toPiece.stackSize;
               updatedBoardGameState[toCoordinate2] = secondFromPieceUpdated;
-              setNewgameBoardState(updatedBoardGameState);
+              GameState.setGameBoardState(updatedBoardGameState);
             } else {
               updatedBoardGameState = Object.assign({}, updatedBoardGameState);
               updatedBoardGameState[toCoordinate2] = secondFromPiece;
-              setNewgameBoardState(updatedBoardGameState);
+              GameState.setGameBoardState(updatedBoardGameState);
             }
 
             checkGameStateAndStartNextTurn();
             drawGameBoardState();
             const shouldAIMakeNextMove =
-              (currentTurn === PLAYER_TWO && isSecondPlayerAI) ||
-              (currentTurn === PLAYER_ONE && isFirstPlayerAI);
+              (GameState.getCurrentTurn() === PLAYER_TWO &&
+                GameState.getIsSecondPlayerAI()) ||
+              (GameState.getCurrentTurn() === PLAYER_ONE &&
+                GameState.getIsFirstPlayerAI());
 
             if (shouldAIMakeNextMove) {
               setTimeout(moveAiCallback, 50);

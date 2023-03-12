@@ -7,7 +7,7 @@ import {
   PLAYER_TWO,
   PLAYABLE_VERTICES,
 } from "./constants";
-import { gameBoardState, numberOfTurnsIntoGame } from "./gameState";
+import GameState, { GameBoardState } from "./gameState";
 import {
   getValidCaptures,
   getValidStacks,
@@ -22,15 +22,15 @@ import {
 } from "./types/types";
 
 export function getGameStatesToAnalyze(
-  gameState: typeof gameBoardState,
+  gameState: GameBoardState,
   turn: Player,
   getAllPossibleMoves?: boolean
 ) {
-  const EARLY_GAME = numberOfTurnsIntoGame < 10;
+  const EARLY_GAME = GameState.getNumberOfTurnsIntoGame() < 10;
 
   if (!EARLY_GAME || getAllPossibleMoves) {
     return getPossibleMoveSequences(gameState, turn);
-  } else if (numberOfTurnsIntoGame === 0) {
+  } else if (GameState.getNumberOfTurnsIntoGame() === 0) {
     return getFirstTurnMoveSequence(gameState, turn);
   } else {
     let moves = getEarlyGameMoveSequences(gameState, turn, TZAAR);
@@ -245,7 +245,7 @@ export function getEarlyGameMoveSequences(
 }
 
 export function getAllPlayerPieceCoordinates(
-  gameState: typeof gameBoardState,
+  gameState: GameBoardState,
   player: Player
 ) {
   let coordinates: ValidCoordinate[] = [];
@@ -262,7 +262,7 @@ export function getAllPlayerPieceCoordinates(
 }
 
 export function getAllPlayerPieceCoordinatesByType(
-  gameState: typeof gameBoardState,
+  gameState: GameBoardState,
   player: Player,
   type: PlayerPieces,
   stackSize: number = 1
@@ -286,7 +286,7 @@ export function getAllPlayerPieceCoordinatesByType(
 }
 
 export function getPossibleMoveSequences(
-  gameState: typeof gameBoardState,
+  gameState: GameBoardState,
   turn: Player
 ) {
   const moves: string[] = [];

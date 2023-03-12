@@ -8,8 +8,8 @@ import {
   CORNER_COORDINATES_AS_MAP,
   PLAYABLE_VERTICES,
 } from "./constants";
-import { currentTurn, gameBoardState } from "./gameState";
-import { Player, ValidCoordinate } from "./types/types";
+import GameState, { GameBoardState } from "./gameState";
+import { ValidCoordinate } from "./types/types";
 import { getInvertedValidCaptures } from "./gameBoardHelpers";
 
 export default class EvaluationFactory {
@@ -54,7 +54,7 @@ export default class EvaluationFactory {
     const winner = node.data.winner;
 
     if (winner) {
-      return winner !== currentTurn ? -Infinity : Infinity;
+      return winner !== GameState.getCurrentTurn() ? -Infinity : Infinity;
     }
 
     const gameMetadata = this.getGameStateMetadata(gameState);
@@ -67,7 +67,7 @@ export default class EvaluationFactory {
       minimizingPlayer
     );
 
-    if (currentTurn === turn) {
+    if (GameState.getCurrentTurn() === turn) {
       score = maximizingPlayerScore - minimizingPlayerScore;
     } else {
       score = -(maximizingPlayerScore - minimizingPlayerScore);
@@ -182,7 +182,7 @@ export default class EvaluationFactory {
 
   private getIsPieceThreatened(
     coordinate: ValidCoordinate,
-    gameState: typeof gameBoardState
+    gameState: GameBoardState
   ) {
     return Boolean(getInvertedValidCaptures(coordinate, gameState).length);
   }
@@ -237,7 +237,7 @@ export default class EvaluationFactory {
     return 0;
   }
 
-  public getGameStateMetadata(gameState: typeof gameBoardState) {
+  public getGameStateMetadata(gameState: GameBoardState) {
     const PLAYER_ONE_TOTT_STACKS = [];
     const PLAYER_ONE_TZARRA_STACKS = [];
     const PLAYER_ONE_TZAAR_STACKS = [];
