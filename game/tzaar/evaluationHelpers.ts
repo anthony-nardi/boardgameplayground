@@ -6,11 +6,11 @@ import {
   PLAYER_TWO,
   PLAYABLE_VERTICES,
 } from "./constants";
-import { gameBoardState, currentTurn } from "./gameState";
-import { PieceType, Player } from "./types/types";
+import GameState, { GameBoardState } from "./gameState";
+import { Player } from "./types/types";
 import { getAnyInvertedValidCaptures, getAnyCapture } from "./gameBoardHelpers";
 
-export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
+export function getHasAllThreePieceTypes(gameState: GameBoardState) {
   let PLAYER_ONE_TOTT = false;
   let PLAYER_ONE_TZARRA = false;
   let PLAYER_ONE_TZAAR = false;
@@ -68,7 +68,7 @@ export function getHasAllThreePieceTypes(gameState: typeof gameBoardState) {
 }
 
 export function isAnyPieceCapturable(
-  gameState: typeof gameBoardState,
+  gameState: GameBoardState,
   player: Player
 ) {
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
@@ -85,10 +85,7 @@ export function isAnyPieceCapturable(
   return false;
 }
 
-export function canCaptureAnyPiece(
-  gameState: typeof gameBoardState,
-  player: Player
-) {
+export function canCaptureAnyPiece(gameState: GameBoardState, player: Player) {
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
     const coordinate = PLAYABLE_VERTICES[i];
     const piece = gameState[coordinate];
@@ -105,7 +102,7 @@ export function canCaptureAnyPiece(
 }
 
 export function getWinner(
-  gameState: typeof gameBoardState,
+  gameState: GameBoardState,
   beforeTurnStart: boolean,
   turn: Player
 ) {

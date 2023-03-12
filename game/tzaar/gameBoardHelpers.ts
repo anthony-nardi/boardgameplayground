@@ -14,7 +14,7 @@ import { List, Map, RecordOf } from "immutable";
 import WindowHelper from "./WindowHelper";
 import { Direction, ValidCoordinate } from "./types/types";
 import GamePieceRenderer from "./gamePieceRenderer";
-import { gameBoardState } from "./gameState";
+import GameState, { GameBoardState } from "./gameState";
 
 const isTruthy = (arg: any) => arg;
 
@@ -435,7 +435,7 @@ export function setupSymmetricalBoard() {
 export function canCapture(
   fromCoordinate: ValidCoordinate,
   toCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   // return (
   //   gameState[fromCoordinate] &&
@@ -460,7 +460,7 @@ export function canCapture(
 export function canStack(
   fromCoordinate: ValidCoordinate,
   toCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   const fromPiece = gameState[fromCoordinate];
   const toPiece = gameState[toCoordinate];
@@ -474,7 +474,7 @@ export function canStack(
 
 export function isValidEmptyCoordinate(
   coordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   return !!(PLAYABLE_VERTICES_AS_MAP[coordinate] && !gameState[coordinate]);
 }
@@ -482,7 +482,7 @@ export function isValidEmptyCoordinate(
 function getNextValidCapture(
   fromCoordinate: ValidCoordinate,
   direction: Direction,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   let coordinateToCheck = fromCoordinate;
   const directionFunction = nextPiece[direction];
@@ -512,7 +512,7 @@ function getNextValidCapture(
 
 export function getValidStacksAndCaptures(
   fromCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   return [
     getNextValidMove(fromCoordinate, "w", gameState),
@@ -527,7 +527,7 @@ export function getValidStacksAndCaptures(
 function getNextValidMove(
   fromCoordinate: ValidCoordinate,
   direction: Direction,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   let coordinateToCheck = fromCoordinate;
   const directionFunction = nextPiece[direction];
@@ -560,7 +560,7 @@ function getNextValidMove(
 function getNextValidStack(
   fromCoordinate: ValidCoordinate,
   direction: Direction,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   let coordinateToCheck = fromCoordinate;
   const directionFunction = nextPiece[direction];
@@ -592,7 +592,7 @@ function getNextValidStack(
 
 export function getValidCaptures(
   fromCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   return [
     getNextValidCapture(fromCoordinate, "w", gameState),
@@ -606,7 +606,7 @@ export function getValidCaptures(
 
 export function getAnyCapture(
   fromCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   return (
     getNextValidCapture(fromCoordinate, "w", gameState) ||
@@ -620,7 +620,7 @@ export function getAnyCapture(
 
 export function getValidStacks(
   fromCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   return [
     getNextValidStack(fromCoordinate, "w", gameState),
@@ -634,7 +634,7 @@ export function getValidStacks(
 
 export function getAnyInvertedValidCaptures(
   toCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   return (
     getNextInvertedValidCapture(toCoordinate, "w", gameState) ||
@@ -648,7 +648,7 @@ export function getAnyInvertedValidCaptures(
 
 export function getInvertedValidCaptures(
   toCoordinate: ValidCoordinate,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   return [
     getNextInvertedValidCapture(toCoordinate, "w", gameState),
@@ -663,7 +663,7 @@ export function getInvertedValidCaptures(
 function getNextInvertedValidCapture(
   toCoordinate: ValidCoordinate,
   direction: Direction,
-  gameState: typeof gameBoardState
+  gameState: GameBoardState
 ) {
   let coordinateToCheck = toCoordinate;
   const directionFunction = nextPiece[direction];

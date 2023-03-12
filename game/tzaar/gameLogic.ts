@@ -11,23 +11,12 @@ import {
   getValidCaptures,
   getValidStacks,
 } from "./gameBoardHelpers";
+import GameState from "./gameState";
 import {
-  movingPiece,
-  gameBoardState,
-  setMovingPiece,
-  nextPhase,
-  currentTurn,
-  turnPhase,
-  isSecondPlayerAI,
-  isFirstPlayerAI,
-  numberOfTurnsIntoGame,
-  getWinnerMessage,
-  setInitialGameState,
-  game_id,
   setGameId,
   addFirstHumanMoveToCurrentGame,
   addSecondHumanMoveToCurrentGame,
-} from "./gameState";
+} from "./gameHistory";
 import React from "react";
 import { ValidCoordinate } from "./types/types";
 import {
@@ -39,7 +28,6 @@ import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
 import { isDebug } from "./utils";
 import EvaluationFactory from "./EvaluationFactory";
-import { aiDoesntKill } from "./tests/aiDoesntKill";
 
 let botOne: undefined | BotFactory;
 let botTwo: undefined | BotFactory;
@@ -47,14 +35,15 @@ let botTwo: undefined | BotFactory;
 let matchIndex = 0;
 
 export function moveAI() {
+  const currentTurn = GameState.getCurrentTurn();
   if (
-    (currentTurn === PLAYER_ONE && !isFirstPlayerAI) ||
-    (currentTurn === PLAYER_TWO && !isSecondPlayerAI)
+    (currentTurn === PLAYER_ONE && !GameState.getIsFirstPlayerAI()) ||
+    (currentTurn === PLAYER_TWO && !GameState.getIsSecondPlayerAI())
   ) {
     return;
   }
 
-  if (getWinner(gameBoardState, true, currentTurn)) {
+  if (getWinner(GameState.getGameBoardState(), true, currentTurn)) {
     return null;
   }
 
@@ -73,17 +62,17 @@ export function moveAI() {
 }
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
-  const piece = gameBoardState[boardCoordinate];
-  return piece && piece.ownedBy === currentTurn;
+  const piece = GameState.getGameBoardState()[boardCoordinate];
+  return piece && piece.ownedBy === GameState.getCurrentTurn();
 }
 
 export function passTurn() {
   const canPass =
-    currentTurn === PLAYER_ONE &&
-    turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS;
+    GameState.getCurrentTurn() === PLAYER_ONE &&
+    GameState.getTurnPhase() === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS;
 
   if (canPass) {
-    nextPhase();
+    GameState.nextPhase();
     hideSkipButton();
     showLoadingSpinner();
     setTimeout(moveAI);
@@ -91,17 +80,19 @@ export function passTurn() {
 }
 
 export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
+  const currentTurn = GameState.getCurrentTurn();
+  const gameBoardState = GameState.getGameBoardState();
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
 
   if (!isCurrentPlayerPiece(boardCoordinate)) {
     return;
   }
 
-  if (currentTurn === PLAYER_TWO && isSecondPlayerAI) {
+  if (currentTurn === PLAYER_TWO && GameState.getIsSecondPlayerAI()) {
     return;
   }
 
-  if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
+  if (currentTurn === PLAYER_ONE && GameState.getIsFirstPlayerAI()) {
     return;
   }
 
@@ -115,23 +106,26 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
     piece.isDragging = true;
   }
 
-  setMovingPiece(boardCoordinate);
+  GameState.setMovingPiece(boardCoordinate);
 }
 
 export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
+  const movingPiece = GameState.getMovingPiece();
+  const currentTurn = GameState.getCurrentTurn();
+
   if (!movingPiece) {
     return;
   }
 
-  if (currentTurn === PLAYER_TWO && isSecondPlayerAI) {
+  if (currentTurn === PLAYER_TWO && GameState.getIsSecondPlayerAI()) {
     return;
   }
 
-  if (currentTurn === PLAYER_ONE && isFirstPlayerAI) {
+  if (currentTurn === PLAYER_ONE && GameState.getIsFirstPlayerAI()) {
     return;
   }
 
-  const gamePiece = gameBoardState[movingPiece];
+  const gamePiece = GameState.getGameBoardState()[movingPiece];
 
   if (!gamePiece) {
     throw new Error("gamepiece not here");
@@ -145,6 +139,9 @@ export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
 }
 
 export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
+  const movingPiece = GameState.getMovingPiece();
+  const gameBoardState = GameState.getGameBoardState();
+
   if (!movingPiece) {
     return;
   }
@@ -158,7 +155,7 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   }
 
   if (!gameBoardState[toCoordinates]) {
-    setMovingPiece(null);
+    GameState.setMovingPiece(null);
     drawGameBoardState();
     return;
   }
@@ -172,11 +169,14 @@ export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
     capturePiece(movingPiece, toCoordinates);
   }
 
-  if (isValidStack && turnPhase === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS) {
+  if (
+    isValidStack &&
+    GameState.getTurnPhase() === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS
+  ) {
     stackPiece(movingPiece, toCoordinates);
   }
 
-  setMovingPiece(null);
+  GameState.setMovingPiece(null);
   drawGameBoardState();
 }
 
@@ -184,6 +184,8 @@ function capturePiece(
   fromCoordinates: ValidCoordinate,
   toCoordinates: ValidCoordinate
 ) {
+  const gameBoardState = GameState.getGameBoardState();
+
   const fromPiece = gameBoardState[fromCoordinates];
 
   if (!fromPiece) {
@@ -191,7 +193,7 @@ function capturePiece(
   }
 
   if (isDebug()) {
-    if (turnPhase === CAPTURE) {
+    if (GameState.getTurnPhase() === CAPTURE) {
       addFirstHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
     } else {
       addSecondHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
@@ -208,6 +210,8 @@ function stackPiece(
   fromCoordinates: ValidCoordinate,
   toCoordinates: ValidCoordinate
 ) {
+  const gameBoardState = GameState.getGameBoardState();
+
   const fromPiece = gameBoardState[fromCoordinates];
   const toPiece = gameBoardState[toCoordinates];
 
@@ -230,17 +234,23 @@ export function checkGameStateAndStartNextTurn(
   shouldCheckWinner = false,
   maybeMoveAI?: Function
 ) {
-  nextPhase();
   let winner;
+  const gameBoardState = GameState.getGameBoardState();
+  const turnPhase = GameState.getTurnPhase();
+  const currentTurn = GameState.getCurrentTurn();
+
+  GameState.nextPhase();
 
   if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
     winner = getWinner(gameBoardState, true, currentTurn);
   }
 
   if (winner) {
-    const message = getWinnerMessage(winner);
-
-    console.log(message, `Number of turns taken: ${numberOfTurnsIntoGame}`);
+    const message = GameState.getWinnerMessage(winner);
+    console.log(
+      message,
+      `Number of turns taken: ${GameState.getNumberOfTurnsIntoGame()}`
+    );
     // @ts-expect-error fix
     const matchesToPlay = setupSurvivalOfTheFittest();
 

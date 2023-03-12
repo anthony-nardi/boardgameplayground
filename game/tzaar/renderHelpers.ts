@@ -9,7 +9,7 @@ import {
 } from "./constants";
 import WindowHelper from "./WindowHelper";
 import { drawCachedBoard } from "./cachedBoard";
-import { gameBoardState, setNewgameBoardState } from "./gameState";
+import GameState from "./gameState";
 import { List, RecordOf } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { ValidCoordinate } from "./types/types";
@@ -141,9 +141,9 @@ export function drawGamePiece(gamePiece: any, xPos: number, yPos: number) {
 }
 
 export function drawGamePieces() {
-  Object.keys(gameBoardState).forEach((key) => {
+  Object.keys(GameState.getGameBoardState()).forEach((key) => {
     // @ts-expect-error fix
-    drawStaticGamePiece(gameBoardState[key], key);
+    drawStaticGamePiece(GameState.getGameBoardState()[key], key);
   });
 }
 
@@ -203,7 +203,7 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
     let index = 0;
     for (const coordinate in piecesToDraw) {
       const piece = piecesToDraw[coordinate];
-      gameBoardState[coordinate as ValidCoordinate] = piece;
+      GameState.getGameBoardState()[coordinate as ValidCoordinate] = piece;
       index = index + 1;
     }
 
