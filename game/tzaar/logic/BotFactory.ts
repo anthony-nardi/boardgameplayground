@@ -273,7 +273,7 @@ export default class BotFactory {
           updatedGameBoardState[toCoordinate] = Object.assign({}, fromPiece);
           GameState.setGameBoardState(updatedGameBoardState);
           checkGameStateAndStartNextTurn();
-          checkGameStateAndStartNextTurn();
+          checkGameStateAndStartNextTurn(true);
           drawGameBoardState();
 
           const shouldAIMakeNextMove =
@@ -366,7 +366,7 @@ export default class BotFactory {
               GameState.setGameBoardState(updatedBoardGameState);
             }
 
-            checkGameStateAndStartNextTurn();
+            checkGameStateAndStartNextTurn(true);
             drawGameBoardState();
             const shouldAIMakeNextMove =
               (GameState.getCurrentTurn() === PLAYER_TWO &&

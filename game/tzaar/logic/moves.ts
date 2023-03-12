@@ -23,7 +23,23 @@ export function getGameStatesToAnalyze(
   const EARLY_GAME = GameState.getNumberOfTurnsIntoGame() < 10;
 
   if (!EARLY_GAME || getAllPossibleMoves) {
-    return getPossibleMoveSequences(gameState, turn);
+    let allPossibleMoves = getPossibleMoveSequences(
+      gameState,
+      turn,
+      true,
+      true,
+      true
+    );
+    if (allPossibleMoves.length > 2000) {
+      allPossibleMoves = getPossibleMoveSequences(
+        gameState,
+        turn,
+        true,
+        true,
+        false
+      );
+    }
+    return allPossibleMoves;
   } else if (GameState.getNumberOfTurnsIntoGame() === 0) {
     return getFirstTurnMoveSequence(gameState, turn);
   } else {
@@ -150,7 +166,10 @@ export function getEarlyGameMoveSequences(
       // if its not obvious, only 2 coordinates on the board changed so we can reuse most of the previous results from getAllPlayerPieceCoordinates
       const validMovesForPieceJustMoved = getValidStacksAndCaptures(
         toCoordinate,
-        gameState
+        gameState,
+        true,
+        true,
+        false
       );
 
       for (
@@ -281,7 +300,10 @@ export function getAllPlayerPieceCoordinatesByType(
 
 export function getPossibleMoveSequences(
   gameState: GameBoardState,
-  turn: Player
+  turn: Player,
+  shouldStackTZAAR: boolean = true,
+  shouldStackTZARRA: boolean = true,
+  shouldStackTOTT: boolean = true
 ) {
   const moves: string[] = [];
   const playerCoordinates = getAllPlayerPieceCoordinates(gameState, turn);
@@ -316,7 +338,10 @@ export function getPossibleMoveSequences(
       // if its not obvious, only 2 coordinates on the board changed so we can reuse most of the previous results from getAllPlayerPieceCoordinates
       const validMovesForPieceJustMoved = getValidStacksAndCaptures(
         coordinateToCapture,
-        gameState
+        gameState,
+        shouldStackTZAAR,
+        shouldStackTZARRA,
+        shouldStackTOTT
       );
 
       for (
@@ -343,7 +368,10 @@ export function getPossibleMoveSequences(
 
         const validMoves = getValidStacksAndCaptures(
           playerPieceCoordinateAfterCapture,
-          gameState
+          gameState,
+          shouldStackTZAAR,
+          shouldStackTZARRA,
+          shouldStackTOTT
         );
 
         for (
