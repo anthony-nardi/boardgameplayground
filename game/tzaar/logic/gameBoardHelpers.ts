@@ -455,12 +455,27 @@ export function canCapture(
 export function canStack(
   fromCoordinate: ValidCoordinate,
   toCoordinate: ValidCoordinate,
-  gameState: GameBoardState
+  gameState: GameBoardState,
+  shouldStackTZAAR: boolean,
+  shouldStackTZARRA: boolean,
+  shouldStackTOTT: boolean
 ) {
   const fromPiece = gameState[fromCoordinate];
   const toPiece = gameState[toCoordinate];
 
   if (!fromPiece || !toPiece) {
+    return false;
+  }
+
+  if (!shouldStackTOTT && fromPiece.type === TOTT) {
+    return false;
+  }
+
+  if (!shouldStackTZARRA && fromPiece.type === TZARRA) {
+    return false;
+  }
+
+  if (!shouldStackTZAAR && fromPiece.type === TZAAR) {
     return false;
   }
 
@@ -507,22 +522,70 @@ function getNextValidCapture(
 
 export function getValidStacksAndCaptures(
   fromCoordinate: ValidCoordinate,
-  gameState: GameBoardState
+  gameState: GameBoardState,
+  shouldStackTZAAR: boolean,
+  shouldStackTZARRA: boolean,
+  shouldStackTOTT: boolean
 ) {
   return [
-    getNextValidMove(fromCoordinate, "w", gameState),
-    getNextValidMove(fromCoordinate, "e", gameState),
-    getNextValidMove(fromCoordinate, "nw", gameState),
-    getNextValidMove(fromCoordinate, "ne", gameState),
-    getNextValidMove(fromCoordinate, "sw", gameState),
-    getNextValidMove(fromCoordinate, "se", gameState),
+    getNextValidMove(
+      fromCoordinate,
+      "w",
+      gameState,
+      shouldStackTZAAR,
+      shouldStackTZARRA,
+      shouldStackTOTT
+    ),
+    getNextValidMove(
+      fromCoordinate,
+      "e",
+      gameState,
+      shouldStackTZAAR,
+      shouldStackTZARRA,
+      shouldStackTOTT
+    ),
+    getNextValidMove(
+      fromCoordinate,
+      "nw",
+      gameState,
+      shouldStackTZAAR,
+      shouldStackTZARRA,
+      shouldStackTOTT
+    ),
+    getNextValidMove(
+      fromCoordinate,
+      "ne",
+      gameState,
+      shouldStackTZAAR,
+      shouldStackTZARRA,
+      shouldStackTOTT
+    ),
+    getNextValidMove(
+      fromCoordinate,
+      "sw",
+      gameState,
+      shouldStackTZAAR,
+      shouldStackTZARRA,
+      shouldStackTOTT
+    ),
+    getNextValidMove(
+      fromCoordinate,
+      "se",
+      gameState,
+      shouldStackTZAAR,
+      shouldStackTZARRA,
+      shouldStackTOTT
+    ),
   ].filter(isTruthy) as ValidCoordinate[];
 }
 
 function getNextValidMove(
   fromCoordinate: ValidCoordinate,
   direction: Direction,
-  gameState: GameBoardState
+  gameState: GameBoardState,
+  shouldStackTZAAR: boolean,
+  shouldStackTZARRA: boolean,
+  shouldStackTOTT: boolean
 ) {
   let coordinateToCheck = fromCoordinate;
   const directionFunction = nextPiece[direction];
@@ -541,7 +604,16 @@ function getNextValidMove(
     }
 
     // First piece we encounter can't be stacked
-    if (canStack(fromCoordinate, coordinateToCheck, gameState)) {
+    if (
+      canStack(
+        fromCoordinate,
+        coordinateToCheck,
+        gameState,
+        shouldStackTZAAR,
+        shouldStackTZARRA,
+        shouldStackTOTT
+      )
+    ) {
       return coordinateToCheck;
     } else if (canCapture(fromCoordinate, coordinateToCheck, gameState)) {
       return coordinateToCheck;
@@ -555,7 +627,10 @@ function getNextValidMove(
 function getNextValidStack(
   fromCoordinate: ValidCoordinate,
   direction: Direction,
-  gameState: GameBoardState
+  gameState: GameBoardState,
+  shouldStackTZAAR: boolean,
+  shouldStackTZARRA: boolean,
+  shouldStackTOTT: boolean
 ) {
   let coordinateToCheck = fromCoordinate;
   const directionFunction = nextPiece[direction];
@@ -574,7 +649,9 @@ function getNextValidStack(
     }
 
     // First piece we encounter can't be stacked
-    if (!canStack(fromCoordinate, coordinateToCheck, gameState)) {
+    if (
+      !canStack(fromCoordinate, coordinateToCheck, gameState, true, true, true)
+    ) {
       return false;
     }
     // Finally a piece we can stack on top of
@@ -618,12 +695,12 @@ export function getValidStacks(
   gameState: GameBoardState
 ) {
   return [
-    getNextValidStack(fromCoordinate, "w", gameState),
-    getNextValidStack(fromCoordinate, "e", gameState),
-    getNextValidStack(fromCoordinate, "nw", gameState),
-    getNextValidStack(fromCoordinate, "ne", gameState),
-    getNextValidStack(fromCoordinate, "sw", gameState),
-    getNextValidStack(fromCoordinate, "se", gameState),
+    getNextValidStack(fromCoordinate, "w", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "e", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "nw", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "ne", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "sw", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "se", gameState, true, true, true),
   ].filter(isTruthy) as ValidCoordinate[];
 }
 
