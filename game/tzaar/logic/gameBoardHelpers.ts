@@ -695,12 +695,12 @@ export function getValidStacks(
   gameState: GameBoardState
 ) {
   return [
-    getNextValidStack(fromCoordinate, "w", gameState),
-    getNextValidStack(fromCoordinate, "e", gameState),
-    getNextValidStack(fromCoordinate, "nw", gameState),
-    getNextValidStack(fromCoordinate, "ne", gameState),
-    getNextValidStack(fromCoordinate, "sw", gameState),
-    getNextValidStack(fromCoordinate, "se", gameState),
+    getNextValidStack(fromCoordinate, "w", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "e", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "nw", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "ne", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "sw", gameState, true, true, true),
+    getNextValidStack(fromCoordinate, "se", gameState, true, true, true),
   ].filter(isTruthy) as ValidCoordinate[];
 }
 
