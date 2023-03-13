@@ -105,7 +105,7 @@ export default class BotFactory {
         depth = 2;
       }
       if (totalStartingMoveCount < 500 && !EARLY_GAME) {
-        depth = 3;
+        depth = 2;
       }
       if (totalStartingMoveCount < 200 && !EARLY_GAME) {
         depth = 4;

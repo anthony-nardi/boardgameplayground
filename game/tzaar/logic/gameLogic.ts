@@ -312,8 +312,6 @@ export function initGame() {
   console.log(`Bot two weights`, botTwoParameters);
 
   renderInitializingBoard(piecesToSetup, () => {
-    // setInitialGameState(null, PLAYER_ONE, TURN_PHASES.CAPTURE, 15);
-
     drawGameBoardState();
 
     const iterations = 1000000;
@@ -352,11 +350,17 @@ export function initGame() {
     let nextPlayer = botTwo;
 
     function playThroughSeq() {
-      debugger;
       nextPlayer = botTwo ? botOne : botTwo;
       const nextMove = arrSeq.shift();
 
       if (nextMove) {
+        if (nextMove === "5,0->5,4=>5,4->5,7") {
+          debugger;
+          GameState.setInitialGameState(PLAYER_TWO, TURN_PHASES.CAPTURE, 15);
+
+          botTwo?.moveAI(() => {});
+          return;
+        }
         console.log(nextMove);
         nextPlayer?.playMove(nextMove, playThroughSeq);
       } else {
