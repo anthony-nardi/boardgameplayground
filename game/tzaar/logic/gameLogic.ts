@@ -28,6 +28,7 @@ import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
 import { isDebug } from "./utils";
 import EvaluationFactory from "./EvaluationFactory";
+import { aiDoesntKillAgain } from "../tests/aiDoesntKill";
 
 let botOne: undefined | BotFactory;
 let botTwo: undefined | BotFactory;
@@ -345,6 +346,24 @@ export function initGame() {
     console.timeEnd(`getGameStateScore iterations: ${iterations}`);
 
     setTimeout(moveAI);
+
+    const arrSeq = aiDoesntKillAgain();
+
+    let nextPlayer = botTwo;
+
+    function playThroughSeq() {
+      debugger;
+      nextPlayer = botTwo ? botOne : botTwo;
+      const nextMove = arrSeq.shift();
+
+      if (nextMove) {
+        console.log(nextMove);
+        nextPlayer?.playMove(nextMove, playThroughSeq);
+      } else {
+        console.log("wat");
+      }
+    }
+    playThroughSeq();
 
     if (isDebug()) {
       drawCoordinates();

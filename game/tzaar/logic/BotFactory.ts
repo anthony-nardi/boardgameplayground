@@ -213,19 +213,19 @@ export default class BotFactory {
     hideLoadingSpinner();
   }
 
-  private playMove(move: string, moveAiCallback: Function) {
-    if (
-      GameState.getCurrentTurn() === PLAYER_ONE &&
-      !GameState.getIsFirstPlayerAI()
-    ) {
-      throw new Error("playMove should not happen for a human player");
-    }
-    if (
-      GameState.getCurrentTurn() === PLAYER_TWO &&
-      !GameState.getIsSecondPlayerAI()
-    ) {
-      throw new Error("playMove should not happen for a human player");
-    }
+  public playMove(move: string, moveAiCallback: Function) {
+    // if (
+    //   GameState.getCurrentTurn() === PLAYER_ONE &&
+    //   !GameState.getIsFirstPlayerAI()
+    // ) {
+    //   throw new Error("playMove should not happen for a human player");
+    // }
+    // if (
+    //   GameState.getCurrentTurn() === PLAYER_TWO &&
+    //   !GameState.getIsSecondPlayerAI()
+    // ) {
+    //   throw new Error("playMove should not happen for a human player");
+    // }
     if (isDebug()) {
       console.log(
         `Number of turns into game: ${GameState.getNumberOfTurnsIntoGame()}`
@@ -282,9 +282,9 @@ export default class BotFactory {
             (GameState.getCurrentTurn() === PLAYER_ONE &&
               GameState.getIsFirstPlayerAI());
 
-          if (shouldAIMakeNextMove) {
-            setTimeout(moveAiCallback, 50);
-          }
+          // if (shouldAIMakeNextMove) {
+          setTimeout(moveAiCallback, 50);
+          // }
         }
       );
       return;
@@ -374,9 +374,9 @@ export default class BotFactory {
               (GameState.getCurrentTurn() === PLAYER_ONE &&
                 GameState.getIsFirstPlayerAI());
 
-            if (shouldAIMakeNextMove) {
-              setTimeout(moveAiCallback, 50);
-            }
+            // if (shouldAIMakeNextMove) {
+            setTimeout(moveAiCallback, 50);
+            // }
           }
         );
       }
