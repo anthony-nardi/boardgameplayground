@@ -112,12 +112,14 @@ export default class BotFactory {
       }
     }
 
+    opts.presort = true;
     opts.depth = depth;
     opts.method = 2;
     opts.pruning = 1;
     opts.sortMethod = 0;
     opts.genBased = false;
     opts.optimal = false;
+    opts.pruneByPathLength = true;
 
     return opts;
   }
