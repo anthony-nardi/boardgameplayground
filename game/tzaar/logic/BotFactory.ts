@@ -105,19 +105,20 @@ export default class BotFactory {
         depth = 2;
       }
       if (totalStartingMoveCount < 500 && !EARLY_GAME) {
-        depth = 2;
+        depth = 3;
       }
       if (totalStartingMoveCount < 200 && !EARLY_GAME) {
         depth = 4;
       }
     }
-
+    opts.presort = true;
     opts.depth = depth;
     opts.method = 2;
     opts.pruning = 1;
     opts.sortMethod = 0;
     opts.genBased = false;
     opts.optimal = false;
+    opts.pruneByPathLength = true;
 
     return opts;
   }
@@ -389,12 +390,23 @@ export default class BotFactory {
     let turn;
     let aim;
 
+    // if (
+    //   move === "5,0->5,4=>5,4->5,7" ||
+    //   (node.parent && node.parent.move === "5,0->5,4=>5,4->5,7")
+    // ) {
+    //   debugger;
+    // }
+
     if (node.type === 0) {
       turn = node.data.turn;
       aim = node.aim;
     } else {
-      turn = node.parent.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-      aim = node.parent.aim * -1;
+      turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+      aim = node.aim * -1;
+
+      //   console.log(
+      //     `prev turn: ${node.data.turn} -> curr turn: ${turn}.... prev aim ${node.aim} curr aim: ${aim}`
+      //   );
     }
 
     const updatedBoardGameState = applyMoveToGameState(
