@@ -1,11 +1,20 @@
 import {
   PLAYER_ONE,
   PLAYER_TWO,
+  AI_ANIMATION_DURATION,
   TURN_PHASES,
   CAPTURE,
   STACK_OR_CAPTURE_OR_PASS,
 } from "../constants";
 import { Player, PlayerPieces, ValidCoordinate } from "../types/types";
+import { checkGameStateAndStartNextTurn } from "./gameLogic";
+import {
+  drawGameBoardState,
+  renderMovingPiece,
+} from "../rendering/renderHelpers";
+import { addAIMoveToCurrentGame } from "./gameHistory";
+import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
+import { isDebug } from "./utils";
 
 export type PieceState = {
   isDragging: boolean;
@@ -330,6 +339,163 @@ class GameState {
     this.turnPhase = phase;
     this.numberOfTurnsIntoGame = numberOfTurns;
     this.isVeryFirstTurn = numberOfTurns === 0;
+  }
+
+  public playMove(move: string, moveAiCallback: Function) {
+    if (this.getCurrentTurn() === PLAYER_ONE && !this.getIsFirstPlayerAI()) {
+      throw new Error("playMove should not happen for a human player");
+    }
+    if (this.getCurrentTurn() === PLAYER_TWO && !this.getIsSecondPlayerAI()) {
+      throw new Error("playMove should not happen for a human player");
+    }
+    if (isDebug()) {
+      console.log(
+        `Number of turns into game: ${this.getNumberOfTurnsIntoGame()}`
+      );
+      console.log(
+        `Current turn: ${this.getCurrentTurn()} is making the move: ${move}`
+      );
+      console.log(this.getGameBoardState());
+      addAIMoveToCurrentGame(move);
+    }
+    // Single move only
+    if (move.indexOf("=>") === -1) {
+      const [firstFromCoordinate, firstToCoordinate] = move.split("->");
+
+      const fromCoordinate = firstFromCoordinate as ValidCoordinate;
+      const toCoordinate = firstToCoordinate as ValidCoordinate;
+
+      const fromPiece = this.getGameBoardState()[fromCoordinate];
+      const updatedBoardGameState = Object.assign({}, this.getGameBoardState());
+      updatedBoardGameState[fromCoordinate] = false;
+      this.setGameBoardState(updatedBoardGameState);
+      const fromFirstPixelCoodinate =
+        getPixelCoordinatesFromBoardCoordinates(fromCoordinate);
+      const toFirstPixelCoordinate =
+        getPixelCoordinatesFromBoardCoordinates(toCoordinate);
+
+      if (!fromPiece) {
+        throw new Error("No from piece");
+      }
+
+      renderMovingPiece(
+        fromPiece,
+        fromFirstPixelCoodinate,
+        toFirstPixelCoordinate,
+        AI_ANIMATION_DURATION,
+        Date.now(),
+        () => {
+          const updatedGameBoardState = Object.assign(
+            {},
+            this.getGameBoardState()
+          );
+          updatedGameBoardState[toCoordinate] = Object.assign({}, fromPiece);
+          this.setGameBoardState(updatedGameBoardState);
+          checkGameStateAndStartNextTurn();
+          checkGameStateAndStartNextTurn(true);
+          drawGameBoardState();
+
+          const shouldAIMakeNextMove =
+            (this.getCurrentTurn() === PLAYER_TWO &&
+              this.getIsSecondPlayerAI()) ||
+            (this.getCurrentTurn() === PLAYER_ONE && this.getIsFirstPlayerAI());
+
+          if (shouldAIMakeNextMove) {
+            setTimeout(moveAiCallback, 50);
+          }
+        }
+      );
+      return;
+    }
+
+    const [firstMove, secondMove] = move.split("=>");
+    const [firstFromCoordinate, firstToCoordinate] = firstMove.split("->");
+    const [secondFromCoordinate, secondToCoordinate] = secondMove.split("->");
+
+    const fromCoordinate = firstFromCoordinate as ValidCoordinate;
+    const toCoordinate = firstToCoordinate as ValidCoordinate;
+    const fromCoordinate2 = secondFromCoordinate as ValidCoordinate;
+    const toCoordinate2 = secondToCoordinate as ValidCoordinate;
+
+    const fromPiece = this.getGameBoardState()[fromCoordinate];
+
+    let updatedBoardGameState = Object.assign({}, this.getGameBoardState());
+    updatedBoardGameState[fromCoordinate] = false;
+    this.setGameBoardState(updatedBoardGameState);
+
+    const fromFirstPixelCoodinate =
+      getPixelCoordinatesFromBoardCoordinates(fromCoordinate);
+    const toFirstPixelCoordinate =
+      getPixelCoordinatesFromBoardCoordinates(toCoordinate);
+
+    const fromSecondPixelCoodinate =
+      getPixelCoordinatesFromBoardCoordinates(fromCoordinate2);
+    const toSecondPixelCoordinate =
+      getPixelCoordinatesFromBoardCoordinates(toCoordinate2);
+
+    if (!fromPiece) {
+      throw new Error("No from Piece");
+    }
+    renderMovingPiece(
+      fromPiece,
+      fromFirstPixelCoodinate,
+      toFirstPixelCoordinate,
+      AI_ANIMATION_DURATION,
+      Date.now(),
+      () => {
+        updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+        updatedBoardGameState[toCoordinate] = fromPiece;
+
+        this.nextPhase();
+
+        const secondFromPiece = updatedBoardGameState[fromCoordinate2];
+
+        if (!secondFromPiece) {
+          throw new Error("no secondFromPiece");
+        }
+        updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+        updatedBoardGameState[fromCoordinate2] = false;
+        this.setGameBoardState(updatedBoardGameState);
+
+        renderMovingPiece(
+          secondFromPiece,
+          fromSecondPixelCoodinate,
+          toSecondPixelCoordinate,
+          AI_ANIMATION_DURATION,
+          Date.now(),
+          () => {
+            const toPiece = updatedBoardGameState[toCoordinate2];
+            if (!toPiece) {
+              throw new Error("no toPiece");
+            }
+            if (secondFromPiece.ownedBy === toPiece.ownedBy) {
+              updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+              const secondFromPieceUpdated = Object.assign({}, secondFromPiece);
+              secondFromPieceUpdated.stackSize =
+                secondFromPiece.stackSize + toPiece.stackSize;
+              updatedBoardGameState[toCoordinate2] = secondFromPieceUpdated;
+              this.setGameBoardState(updatedBoardGameState);
+            } else {
+              updatedBoardGameState = Object.assign({}, updatedBoardGameState);
+              updatedBoardGameState[toCoordinate2] = secondFromPiece;
+              this.setGameBoardState(updatedBoardGameState);
+            }
+
+            checkGameStateAndStartNextTurn(true);
+            drawGameBoardState();
+            const shouldAIMakeNextMove =
+              (this.getCurrentTurn() === PLAYER_TWO &&
+                this.getIsSecondPlayerAI()) ||
+              (this.getCurrentTurn() === PLAYER_ONE &&
+                this.getIsFirstPlayerAI());
+
+            if (shouldAIMakeNextMove) {
+              setTimeout(moveAiCallback, 50);
+            }
+          }
+        );
+      }
+    );
   }
 }
 
