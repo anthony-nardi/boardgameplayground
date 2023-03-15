@@ -50,30 +50,29 @@ export default class EvaluationFactory {
 
   public getGameStateScore(node: any) {
     const gameState = node.gamestate;
-    const turn = node.data.turn;
     const winner = node.data.winner;
 
+    // The ACTUAL current turn of the game (not the turn for this node.gamestate)
+    const maximizingPlayer = GameState.getCurrentTurn();
+
     if (winner) {
-      return winner !== GameState.getCurrentTurn() ? -Infinity : Infinity;
+      return winner === maximizingPlayer ? Infinity : -Infinity;
     }
+    const minimizingPlayer =
+      maximizingPlayer === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
 
     const gameMetadata = this.getGameStateMetadata(gameState);
-    let score = 0;
-    const minimizingPlayer = turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
 
-    const maximizingPlayerScore = this.getTotalScore(gameMetadata, turn);
+    const maximizingPlayerScore = this.getTotalScore(
+      gameMetadata,
+      maximizingPlayer
+    );
     const minimizingPlayerScore = this.getTotalScore(
       gameMetadata,
       minimizingPlayer
     );
 
-    if (GameState.getCurrentTurn() === turn) {
-      score = maximizingPlayerScore - minimizingPlayerScore;
-    } else {
-      score = -(maximizingPlayerScore - minimizingPlayerScore);
-    }
-
-    return score;
+    return maximizingPlayerScore - minimizingPlayerScore;
   }
 
   private getTotalScore(

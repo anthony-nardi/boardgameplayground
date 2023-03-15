@@ -102,17 +102,17 @@ export default class BotFactory {
     let depth = 1;
     if (GameState.getNumberOfTurnsIntoGame() > 1) {
       if (totalStartingMoveCount < 3000) {
-        depth = 30;
-      }
-      if (totalStartingMoveCount < 500 && !EARLY_GAME) {
         depth = 3;
       }
+      if (totalStartingMoveCount < 500 && !EARLY_GAME) {
+        depth = 5;
+      }
       if (totalStartingMoveCount < 200 && !EARLY_GAME) {
-        depth = 4;
+        depth = 10;
       }
     }
 
-    opts.timeout = 10000;
+    opts.timeout = 15000;
     opts.presort = true;
     opts.depth = depth;
     opts.method = 3;
