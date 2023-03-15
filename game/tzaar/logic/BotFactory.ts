@@ -112,7 +112,7 @@ export default class BotFactory {
       }
     }
 
-    opts.timeout = 15000;
+    opts.timeout = 6000;
     opts.presort = true;
     opts.depth = depth;
     opts.method = 3;
@@ -187,7 +187,8 @@ export default class BotFactory {
 
     const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
       GameState.getGameBoardState(),
-      GameState.getCurrentTurn()
+      GameState.getCurrentTurn(),
+      GameState.getNumberOfTurnsIntoGame() > 10
     );
 
     console.log(
@@ -225,7 +226,7 @@ export default class BotFactory {
     const gamestateToAnalyze = node.gamestate;
 
     let turn;
-    let aim;
+    // let aim;
 
     if (node.type === 0) {
       turn = node.data.turn;
@@ -234,6 +235,12 @@ export default class BotFactory {
       turn = node.parent.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
       // aim = node.parent.aim * -1;
     }
+
+    // if (aim === -1) {
+    //   console.log("aimmmm");
+    // }
+
+    // console.log(node.aim);
 
     const updatedBoardGameState = applyMoveToGameState(
       gamestateToAnalyze,

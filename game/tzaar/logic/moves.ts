@@ -20,17 +20,15 @@ export function getGameStatesToAnalyze(
   turn: Player,
   getAllPossibleMoves?: boolean
 ) {
-  const EARLY_GAME = GameState.getNumberOfTurnsIntoGame() < 10;
-
-  if (!EARLY_GAME || getAllPossibleMoves) {
+  if (getAllPossibleMoves) {
     let allPossibleMoves = getPossibleMoveSequences(
       gameState,
       turn,
       true,
       true,
-      true
+      false
     );
-    if (allPossibleMoves.length > 2000) {
+    if (allPossibleMoves.length < 400) {
       allPossibleMoves = getPossibleMoveSequences(
         gameState,
         turn,
