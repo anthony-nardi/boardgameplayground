@@ -7,7 +7,7 @@ import {
 } from "../rendering/renderHelpers";
 import { setupSymmetricalBoard } from "./gameBoardHelpers";
 import GameState from "./gameState";
-import { setGameId } from "./GameHistory";
+import GameHistory from "./GameHistory";
 import { showLoadingSpinner } from "../rendering/domHelpers";
 import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
@@ -83,7 +83,7 @@ export function checkGameStateAndStartNextTurn(
 
 export function initGame() {
   if (isDebugModeOn()) {
-    setGameId(Date.now());
+    GameHistory.setGameId(Date.now());
   }
 
   const piecesToSetup = setupSymmetricalBoard();

@@ -12,10 +12,7 @@ import { hideSkipButton, showLoadingSpinner } from "../rendering/domHelpers";
 import { getWinner } from "./evaluationHelpers";
 import { checkGameStateAndStartNextTurn, moveAI } from "./gameLogic";
 import { isDebugModeOn } from "./utils";
-import {
-  addFirstHumanMoveToCurrentGame,
-  addSecondHumanMoveToCurrentGame,
-} from "./GameHistory";
+import GameHistory from "./GameHistory";
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   const piece = GameState.getGameBoardState()[boardCoordinate];
@@ -36,9 +33,13 @@ export function capturePiece(
 
   if (isDebugModeOn()) {
     if (GameState.getTurnPhase() === CAPTURE) {
-      addFirstHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
+      GameHistory.addFirstHumanMoveToCurrentGame(
+        `${fromCoordinates}->${toCoordinates}`
+      );
     } else {
-      addSecondHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
+      GameHistory.addSecondHumanMoveToCurrentGame(
+        `${fromCoordinates}->${toCoordinates}`
+      );
     }
   }
 
@@ -62,7 +63,9 @@ export function stackPiece(
   }
 
   if (isDebugModeOn()) {
-    addSecondHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
+    GameHistory.addSecondHumanMoveToCurrentGame(
+      `${fromCoordinates}->${toCoordinates}`
+    );
   }
 
   gameBoardState[fromCoordinates] = false;

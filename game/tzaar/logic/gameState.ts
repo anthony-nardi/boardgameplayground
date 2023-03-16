@@ -12,7 +12,7 @@ import {
   drawGameBoardState,
   renderMovingPiece,
 } from "../rendering/renderHelpers";
-import { addAIMoveToCurrentGame } from "./GameHistory";
+import GameHistory from "./GameHistory";
 import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
 import { isDebugModeOn } from "./utils";
 
@@ -356,7 +356,7 @@ class GameState {
         `Current turn: ${this.getCurrentTurn()} is making the move: ${move}`
       );
       console.log(this.getGameBoardState());
-      addAIMoveToCurrentGame(move);
+      GameHistory.addAIMoveToCurrentGame(move);
     }
     // Single move only
     if (move.indexOf("=>") === -1) {
