@@ -1,19 +1,11 @@
-import { PLAYER_TWO, PLAYER_ONE, AI_ANIMATION_DURATION } from "../constants";
-import {
-  drawGameBoardState,
-  renderMovingPiece,
-} from "../rendering/renderHelpers";
-import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
+import { PLAYER_TWO, PLAYER_ONE } from "../constants";
 import GameState from "./gameState";
-import { addAIMoveToCurrentGame } from "./gameHistory";
-import { getGameStatesToAnalyze } from "./moves";
+import { getGameStatesToAnalyze } from "./availableMovesGenerator";
 import * as minimaxer from "minimaxer";
 import { ValidCoordinate } from "../types/types";
 import { hideLoadingSpinner } from "../rendering/domHelpers";
-import { checkGameStateAndStartNextTurn } from "./gameLogic";
 import EvaluationFactory from "./EvaluationFactory";
 import { getWinner } from "./evaluationHelpers";
-import { isDebug } from "./utils";
 
 export function applyMoveToGameState(gamestate: any, move: string) {
   // dont render moving piece in the same spot...
@@ -86,6 +78,8 @@ export default class BotFactory {
     this.evaluation = new EvaluationFactory(props);
 
     this.VERSION = props.VERSION;
+
+    console.log(`Bot version: ${this.VERSION}`);
   }
 
   private VERSION: number;
@@ -95,32 +89,23 @@ export default class BotFactory {
     return this.evaluation.getGameStateScore(node);
   }
 
-  private getOpts(totalStartingMoveCount: number) {
+  private getOpts() {
     const opts = new minimaxer.NegamaxOpts();
-    const EARLY_GAME = GameState.getNumberOfTurnsIntoGame() < 10;
 
     let depth = 1;
+
     if (GameState.getNumberOfTurnsIntoGame() > 1) {
-      if (totalStartingMoveCount < 3000) {
-        depth = 3;
-      }
-      if (totalStartingMoveCount < 500 && !EARLY_GAME) {
-        depth = 5;
-      }
-      if (totalStartingMoveCount < 200 && !EARLY_GAME) {
-        depth = 10;
-      }
+      depth = 999;
     }
 
-    opts.timeout = 6000;
-    opts.presort = true;
+    if (GameState.getNumberOfTurnsIntoGame() < 5) {
+      opts.timeout = 3000;
+    } else {
+      opts.timeout = 6000;
+    }
+
     opts.depth = depth;
     opts.method = 3;
-    opts.pruning = 1;
-    opts.sortMethod = 0;
-    opts.genBased = false;
-    opts.pruneByPathLength = true;
-    opts.genBased = true;
     opts.optimal = true;
 
     return opts;
@@ -165,7 +150,7 @@ export default class BotFactory {
     const turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
 
     const gamestateToAnalyze = node.gamestate;
-    const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn, true);
+    const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn);
 
     if (moves.length === 0) {
       throw new Error(
@@ -187,8 +172,7 @@ export default class BotFactory {
 
     const allPossibleStatesAfterTurn = getGameStatesToAnalyze(
       GameState.getGameBoardState(),
-      GameState.getCurrentTurn(),
-      GameState.getNumberOfTurnsIntoGame() > 10
+      GameState.getCurrentTurn()
     );
 
     console.log(
@@ -197,7 +181,7 @@ export default class BotFactory {
       } for ${GameState.getCurrentTurn()} on turn ${GameState.getNumberOfTurnsIntoGame()}`
     );
 
-    const opts = this.getOpts(allPossibleStatesAfterTurn.length);
+    const opts = this.getOpts();
     const root = this.getRootNode(allPossibleStatesAfterTurn);
     const tree = new minimaxer.Negamax(root, opts);
 
@@ -226,21 +210,12 @@ export default class BotFactory {
     const gamestateToAnalyze = node.gamestate;
 
     let turn;
-    // let aim;
 
     if (node.type === 0) {
       turn = node.data.turn;
-      // aim = node.aim;
     } else {
       turn = node.parent.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-      // aim = node.parent.aim * -1;
     }
-
-    // if (aim === -1) {
-    //   console.log("aimmmm");
-    // }
-
-    // console.log(node.aim);
 
     const updatedBoardGameState = applyMoveToGameState(
       gamestateToAnalyze,
@@ -256,7 +231,6 @@ export default class BotFactory {
       updatedBoardGameState,
       move,
       { turn, winner }
-      // aim
     );
 
     return childNode;

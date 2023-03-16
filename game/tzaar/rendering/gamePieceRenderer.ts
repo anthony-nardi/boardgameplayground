@@ -1,8 +1,6 @@
 import { TOTT, PLAYER_ONE, PLAYER_TWO, TZAAR, TZARRA } from "../constants";
 import WindowHelper from "./WindowHelper";
-import { RecordOf } from "immutable";
 
-export const DEBUG = false;
 export const NUMBER_OF_ROWS = 8;
 export const NUMBER_OF_COLS = 8;
 
@@ -217,6 +215,30 @@ class GamePieceRenderer {
     if (!this.circleRadius || !this.smallerCircleRadius) {
       throw new Error("circle radius isnt ready");
     }
+
+    // if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TOTT) {
+    //   const image = document.getElementById("source");
+    //   context.drawImage(
+    //     image,
+    //     0,
+    //     0,
+    //     this.circleRadius * 2,
+    //     this.circleRadius * 2
+    //   );
+    //   return;
+    // }
+
+    // if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZARRA) {
+    //   const image = document.getElementById("source2");
+    //   context.drawImage(
+    //     image,
+    //     0,
+    //     0,
+    //     this.circleRadius * 2,
+    //     this.circleRadius * 2
+    //   );
+    //   return;
+    // }
 
     if (gamePiece.ownedBy === PLAYER_ONE) {
       context.fillStyle = this.PLAYER_ONE_COLOR_BG;

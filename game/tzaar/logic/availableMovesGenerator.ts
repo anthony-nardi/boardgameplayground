@@ -17,47 +17,21 @@ import { Player, PlayerPieces, ValidCoordinate } from "../types/types";
 
 export function getGameStatesToAnalyze(
   gameState: GameBoardState,
-  turn: Player,
-  getAllPossibleMoves?: boolean
+  turn: Player
 ) {
-  if (getAllPossibleMoves) {
-    let allPossibleMoves = getPossibleMoveSequences(
-      gameState,
-      turn,
-      true,
-      true,
-      false
-    );
-    if (allPossibleMoves.length < 400) {
-      allPossibleMoves = getPossibleMoveSequences(
-        gameState,
-        turn,
-        true,
-        true,
-        false
-      );
-    }
-    return allPossibleMoves;
+  if (GameState.getNumberOfTurnsIntoGame() > 10) {
+    return getPossibleMoveSequences(gameState, turn);
   } else if (GameState.getNumberOfTurnsIntoGame() === 0) {
     return getFirstTurnMoveSequence(gameState, turn);
   } else {
     let moves = getEarlyGameMoveSequences(gameState, turn, TZAAR);
-    console.log(
-      `EARLY GAME: ${moves.length} possible moves selected for TZAAR pieces.`
-    );
 
     if (!moves.length) {
       moves = getEarlyGameMoveSequences(gameState, turn, TZARRA);
-      console.log(
-        `EARLY GAME: ${moves.length} possible moves selected for TZARRA pieces.`
-      );
     }
 
     if (!moves.length) {
       moves = getEarlyGameMoveSequences(gameState, turn, TOTT);
-      console.log(
-        `EARLY GAME: ${moves.length} possible moves selected for TOTT pieces.`
-      );
     }
 
     return moves;
@@ -164,10 +138,7 @@ export function getEarlyGameMoveSequences(
       // if its not obvious, only 2 coordinates on the board changed so we can reuse most of the previous results from getAllPlayerPieceCoordinates
       const validMovesForPieceJustMoved = getValidStacksAndCaptures(
         toCoordinate,
-        gameState,
-        true,
-        true,
-        false
+        gameState
       );
 
       for (
@@ -298,10 +269,7 @@ export function getAllPlayerPieceCoordinatesByType(
 
 export function getPossibleMoveSequences(
   gameState: GameBoardState,
-  turn: Player,
-  shouldStackTZAAR: boolean = true,
-  shouldStackTZARRA: boolean = true,
-  shouldStackTOTT: boolean = true
+  turn: Player
 ) {
   const moves: string[] = [];
   const playerCoordinates = getAllPlayerPieceCoordinates(gameState, turn);
@@ -336,11 +304,11 @@ export function getPossibleMoveSequences(
       // if its not obvious, only 2 coordinates on the board changed so we can reuse most of the previous results from getAllPlayerPieceCoordinates
       const validMovesForPieceJustMoved = getValidStacksAndCaptures(
         coordinateToCapture,
-        gameState,
-        shouldStackTZAAR,
-        shouldStackTZARRA,
-        shouldStackTOTT
+        gameState
       );
+
+      const firstCaptureAndSecondStartingPosition =
+        fromToKey + "=>" + coordinateToCapture + "->";
 
       for (
         let validMoveIndex = 0;
@@ -348,10 +316,7 @@ export function getPossibleMoveSequences(
         validMoveIndex++
       ) {
         const moveString =
-          fromToKey +
-          "=>" +
-          coordinateToCapture +
-          "->" +
+          firstCaptureAndSecondStartingPosition +
           validMovesForPieceJustMoved[validMoveIndex];
         moves.push(moveString);
       }
@@ -366,11 +331,11 @@ export function getPossibleMoveSequences(
 
         const validMoves = getValidStacksAndCaptures(
           playerPieceCoordinateAfterCapture,
-          gameState,
-          shouldStackTZAAR,
-          shouldStackTZARRA,
-          shouldStackTOTT
+          gameState
         );
+
+        const firstCaptureAndSecondStartingPosition2 =
+          fromToKey + "=>" + playerPieceCoordinateAfterCapture + "->";
 
         for (
           let validMoveIndex = 0;
@@ -378,11 +343,7 @@ export function getPossibleMoveSequences(
           validMoveIndex++
         ) {
           const moveString =
-            fromToKey +
-            "=>" +
-            playerPieceCoordinateAfterCapture +
-            "->" +
-            validMoves[validMoveIndex];
+            firstCaptureAndSecondStartingPosition2 + validMoves[validMoveIndex];
 
           moves.push(moveString);
         }

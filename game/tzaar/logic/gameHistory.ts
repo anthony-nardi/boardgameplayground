@@ -1,58 +1,87 @@
-export let game_id: number | string = 0;
+class GameHistory {
+  private _game_id: number | string = 0;
+  private _local_storage_key = "tzaar_games";
 
-export function setGameId(id: number | string) {
-  game_id = id;
-  // @ts-expect-error fix
-  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
+  public setGameId(id: number | string) {
+    this._game_id = id;
+    let existingGames;
 
-  if (!existingGames) {
-    existingGames = {};
+    const tzaarGames = localStorage.getItem(this._local_storage_key);
+
+    if (tzaarGames) {
+      existingGames = JSON.parse(tzaarGames);
+    } else {
+      existingGames = {};
+    }
+
+    const gameIds = Object.keys(existingGames);
+
+    for (let i = 0; i < gameIds.length; i++) {
+      if (existingGames[gameIds[i]].length === 0) {
+        delete existingGames[gameIds[i]];
+      }
+    }
+
+    existingGames[this._game_id] = [];
+
+    localStorage.setItem(
+      this._local_storage_key,
+      JSON.stringify(existingGames)
+    );
   }
 
-  const gameIds = Object.keys(existingGames);
+  public getGameId() {
+    return this._game_id;
+  }
 
-  for (let i = 0; i < gameIds.length; i++) {
-    if (existingGames[gameIds[i]].length === 0) {
-      delete existingGames[gameIds[i]];
+  public addFirstHumanMoveToCurrentGame(move: string) {
+    const tzaarGames = localStorage.getItem(this._local_storage_key);
+
+    if (tzaarGames) {
+      let existingGames = JSON.parse(tzaarGames);
+      if (!existingGames || !existingGames[this._game_id]) {
+        throw new Error("Game doesnt exist");
+      }
+      existingGames[this._game_id].push(move);
+      localStorage.setItem(
+        this._local_storage_key,
+        JSON.stringify(existingGames)
+      );
     }
   }
 
-  existingGames[game_id] = [];
+  public addSecondHumanMoveToCurrentGame(move: string) {
+    const tzaarGames = localStorage.getItem(this._local_storage_key);
 
-  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
-}
-
-export function getGameId() {
-  return game_id;
-}
-
-export function addFirstHumanMoveToCurrentGame(move: string) {
-  // @ts-expect-error fix
-  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
-  if (!existingGames || !existingGames[game_id]) {
-    throw new Error("Game doesnt exist");
+    if (tzaarGames) {
+      let existingGames = JSON.parse(tzaarGames);
+      if (!existingGames || !existingGames[this._game_id]) {
+        throw new Error("Game doesnt exist");
+      }
+      const moveToAddTo = existingGames[this._game_id].pop();
+      existingGames[this._game_id].push(`${moveToAddTo}=>${move}`);
+      localStorage.setItem(
+        this._local_storage_key,
+        JSON.stringify(existingGames)
+      );
+    }
   }
-  existingGames[game_id].push(move);
-  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
+
+  public addAIMoveToCurrentGame(move: string) {
+    const tzaarGames = localStorage.getItem(this._local_storage_key);
+
+    if (tzaarGames) {
+      let existingGames = JSON.parse(tzaarGames);
+      if (!existingGames || !existingGames[this._game_id]) {
+        throw new Error("Game doesnt exist");
+      }
+      existingGames[this._game_id].push(move);
+      localStorage.setItem(
+        this._local_storage_key,
+        JSON.stringify(existingGames)
+      );
+    }
+  }
 }
 
-export function addSecondHumanMoveToCurrentGame(move: string) {
-  // @ts-expect-error fix
-  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
-  if (!existingGames || !existingGames[game_id]) {
-    throw new Error("Game doesnt exist");
-  }
-  const moveToAddTo = existingGames[game_id].pop();
-  existingGames[game_id].push(`${moveToAddTo}=>${move}`);
-  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
-}
-
-export function addAIMoveToCurrentGame(move: string) {
-  // @ts-expect-error fix
-  let existingGames = JSON.parse(localStorage.getItem("tzaar_games"));
-  if (!existingGames || !existingGames[game_id]) {
-    throw new Error("Game doesnt exist");
-  }
-  existingGames[game_id].push(move);
-  localStorage.setItem("tzaar_games", JSON.stringify(existingGames));
-}
+export default new GameHistory();

@@ -13,7 +13,7 @@ import GameState from "../logic/gameState";
 import { List } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { ValidCoordinate } from "../types/types";
-import { circlePatternInsideOut } from "../logic/initialSetupOptions";
+import { circlePatternInsideOut } from "./initialSetupOptions";
 
 function getContext() {
   if (!window.GAME_STATE_BOARD_CANVAS) {
@@ -195,8 +195,7 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
       piece,
       from,
       to,
-      // @ts-expect-error fix
-      delay: index * 25,
+      delay: +index * 25,
     });
   }
 
