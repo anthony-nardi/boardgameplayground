@@ -6,7 +6,7 @@ import {
   PLAYER_TWO,
   PLAYABLE_VERTICES,
 } from "../constants";
-import GameState, { GameBoardState } from "./gameState";
+import { GameBoardState } from "./gameState";
 import { Player } from "../types/types";
 import { getAnyInvertedValidCaptures, getAnyCapture } from "./gameBoardHelpers";
 

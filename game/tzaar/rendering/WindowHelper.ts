@@ -1,8 +1,3 @@
-type WindowHelperProps = {
-  height: number;
-  width: number;
-};
-
 class WindowHelper {
   width: number = 0;
   height: number = 0;

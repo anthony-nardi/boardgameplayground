@@ -9,8 +9,6 @@ import {
   PLAYABLE_VERTICES,
 } from "../constants";
 import GameState, { GameBoardState } from "./gameState";
-import { ValidCoordinate } from "../types/types";
-import { getInvertedValidCaptures } from "./gameBoardHelpers";
 
 export default class EvaluationFactory {
   constructor(props: {
@@ -158,82 +156,6 @@ export default class EvaluationFactory {
   // we value stacks depending on how many of that type are on the board
   private getScoreForStacks(numberOfPieces: number, stackSize: number) {
     return (this.STACK_VALUE_BONUS - numberOfPieces) * stackSize;
-  }
-
-  private getScoreForStacksThreatened(
-    stacksThreatened: number,
-    pieceType: typeof TZAAR | typeof TZARRA | typeof TOTT
-  ) {
-    return stacksThreatened;
-  }
-
-  private getScoreForMaterialPower(stackSize: number, count: number) {
-    const countPower = 100 / count;
-
-    if (stackSize > 1 && stackSize < 5) {
-      return 30 * countPower;
-    }
-    if (stackSize >= 5) {
-      return 15 * countPower;
-    }
-    return stackSize * countPower;
-  }
-
-  private getIsPieceThreatened(
-    coordinate: ValidCoordinate,
-    gameState: GameBoardState
-  ) {
-    return Boolean(getInvertedValidCaptures(coordinate, gameState).length);
-  }
-
-  private getScoreForEdgesAndCorners(edges: number, corners: number) {
-    return edges * this.EDGE_PENALTY + corners * this.CORNER_PENALTY;
-  }
-
-  private getScoreForHighestStack(currentStack: number, stackToBeat: number) {
-    return currentStack > stackToBeat ? this.LARGEST_STACK_BONUS : 0;
-  }
-
-  private addOne(n: any) {
-    return n + 1;
-  }
-
-  private getStacksScore(stacks: number[]) {
-    return stacks.reduce((total, stack) => {
-      return total + this.getStackSizeScore(stack);
-    }, 0);
-  }
-
-  private getStackSizeScore(stackSize: number) {
-    if (this.VERSION === 1) {
-      return 0;
-    }
-    if (this.VERSION === 2) {
-      if (stackSize <= 4) {
-        return Math.pow(stackSize, 3);
-      } else {
-        return 64 - Math.pow(stackSize - 4, 2);
-      }
-    }
-
-    return 0;
-  }
-
-  private getCountScore(count: number) {
-    if (this.VERSION === 1) {
-      return 0;
-    }
-    if (this.VERSION === 2) {
-      if (count === 1) {
-        return 100;
-      }
-      if (count > 5) {
-        return 20;
-      }
-      return 100 / (count + 1);
-    }
-
-    return 0;
   }
 
   public getGameStateMetadata(gameState: GameBoardState) {

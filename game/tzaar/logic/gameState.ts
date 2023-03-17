@@ -12,9 +12,9 @@ import {
   drawGameBoardState,
   renderMovingPiece,
 } from "../rendering/renderHelpers";
-import { addAIMoveToCurrentGame } from "./gameHistory";
+import GameHistory from "./GameHistory";
 import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
-import { isDebug } from "./utils";
+import { isDebugModeOn } from "./utils";
 
 export type PieceState = {
   isDragging: boolean;
@@ -348,7 +348,7 @@ class GameState {
     if (this.getCurrentTurn() === PLAYER_TWO && !this.getIsSecondPlayerAI()) {
       throw new Error("playMove should not happen for a human player");
     }
-    if (isDebug()) {
+    if (isDebugModeOn()) {
       console.log(
         `Number of turns into game: ${this.getNumberOfTurnsIntoGame()}`
       );
@@ -356,7 +356,7 @@ class GameState {
         `Current turn: ${this.getCurrentTurn()} is making the move: ${move}`
       );
       console.log(this.getGameBoardState());
-      addAIMoveToCurrentGame(move);
+      GameHistory.addAIMoveToCurrentGame(move);
     }
     // Single move only
     if (move.indexOf("=>") === -1) {

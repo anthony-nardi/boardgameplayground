@@ -3,30 +3,15 @@ import { drawInitialGrid } from "../rendering/cachedBoard";
 import {
   drawCoordinates,
   drawGameBoardState,
-  drawGamePiece,
   renderInitializingBoard,
 } from "../rendering/renderHelpers";
-import {
-  setupSymmetricalBoard,
-  getValidCaptures,
-  getValidStacks,
-} from "./gameBoardHelpers";
+import { setupSymmetricalBoard } from "./gameBoardHelpers";
 import GameState from "./gameState";
-import {
-  setGameId,
-  addFirstHumanMoveToCurrentGame,
-  addSecondHumanMoveToCurrentGame,
-} from "./gameHistory";
-import React from "react";
-import { ValidCoordinate } from "../types/types";
-import {
-  getPixelCoordinatesFromUserInteraction,
-  getBoardCoordinatesFromUserInteraction,
-} from "../rendering/coordinateHelpers";
-import { hideSkipButton, showLoadingSpinner } from "../rendering/domHelpers";
+import GameHistory from "./GameHistory";
+import { showLoadingSpinner } from "../rendering/domHelpers";
 import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
-import { isDebug } from "./utils";
+import { isDebugModeOn } from "./utils";
 import EvaluationFactory from "./EvaluationFactory";
 
 let botOne: undefined | BotFactory;
@@ -59,175 +44,6 @@ export function moveAI() {
       botTwo?.moveAI(moveAI);
     }, 200);
   }
-}
-
-function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
-  const piece = GameState.getGameBoardState()[boardCoordinate];
-  return piece && piece.ownedBy === GameState.getCurrentTurn();
-}
-
-export function passTurn() {
-  const canPass =
-    GameState.getCurrentTurn() === PLAYER_ONE &&
-    GameState.getTurnPhase() === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS;
-
-  if (canPass) {
-    GameState.nextPhase();
-    hideSkipButton();
-    showLoadingSpinner();
-    setTimeout(moveAI);
-  }
-}
-
-export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
-  const currentTurn = GameState.getCurrentTurn();
-  const gameBoardState = GameState.getGameBoardState();
-  const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
-
-  if (!isCurrentPlayerPiece(boardCoordinate)) {
-    return;
-  }
-
-  if (currentTurn === PLAYER_TWO && GameState.getIsSecondPlayerAI()) {
-    return;
-  }
-
-  if (currentTurn === PLAYER_ONE && GameState.getIsFirstPlayerAI()) {
-    return;
-  }
-
-  if (getWinner(gameBoardState, true, currentTurn)) {
-    return;
-  }
-
-  const piece = gameBoardState[boardCoordinate];
-
-  if (piece) {
-    piece.isDragging = true;
-  }
-
-  GameState.setMovingPiece(boardCoordinate);
-}
-
-export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
-  const movingPiece = GameState.getMovingPiece();
-  const currentTurn = GameState.getCurrentTurn();
-
-  if (!movingPiece) {
-    return;
-  }
-
-  if (currentTurn === PLAYER_TWO && GameState.getIsSecondPlayerAI()) {
-    return;
-  }
-
-  if (currentTurn === PLAYER_ONE && GameState.getIsFirstPlayerAI()) {
-    return;
-  }
-
-  const gamePiece = GameState.getGameBoardState()[movingPiece];
-
-  if (!gamePiece) {
-    throw new Error("gamepiece not here");
-  }
-
-  const [x, y] = getPixelCoordinatesFromUserInteraction(event);
-
-  drawGameBoardState();
-
-  drawGamePiece(gamePiece, x, y);
-}
-
-export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
-  const movingPiece = GameState.getMovingPiece();
-  const gameBoardState = GameState.getGameBoardState();
-
-  if (!movingPiece) {
-    return;
-  }
-
-  const toCoordinates = getBoardCoordinatesFromUserInteraction(event);
-
-  const piece = gameBoardState[movingPiece];
-
-  if (piece) {
-    piece.isDragging = false;
-  }
-
-  if (!gameBoardState[toCoordinates]) {
-    GameState.setMovingPiece(null);
-    drawGameBoardState();
-    return;
-  }
-
-  const validCaptures = getValidCaptures(movingPiece, gameBoardState);
-  const validStacks = getValidStacks(movingPiece, gameBoardState);
-  const isValidCapture = validCaptures.includes(toCoordinates);
-  const isValidStack = validStacks.includes(toCoordinates);
-
-  if (isValidCapture) {
-    capturePiece(movingPiece, toCoordinates);
-  }
-
-  if (
-    isValidStack &&
-    GameState.getTurnPhase() === TURN_PHASES.STACK_OR_CAPTURE_OR_PASS
-  ) {
-    stackPiece(movingPiece, toCoordinates);
-  }
-
-  GameState.setMovingPiece(null);
-  drawGameBoardState();
-}
-
-function capturePiece(
-  fromCoordinates: ValidCoordinate,
-  toCoordinates: ValidCoordinate
-) {
-  const gameBoardState = GameState.getGameBoardState();
-
-  const fromPiece = gameBoardState[fromCoordinates];
-
-  if (!fromPiece) {
-    throw new Error("fromPiece not there.");
-  }
-
-  if (isDebug()) {
-    if (GameState.getTurnPhase() === CAPTURE) {
-      addFirstHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
-    } else {
-      addSecondHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
-    }
-  }
-
-  gameBoardState[fromCoordinates] = false;
-  gameBoardState[toCoordinates] = fromPiece;
-
-  checkGameStateAndStartNextTurn(true, moveAI);
-}
-
-function stackPiece(
-  fromCoordinates: ValidCoordinate,
-  toCoordinates: ValidCoordinate
-) {
-  const gameBoardState = GameState.getGameBoardState();
-
-  const fromPiece = gameBoardState[fromCoordinates];
-  const toPiece = gameBoardState[toCoordinates];
-
-  if (!fromPiece || !toPiece) {
-    throw new Error("Stacking broken");
-  }
-
-  if (isDebug()) {
-    addSecondHumanMoveToCurrentGame(`${fromCoordinates}->${toCoordinates}`);
-  }
-
-  gameBoardState[fromCoordinates] = false;
-  gameBoardState[toCoordinates] = fromPiece;
-  fromPiece.stackSize = fromPiece.stackSize + toPiece.stackSize;
-
-  checkGameStateAndStartNextTurn(false, moveAI);
 }
 
 export function checkGameStateAndStartNextTurn(
@@ -266,8 +82,8 @@ export function checkGameStateAndStartNextTurn(
 }
 
 export function initGame() {
-  if (isDebug()) {
-    setGameId(Date.now());
+  if (isDebugModeOn()) {
+    GameHistory.setGameId(Date.now());
   }
 
   const piecesToSetup = setupSymmetricalBoard();
@@ -315,9 +131,9 @@ export function initGame() {
 
     drawGameBoardState();
 
-    const iterations = 1000000;
+    const iterations = 1000;
 
-    console.time(`getGameStateScore iterations: ${iterations}`);
+    console.time(`getPossibleMoveSequences iterations: ${iterations}`);
     const evalThing = new EvaluationFactory({
       CORNER_PENALTY_MULTIPLIER: 1,
       COUNT_SCORE_MULTIPLIER: 1,
@@ -336,17 +152,50 @@ export function initGame() {
       //   gameBoardState,
       //   PLAYER_TWO,
       // ); // 9036.78125 ms per mil
-      // getPossibleMoveSequences(gameBoardState, PLAYER_TWO); //1k 4801.859130859375 ms
+      // getPossibleMoveSequences(
+      //   GameState.getGameBoardState(),
+      //   PLAYER_TWO,
+      //   true,
+      //   true,
+      //   false
+      // ); //1k 4801.859130859375 ms -> 1700ms
       // applyMoveToGameState(gameBoardState, "5,7->4,7=>5,6->4,7"); // 1000000 1.931s
       // isAnyPieceCapturable(gameBoardState, PLAYER_ONE); // 10000000 3s
       // let moves = getEarlyGameMoveSequences(gameBoardState, PLAYER_ONE)
       // console.log(Object.keys(moves).length)
     }
-    console.timeEnd(`getGameStateScore iterations: ${iterations}`);
+    console.timeEnd(`getPossibleMoveSequences iterations: ${iterations}`);
+    console.time(`getEarlyGameMoveSequences iterations: ${iterations}`);
+
+    for (let i = 0; i < iterations; i++) {
+      // evalThing.getGameStateMetadata(gameBoardState);
+      // getHasAllThreePieceTypes(gameBoardState); //1000000  800ms (now 430ms)
+      // getWinner(gameBoardState) // 3.8s per mil
+      // botOne?.evaluation?.getGameStateScore(
+      //   gameBoardState,
+      //   PLAYER_TWO,
+      // ); // 9036.78125 ms per mil
+      // getEarlyGameMoveSequences(
+      //   GameState.getGameBoardState(),
+      //   PLAYER_TWO,
+      //   TZAAR
+      // ).concat(
+      //   getEarlyGameMoveSequences(
+      //     GameState.getGameBoardState(),
+      //     PLAYER_TWO,
+      //     TZARRA
+      //   )
+      // ); // 1k 450ms
+      // applyMoveToGameState(gameBoardState, "5,7->4,7=>5,6->4,7"); // 1000000 1.931s
+      // isAnyPieceCapturable(gameBoardState, PLAYER_ONE); // 10000000 3s
+      // let moves = getEarlyGameMoveSequences(gameBoardState, PLAYER_ONE)
+      // console.log(Object.keys(moves).length)
+    }
+    console.timeEnd(`getEarlyGameMoveSequences iterations: ${iterations}`);
 
     setTimeout(moveAI);
 
-    if (isDebug()) {
+    if (isDebugModeOn()) {
       drawCoordinates();
     }
   });

@@ -1,13 +1,13 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
+import { initGame } from "../logic/gameLogic";
 import {
-  initGame,
   handleDropPiece,
   handleClickPiece,
   handleMovePiece,
-  passTurn,
-} from "./gameLogic";
-import WindowHelper from "../rendering/WindowHelper";
-import gamePieceRenderer from "../rendering/gamePieceRenderer";
+  handlePassTurn,
+} from "../logic/EventHandlers";
+import WindowHelper from "./WindowHelper";
+import gamePieceRenderer from "./gamePieceRenderer";
 import { Button } from "@mantine/core";
 
 export default function () {
@@ -35,6 +35,12 @@ export default function () {
 
   return (
     <>
+      <div className="hidden">
+        <img id="source" src="player_one_tott.png" width="100" height="100" />
+      </div>
+      <div className="hidden">
+        <img id="source2" src="tzarra_p2.png" width="400" height="400" />
+      </div>
       <div className="wrapper hidden" id="loadingSpinner">
         <div className="ajaxSpinner circles">
           <div className="dotWrapper">
@@ -70,7 +76,7 @@ export default function () {
           color="gray"
           className="hidden"
           id="skipTurnButton"
-          onClick={passTurn}
+          onClick={handlePassTurn}
         >
           Pass
         </Button>
