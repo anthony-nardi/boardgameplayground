@@ -8,7 +8,7 @@ import {
   CORNER_COORDINATES_AS_MAP,
   PLAYABLE_VERTICES,
 } from "../constants";
-import GameState, { GameBoardState } from "./gameState";
+import GameState, { GameBoardState } from "./GameState";
 
 export default class EvaluationFactory {
   constructor(props: {

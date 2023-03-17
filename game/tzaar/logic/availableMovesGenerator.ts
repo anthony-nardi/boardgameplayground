@@ -6,7 +6,7 @@ import {
   PLAYER_TWO,
   PLAYABLE_VERTICES,
 } from "../constants";
-import GameState, { GameBoardState } from "./gameState";
+import GameState, { GameBoardState } from "./GameState";
 import {
   getValidCaptures,
   getValidStacks,

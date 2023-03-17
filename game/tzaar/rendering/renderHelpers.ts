@@ -9,7 +9,7 @@ import {
 } from "../constants";
 import WindowHelper from "./WindowHelper";
 import { drawCachedBoard } from "./cachedBoard";
-import GameState from "../logic/gameState";
+import GameState from "../logic/GameState";
 import { List } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
 import { ValidCoordinate } from "../types/types";
@@ -133,12 +133,14 @@ export function drawGamePiece(gamePiece: any, xPos: number, yPos: number) {
     context.drawImage(GamePieceRenderer.PLAYER_TWO_TZAAR, dx, dy, dw, dh);
   }
 
-  const textPositionX = Math.floor(+xPos - 6);
-  const textPositionY = Math.floor(+yPos + 6);
+  if (gamePiece.stackSize > 1) {
+    const textPositionX = Math.floor(+xPos - 7);
+    const textPositionY = Math.floor(+yPos + 8);
 
-  context.font = "1.15rem Helvetica";
-  context.fillStyle = gamePiece.type === TZAAR ? "#000" : "#fff";
-  context.fillText(String(gamePiece.stackSize), textPositionX, textPositionY);
+    context.font = "1.5rem Helvetica";
+    context.fillStyle = gamePiece.type === TZAAR ? "#fff" : "#000";
+    context.fillText(String(gamePiece.stackSize), textPositionX, textPositionY);
+  }
 }
 
 export function drawGamePieces() {

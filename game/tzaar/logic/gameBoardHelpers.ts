@@ -9,7 +9,7 @@ import {
 import WindowHelper from "../rendering/WindowHelper";
 import { Direction, ValidCoordinate } from "../types/types";
 import GamePieceRenderer from "../rendering/gamePieceRenderer";
-import { GameBoardState } from "./gameState";
+import { GameBoardState } from "./GameState";
 
 const isTruthy = (arg: any) => arg;
 
