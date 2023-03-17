@@ -20,6 +20,7 @@ export function getPixelCoordinatesFromUserInteraction(
   event:
     | React.MouseEvent<HTMLCanvasElement>
     | React.TouchEvent<HTMLCanvasElement>
+    | React.SyntheticEvent<HTMLCanvasElement>
 ) {
   if (
     event.type === "touchstart" ||
@@ -37,7 +38,9 @@ export function getPixelCoordinatesFromUserInteraction(
 }
 
 export function getBoardCoordinatesFromUserInteraction(
-  event: React.MouseEvent<HTMLCanvasElement>
+  event:
+    | React.MouseEvent<HTMLCanvasElement>
+    | React.SyntheticEvent<HTMLCanvasElement>
 ) {
   const [x, y] = getPixelCoordinatesFromUserInteraction(event);
   return getBoardCoordinatesFromPixelCoordinates(x, y);

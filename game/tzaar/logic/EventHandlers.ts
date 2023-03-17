@@ -1,7 +1,7 @@
 import { PLAYER_TWO, PLAYER_ONE, TURN_PHASES, CAPTURE } from "../constants";
 import { drawGameBoardState, drawGamePiece } from "../rendering/renderHelpers";
 import { getValidCaptures, getValidStacks } from "./gameBoardHelpers";
-import GameState from "./gameState";
+import GameState from "./GameState";
 import React from "react";
 import { ValidCoordinate } from "../types/types";
 import {
@@ -12,7 +12,7 @@ import { hideSkipButton, showLoadingSpinner } from "../rendering/domHelpers";
 import { getWinner } from "./evaluationHelpers";
 import { checkGameStateAndStartNextTurn, moveAI } from "./gameLogic";
 import { isDebugModeOn } from "./utils";
-import GameHistory from "./GameHistory";
+import GameHistory from "../utils/GameHistory";
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   const piece = GameState.getGameBoardState()[boardCoordinate];
@@ -88,7 +88,11 @@ export function handlePassTurn() {
   }
 }
 
-export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
+export function handleClickPiece(
+  event:
+    | React.MouseEvent<HTMLCanvasElement>
+    | React.SyntheticEvent<HTMLCanvasElement>
+) {
   const currentTurn = GameState.getCurrentTurn();
   const gameBoardState = GameState.getGameBoardState();
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
@@ -118,7 +122,11 @@ export function handleClickPiece(event: React.MouseEvent<HTMLCanvasElement>) {
   GameState.setMovingPiece(boardCoordinate);
 }
 
-export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
+export function handleMovePiece(
+  event:
+    | React.MouseEvent<HTMLCanvasElement>
+    | React.SyntheticEvent<HTMLCanvasElement>
+) {
   const movingPiece = GameState.getMovingPiece();
   const currentTurn = GameState.getCurrentTurn();
 
@@ -147,7 +155,11 @@ export function handleMovePiece(event: React.MouseEvent<HTMLCanvasElement>) {
   drawGamePiece(gamePiece, x, y);
 }
 
-export function handleDropPiece(event: React.MouseEvent<HTMLCanvasElement>) {
+export function handleDropPiece(
+  event:
+    | React.MouseEvent<HTMLCanvasElement>
+    | React.SyntheticEvent<HTMLCanvasElement>
+) {
   const movingPiece = GameState.getMovingPiece();
   const gameBoardState = GameState.getGameBoardState();
 

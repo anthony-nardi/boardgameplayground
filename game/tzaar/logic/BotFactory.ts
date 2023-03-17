@@ -1,5 +1,5 @@
 import { PLAYER_TWO, PLAYER_ONE } from "../constants";
-import GameState from "./gameState";
+import GameState from "./GameState";
 import { getGameStatesToAnalyze } from "./availableMovesGenerator";
 import * as minimaxer from "minimaxer";
 import { ValidCoordinate } from "../types/types";
@@ -65,16 +65,27 @@ export function applyMoveToGameState(gamestate: any, move: string) {
 }
 
 export default class BotFactory {
-  constructor(props: {
-    CORNER_PENALTY_MULTIPLIER: number;
-    COUNT_SCORE_MULTIPLIER: number;
-    EDGE_PENALTY_MULTIPLIER: number;
-    LARGEST_STACK_BONUS_MULTIPLIER: number;
-    SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number;
-    STACK_SIZE_SCORE_MULTIPLIER: number;
-    STACK_VALUE_BONUS_MULTIPLIER: number;
-    VERSION: number;
-  }) {
+  constructor(
+    props: {
+      CORNER_PENALTY_MULTIPLIER: number;
+      COUNT_SCORE_MULTIPLIER: number;
+      EDGE_PENALTY_MULTIPLIER: number;
+      LARGEST_STACK_BONUS_MULTIPLIER: number;
+      SCORE_FOR_STACKS_THREATENED_MULTIPLIER: number;
+      STACK_SIZE_SCORE_MULTIPLIER: number;
+      STACK_VALUE_BONUS_MULTIPLIER: number;
+      VERSION: number;
+    } = {
+      VERSION: 1,
+      CORNER_PENALTY_MULTIPLIER: 1,
+      COUNT_SCORE_MULTIPLIER: 1,
+      EDGE_PENALTY_MULTIPLIER: 1,
+      LARGEST_STACK_BONUS_MULTIPLIER: 1,
+      SCORE_FOR_STACKS_THREATENED_MULTIPLIER: 1,
+      STACK_SIZE_SCORE_MULTIPLIER: 1,
+      STACK_VALUE_BONUS_MULTIPLIER: 1,
+    }
+  ) {
     this.evaluation = new EvaluationFactory(props);
 
     this.VERSION = props.VERSION;
@@ -104,10 +115,17 @@ export default class BotFactory {
       opts.timeout = 6000;
     }
 
+    // TODO: optimal seems to be less performance (very slightly)
+    // Probably best to play around with options at different points
+    // in the game.
     opts.depth = depth;
     opts.method = 3;
-    opts.optimal = true;
-
+    opts.presort = true;
+    opts.pruning = 1;
+    opts.sortMethod = 2;
+    opts.genBased = true;
+    opts.optimal = false;
+    opts.pruneByPathLength = true;
     return opts;
   }
 
@@ -144,21 +162,6 @@ export default class BotFactory {
       );
       return true;
     }
-  }
-
-  private getMovesCallback(node: any) {
-    const turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
-
-    const gamestateToAnalyze = node.gamestate;
-    const moves = getGameStatesToAnalyze(gamestateToAnalyze, turn);
-
-    if (moves.length === 0) {
-      throw new Error(
-        "THis shouldnt happen... moves is 0 so it should be a terminal game for minimax"
-      );
-    }
-
-    return moves;
   }
 
   public moveAI(moveAiCallback: Function) {
@@ -204,6 +207,11 @@ export default class BotFactory {
     }
 
     hideLoadingSpinner();
+  }
+
+  private getMovesCallback(node: any) {
+    const turn = node.data.turn === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+    return getGameStatesToAnalyze(node.gamestate, turn);
   }
 
   private createChildCallback(node: any, move: string) {

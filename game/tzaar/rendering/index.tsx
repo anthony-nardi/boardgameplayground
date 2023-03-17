@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { initGame } from "../logic/gameLogic";
 import {
   handleDropPiece,
@@ -7,10 +7,8 @@ import {
   handlePassTurn,
 } from "../logic/EventHandlers";
 import WindowHelper from "./WindowHelper";
-import gamePieceRenderer, {promiseArray} from "./gamePieceRenderer";
-import { Button } from "@mantine/core";
-
-
+import gamePieceRenderer, { promiseArray } from "./gamePieceRenderer";
+import { Button, Badge } from "@mantine/core";
 
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
@@ -24,7 +22,6 @@ export default function () {
         console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "false"`);
       }
       Promise.all(promiseArray).then(() => {
-        
         isGameInitializedRef.current = true;
         window.GAME_STATE_BOARD_CANVAS = Canvas.current;
         WindowHelper.setHeight();
@@ -37,16 +34,65 @@ export default function () {
     }
   }, [Canvas]);
 
+  const handleTouchStart = useCallback(
+    (evt: React.SyntheticEvent<HTMLCanvasElement>) => {
+      if ("ontouchstart" in document) {
+        handleClickPiece(evt);
+      }
+    },
+    []
+  );
+
+  const handleTouchMove = useCallback(
+    (evt: React.SyntheticEvent<HTMLCanvasElement>) => {
+      if ("ontouchstart" in document) {
+        handleMovePiece(evt);
+      }
+    },
+    []
+  );
+
+  const handleTouchEnd = useCallback(
+    (evt: React.SyntheticEvent<HTMLCanvasElement>) => {
+      if ("ontouchstart" in document) {
+        handleDropPiece(evt);
+      }
+    },
+    []
+  );
+
+  const handleMouseDown = useCallback(
+    (evt: React.MouseEvent<HTMLCanvasElement>) => {
+      if ("ontouchstart" in document) {
+        return;
+      }
+      handleClickPiece(evt);
+    },
+    []
+  );
+
+  const handleMouseUp = useCallback(
+    (evt: React.MouseEvent<HTMLCanvasElement>) => {
+      if ("ontouchstart" in document) {
+        return;
+      }
+      handleDropPiece(evt);
+    },
+    []
+  );
+
+  const handleMouseMove = useCallback(
+    (evt: React.MouseEvent<HTMLCanvasElement>) => {
+      if ("ontouchstart" in document) {
+        return;
+      }
+      handleMovePiece(evt);
+    },
+    []
+  );
+
   return (
-    <>
-      {/* <div className="hidden">
-        <img id="blue_tott" src="blue_tott.png" width="100" height="100" />
-        <img id="blue_tzaar" src="blue_tzaar.png" width="100" height="100" />
-        <img id="blue_tzarra" src="blue_tzarra.png" width="100" height="100" />
-        <img id="gold_tott" src="gold_tott.png" width="100" height="100" />
-        <img id="gold_tzarra" src="gold_tzarra.png" width="100" height="100" />
-        <img id="gold_tzaar" src="gold_tzaar.png" width="100" height="100" />
-      </div> */}
+    <div className="tzaar_background_color">
       <div className="wrapper hidden" id="loadingSpinner">
         <div className="ajaxSpinner circles">
           <div className="dotWrapper">
@@ -76,29 +122,33 @@ export default function () {
         </div>
       </div>
       <div className="stateContainer">
-        <div id="turnDiv"></div>
-        <div id="phaseDiv"></div>
+        <Badge>
+          <div id="turnDiv"></div>
+        </Badge>
+        <Badge ml="xs">
+          {" "}
+          <div id="phaseDiv"></div>
+        </Badge>
         <Button
+          compact
+          ml="xs"
           color="gray"
           className="hidden"
           id="skipTurnButton"
           onClick={handlePassTurn}
         >
-          Pass
+          Pass turn
         </Button>
       </div>
       <canvas
         ref={Canvas}
-        // @ts-expect-error fix
-        onTouchStart={"ontouchstart" in document ? handleClickPiece : () => {}}
-        // @ts-expect-error fix
-        onTouchMove={"ontouchstart" in document ? handleMovePiece : () => {}}
-        // @ts-expect-error fix
-        onTouchEnd={"ontouchstart" in document ? handleDropPiece : () => {}}
-        onMouseDown={"ontouchstart" in document ? () => {} : handleClickPiece}
-        onMouseMove={"ontouchstart" in document ? () => {} : handleMovePiece}
-        onMouseUp={"ontouchstart" in document ? () => {} : handleDropPiece}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
       />
-    </>
+    </div>
   );
 }

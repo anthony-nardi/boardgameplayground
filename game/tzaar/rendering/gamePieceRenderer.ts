@@ -7,22 +7,19 @@ export const NUMBER_OF_COLS = 8;
 const images = [
   "blue_tott.png",
   "blue_tzarra.png",
-
   "blue_tzarra_2.png",
   "blue_tzaar.png",
   "gold_tott.png",
   "gold_tzarra.png",
   "gold_tzarra_2.png",
-
   "gold_tzaar.png",
 ];
 
-const loadedImages = {};
+const loadedImages: any = {};
 export const promiseArray = images.map(function (imgurl) {
   var prom = new Promise(function (resolve, reject) {
     var img = new Image();
     img.onload = function () {
-      // @ts-expect-error fix
       loadedImages[imgurl] = img;
       resolve(null);
     };
