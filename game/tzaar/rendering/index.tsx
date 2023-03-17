@@ -7,8 +7,10 @@ import {
   handlePassTurn,
 } from "../logic/EventHandlers";
 import WindowHelper from "./WindowHelper";
-import gamePieceRenderer from "./gamePieceRenderer";
+import gamePieceRenderer, {promiseArray} from "./gamePieceRenderer";
 import { Button } from "@mantine/core";
+
+
 
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
@@ -21,26 +23,30 @@ export default function () {
       } else {
         console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "false"`);
       }
-
-      isGameInitializedRef.current = true;
-      window.GAME_STATE_BOARD_CANVAS = Canvas.current;
-      WindowHelper.setHeight();
-      WindowHelper.setWidth();
-      WindowHelper.setUseWindowHeight();
-      WindowHelper.setDevicePixelRatio();
-      gamePieceRenderer.init();
-      initGame();
+      Promise.all(promiseArray).then(() => {
+        
+        isGameInitializedRef.current = true;
+        window.GAME_STATE_BOARD_CANVAS = Canvas.current;
+        WindowHelper.setHeight();
+        WindowHelper.setWidth();
+        WindowHelper.setUseWindowHeight();
+        WindowHelper.setDevicePixelRatio();
+        gamePieceRenderer.init();
+        initGame();
+      });
     }
   }, [Canvas]);
 
   return (
     <>
-      <div className="hidden">
-        <img id="source" src="player_one_tott.png" width="100" height="100" />
-      </div>
-      <div className="hidden">
-        <img id="source2" src="tzarra_p2.png" width="400" height="400" />
-      </div>
+      {/* <div className="hidden">
+        <img id="blue_tott" src="blue_tott.png" width="100" height="100" />
+        <img id="blue_tzaar" src="blue_tzaar.png" width="100" height="100" />
+        <img id="blue_tzarra" src="blue_tzarra.png" width="100" height="100" />
+        <img id="gold_tott" src="gold_tott.png" width="100" height="100" />
+        <img id="gold_tzarra" src="gold_tzarra.png" width="100" height="100" />
+        <img id="gold_tzaar" src="gold_tzaar.png" width="100" height="100" />
+      </div> */}
       <div className="wrapper hidden" id="loadingSpinner">
         <div className="ajaxSpinner circles">
           <div className="dotWrapper">

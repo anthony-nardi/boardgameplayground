@@ -133,11 +133,11 @@ export function drawGamePiece(gamePiece: any, xPos: number, yPos: number) {
     context.drawImage(GamePieceRenderer.PLAYER_TWO_TZAAR, dx, dy, dw, dh);
   }
 
-  const textPositionX = Math.floor(+xPos - 6);
-  const textPositionY = Math.floor(+yPos + 6);
+  const textPositionX = Math.floor(+xPos - 7);
+  const textPositionY = Math.floor(+yPos + 8);
 
-  context.font = "1.15rem Helvetica";
-  context.fillStyle = gamePiece.type === TZAAR ? "#000" : "#fff";
+  context.font = "1.5rem Helvetica";
+  context.fillStyle = (gamePiece.type === TZAAR) === TZARRA ? "#fff" : "#000";
   context.fillText(String(gamePiece.stackSize), textPositionX, textPositionY);
 }
 

@@ -4,6 +4,33 @@ import WindowHelper from "./WindowHelper";
 export const NUMBER_OF_ROWS = 8;
 export const NUMBER_OF_COLS = 8;
 
+const images = [
+  "blue_tott.png",
+  "blue_tzarra.png",
+
+  "blue_tzarra_2.png",
+  "blue_tzaar.png",
+  "gold_tott.png",
+  "gold_tzarra.png",
+  "gold_tzarra_2.png",
+
+  "gold_tzaar.png",
+];
+
+const loadedImages = {};
+export const promiseArray = images.map(function (imgurl) {
+  var prom = new Promise(function (resolve, reject) {
+    var img = new Image();
+    img.onload = function () {
+      // @ts-expect-error fix
+      loadedImages[imgurl] = img;
+      resolve(null);
+    };
+    img.src = imgurl;
+  });
+  return prom;
+});
+
 class GamePieceRenderer {
   init() {
     const extraSpace = 1;
@@ -216,80 +243,42 @@ class GamePieceRenderer {
       throw new Error("circle radius isnt ready");
     }
 
-    // if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TOTT) {
-    //   const image = document.getElementById("source");
-    //   context.drawImage(
-    //     image,
-    //     0,
-    //     0,
-    //     this.circleRadius * 2,
-    //     this.circleRadius * 2
-    //   );
-    //   return;
-    // }
-
-    // if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZARRA) {
-    //   const image = document.getElementById("source2");
-    //   context.drawImage(
-    //     image,
-    //     0,
-    //     0,
-    //     this.circleRadius * 2,
-    //     this.circleRadius * 2
-    //   );
-    //   return;
-    // }
+    let image;
 
     if (gamePiece.ownedBy === PLAYER_ONE) {
-      context.fillStyle = this.PLAYER_ONE_COLOR_BG;
-      context.beginPath();
-      context.arc(
-        this.circleRadius,
-        this.circleRadius,
-        this.circleRadius - 2,
+      if (gamePiece.type === TOTT) {
+        image = loadedImages["blue_tott.png"];
+      } else if (gamePiece.type === TZARRA) {
+        image = loadedImages["blue_tzarra_2.png"];
+      } else {
+        image = loadedImages["blue_tzaar.png"];
+      }
+
+      context.drawImage(
+        image,
         0,
-        2 * Math.PI
+        0,
+        this.circleRadius * 2,
+        this.circleRadius * 2
       );
-      context.fill();
+      return;
     } else {
-      context.fillStyle = this.PLAYER_TWO_COLOR_BG;
-      context.beginPath();
-      context.arc(
-        this.circleRadius,
-        this.circleRadius,
-        this.circleRadius - 2,
-        0,
-        2 * Math.PI
-      );
-      context.fill();
-    }
+      if (gamePiece.type === TOTT) {
+        image = loadedImages["gold_tott.png"];
+      } else if (gamePiece.type === TZARRA) {
+        image = loadedImages["gold_tzarra_2.png"];
+      } else {
+        image = loadedImages["gold_tzaar.png"];
+      }
 
-    if (gamePiece.type === TZAAR) {
-      context.fillStyle = this.CENTER_COLOR;
-      context.beginPath();
-      this.drawStar(
-        this.circleRadius,
-        this.circleRadius,
-        4,
-        this.circleRadius / 2,
-        this.circleRadius / 4,
-        context,
-        this.CENTER_COLOR
-      );
-
-      context.fill();
-    } else if (gamePiece.type === TZARRA) {
-      context.strokeStyle = this.CENTER_COLOR;
-      context.lineWidth = 3;
-      context.beginPath();
-      context.arc(
-        this.circleRadius,
-        this.circleRadius,
-        this.smallerCircleRadius,
+      context.drawImage(
+        image,
         0,
-        2 * Math.PI
+        0,
+        this.circleRadius * 2,
+        this.circleRadius * 2
       );
-      context.stroke();
+      return;
     }
   }
 }
