@@ -28,13 +28,14 @@ export type GameBoardState = {
 };
 
 class GameState {
+  private gameStarted = false;
   private isVeryFirstTurn = true;
   private currentTurn: Player = PLAYER_ONE;
   private turnPhase: typeof CAPTURE | typeof STACK_OR_CAPTURE_OR_PASS =
     TURN_PHASES.CAPTURE;
   private numberOfTurnsIntoGame = 0;
-  private isFirstPlayerAI = false;
-  private isSecondPlayerAI = true;
+  private isFirstPlayerAI = true;
+  private isSecondPlayerAI = false;
   private movingPiece: null | ValidCoordinate = null;
   private gameBoardState: GameBoardState = {
     "4,0": false,
@@ -98,6 +99,12 @@ class GameState {
     "3,8": false,
     "4,8": false,
   };
+  public getHasGameStarted() {
+    return this.gameStarted;
+  }
+  public setHasGameStarted() {
+    this.gameStarted = true;
+  }
   public getMovingPiece() {
     return this.movingPiece;
   }
@@ -238,7 +245,7 @@ class GameState {
     return message;
   }
 
-  public nextPhase(maybeMoveAI?: Function) {
+  public nextPhase() {
     const skipTurnButton = document.getElementById("skipTurnButton");
     const phaseDiv = document.getElementById("phaseDiv");
     const turnDiv = document.getElementById("turnDiv");
@@ -261,7 +268,6 @@ class GameState {
           this.isSecondPlayerAI ? "AI" : "HUMAN"
         })`;
       }
-      maybeMoveAI && maybeMoveAI();
       return;
     }
 
@@ -307,8 +313,6 @@ class GameState {
         })`;
       }
 
-      maybeMoveAI && maybeMoveAI();
-
       return;
     }
     if (
@@ -326,7 +330,6 @@ class GameState {
           this.isFirstPlayerAI ? "AI" : "HUMAN"
         })`;
       }
-      maybeMoveAI && maybeMoveAI();
 
       return;
     }
@@ -386,8 +389,15 @@ class GameState {
 
         updatedGameBoardState[toCoordinate] = Object.assign({}, fromPiece);
         this.setGameBoardState(updatedGameBoardState);
+
+        const isFirstTurn = this.isVeryFirstTurn;
+
         checkGameStateAndStartNextTurn();
-        checkGameStateAndStartNextTurn(true);
+
+        if (!isFirstTurn) {
+          checkGameStateAndStartNextTurn(true);
+        }
+
         drawGameBoardState();
 
         if (this.getShouldAIMakeNextMove()) {

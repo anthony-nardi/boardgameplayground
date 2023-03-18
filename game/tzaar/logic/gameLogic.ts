@@ -23,6 +23,7 @@ export function moveAI() {
   const shouldMoveAI =
     (isPlayerOneTurn && GameState.getIsFirstPlayerAI()) ||
     (isPlayerTwoTurn && GameState.getIsSecondPlayerAI());
+
   const isGameOver = getWinner(
     GameState.getGameBoardState(),
     true,
@@ -73,6 +74,12 @@ export function checkGameStateAndStartNextTurn(
 }
 
 export function initGame() {
+  if (GameState.getHasGameStarted()) {
+    return;
+  } else {
+    GameState.setHasGameStarted();
+  }
+
   if (isDebugModeOn()) {
     GameHistory.setGameId(Date.now());
   }
