@@ -160,6 +160,12 @@ export default class BotFactory {
         message,
         `Number of turns into game: ${GameState.getNumberOfTurnsIntoGame()}`
       );
+
+      const winnerElement = document.getElementById("winnerMessage");
+      if (winnerElement && message) {
+        winnerElement.innerHTML = message;
+      }
+
       return true;
     }
   }

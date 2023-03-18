@@ -129,6 +129,9 @@ export default function () {
           {" "}
           <div id="phaseDiv"></div>
         </Badge>
+        <Badge id="winnerMessage" ml="xs">
+
+        </Badge>
         <Button
           compact
           ml="xs"
