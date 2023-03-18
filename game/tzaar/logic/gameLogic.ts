@@ -63,6 +63,10 @@ export function checkGameStateAndStartNextTurn(
       message,
       `Number of turns taken: ${GameState.getNumberOfTurnsIntoGame()}`
     );
+    const winnerElement = document.getElementById("winnerMessage");
+    if (winnerElement && message) {
+      winnerElement.innerHTML = message;
+    }
   }
 
   maybeMoveAI && setTimeout(maybeMoveAI);
