@@ -6,14 +6,25 @@ export const NUMBER_OF_COLS = 8;
 
 const images = [
   "blue_tott.png",
-  "blue_tzarra.png",
   "blue_tzarra_2.png",
   "blue_tzaar.png",
   "gold_tott.png",
-  "gold_tzarra.png",
   "gold_tzarra_2.png",
   "gold_tzaar.png",
+  "brown_tott.png",
+  "brown_tzarra.png",
+  "brown_tzaar.png",
+  "green_tott.png",
+  "green_tzarra.png",
+  "green_tzaar.png",
 ];
+
+const P1_TOTT = "blue_tott.png";
+const P1_TZARRA = "blue_tzarra_2.png";
+const P1_TZAAR = "blue_tzaar.png";
+const P2_TOTT = "gold_tott.png";
+const P2_TZARRA = "gold_tzarra_2.png";
+const P2_TZAAR = "gold_tzaar.png";
 
 const loadedImages: any = {};
 export const promiseArray = images.map(function (imgurl) {
@@ -244,11 +255,11 @@ class GamePieceRenderer {
 
     if (gamePiece.ownedBy === PLAYER_ONE) {
       if (gamePiece.type === TOTT) {
-        image = loadedImages["blue_tott.png"];
+        image = loadedImages[P1_TOTT];
       } else if (gamePiece.type === TZARRA) {
-        image = loadedImages["blue_tzarra_2.png"];
+        image = loadedImages[P1_TZARRA];
       } else {
-        image = loadedImages["blue_tzaar.png"];
+        image = loadedImages[P1_TZAAR];
       }
 
       context.drawImage(
@@ -261,11 +272,11 @@ class GamePieceRenderer {
       return;
     } else {
       if (gamePiece.type === TOTT) {
-        image = loadedImages["gold_tott.png"];
+        image = loadedImages[P2_TOTT];
       } else if (gamePiece.type === TZARRA) {
-        image = loadedImages["gold_tzarra_2.png"];
+        image = loadedImages[P2_TZARRA];
       } else {
-        image = loadedImages["gold_tzaar.png"];
+        image = loadedImages[P2_TZAAR];
       }
 
       context.drawImage(
