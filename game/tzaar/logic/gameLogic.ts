@@ -73,11 +73,19 @@ export function checkGameStateAndStartNextTurn(
   maybeMoveAI && setTimeout(maybeMoveAI);
 }
 
-export function initGame() {
+export function initGame(isHumanFirstPlayer: boolean) {
   if (GameState.getHasGameStarted()) {
     return;
   } else {
     GameState.setHasGameStarted();
+  }
+
+  if (isHumanFirstPlayer) {
+    GameState.setIsFirstPlayerAI(false);
+    GameState.setIsSecondPlayerAI(true);
+  } else {
+    GameState.setIsFirstPlayerAI(true);
+    GameState.setIsSecondPlayerAI(false);
   }
 
   if (isDebugModeOn()) {

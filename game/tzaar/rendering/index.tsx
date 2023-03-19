@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { initGame } from "../logic/gameLogic";
 import {
   handleDropPiece,
@@ -9,13 +9,25 @@ import {
 import WindowHelper from "./WindowHelper";
 import gamePieceRenderer, { promiseArray } from "./gamePieceRenderer";
 import { Button, Badge } from "@mantine/core";
+import SelectionScreen from "./SelectionScreen";
 
 export default function () {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
   const isGameInitializedRef = useRef(false);
+  const [showSelectionScreen, setShowSelectionScreen] = useState(true);
+  const [isHumanFirstPlayer, setIsHumanFirstPlayer] = useState(true);
+
+  const handleOnPlay = useCallback((firstOrSecond: string) => {
+    setShowSelectionScreen(false);
+    setIsHumanFirstPlayer(firstOrSecond === "first");
+  }, []);
 
   useEffect(() => {
-    if (Canvas.current && !isGameInitializedRef.current) {
+    if (
+      !showSelectionScreen &&
+      Canvas.current &&
+      !isGameInitializedRef.current
+    ) {
       if (window.localStorage.getItem("DEBUG_TZAAR") === "true") {
         console.log(`window.localStorage.getItem("DEBUG_TZAAR") is "true"`);
       } else {
@@ -29,10 +41,10 @@ export default function () {
         WindowHelper.setUseWindowHeight();
         WindowHelper.setDevicePixelRatio();
         gamePieceRenderer.init();
-        initGame();
+        initGame(isHumanFirstPlayer);
       });
     }
-  }, [Canvas]);
+  }, [Canvas, showSelectionScreen]);
 
   const handleTouchStart = useCallback(
     (evt: React.SyntheticEvent<HTMLCanvasElement>) => {
@@ -91,6 +103,10 @@ export default function () {
     []
   );
 
+  if (showSelectionScreen) {
+    return <SelectionScreen onPlay={handleOnPlay} />;
+  }
+
   return (
     <div className="tzaar_background_color">
       <div className="wrapper hidden" id="loadingSpinner">
@@ -129,9 +145,7 @@ export default function () {
           {" "}
           <div id="phaseDiv"></div>
         </Badge>
-        <Badge id="winnerMessage" ml="xs">
-
-        </Badge>
+        <Badge id="winnerMessage" ml="xs"></Badge>
         <Button
           compact
           ml="xs"
