@@ -8,7 +8,7 @@ import {
   PLAYER_TWO,
 } from "../constants";
 import WindowHelper from "./WindowHelper";
-import { drawCachedBoard } from "./cachedBoard";
+import { drawCachedBoard, getInitialGridState } from "./cachedBoard";
 import GameState from "../logic/GameState";
 import { List } from "immutable";
 import GamePieceRenderer from "./gamePieceRenderer";
@@ -24,7 +24,8 @@ function getContext() {
 }
 
 export function drawCoordinates() {
-  PLAYABLE_VERTICES.map(drawCoordinate);
+  const vertices = getInitialGridState();
+  vertices.map(drawCoordinate);
 }
 
 export function drawCoordinate(coordinate: ValidCoordinate) {
@@ -62,16 +63,16 @@ export function drawCoordinate(coordinate: ValidCoordinate) {
 
   const centerX = (WindowHelper.width * WindowHelper.devicePixelRatio) / 2;
   const centerY = (WindowHelper.height * WindowHelper.devicePixelRatio) / 2;
-  context.save();
-  context.translate(0, 0);
-  context.rotate((30 * Math.PI) / 180);
+  // context.save();
+  // context.translate(0, 0);
+  // context.rotate((30 * Math.PI) / 180);
 
   context.fillRect(xPos + 5, yPos - 5, 30, 20);
 
   context.fillStyle = "#000";
 
   context.fillText(coordinate, xPos + 10, yPos + 10);
-  context.restore();
+  // context.restore();
 }
 
 export function drawGameBoardState() {

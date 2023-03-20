@@ -95,14 +95,16 @@ export function initGame(isHumanFirstPlayer: boolean) {
   const piecesToSetup = setupSymmetricalBoard();
 
   drawInitialGrid();
+  drawGameBoardState();
+  // drawCoordinates();
 
-  renderInitializingBoard(piecesToSetup, () => {
-    drawGameBoardState();
+  // renderInitializingBoard(piecesToSetup, () => {
+  // drawGameBoardState();
 
-    setTimeout(moveAI);
+  // setTimeout(moveAI);
 
-    if (isDebugModeOn()) {
-      drawCoordinates();
-    }
-  });
+  //   if (isDebugModeOn()) {
+  //     drawCoordinates();
+  //   }
+  // });
 }
