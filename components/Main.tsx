@@ -34,8 +34,9 @@ const useStyles = createStyles((theme) => ({
   },
 
   card: {
-    border: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-      }`,
+    border: `1px solid ${
+      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
+    }`,
   },
 
   cardTitle: {
@@ -81,19 +82,29 @@ export function FeaturesCards() {
         mt={50}
         breakpoints={[{ maxWidth: "md", cols: 1 }]}
       >
-        <Link
-          href="/tzaar"
-          style={{ textDecoration: "none" }}
-        >
+        <Link href="/tzaar" style={{ textDecoration: "none" }}>
           <Card shadow="md" radius="md" className={classes.card} p="xl">
             <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
               TZAAR
             </Text>
             <Text size="sm" color="dimmed" mt="sm">
-              A 2 player abstract strategy game. Part of the GIPF series designed by Kris Burm.
+              A 2 player abstract strategy game. Part of the GIPF series
+              designed by Kris Burm.
             </Text>
           </Card>
         </Link>
+        <Link href="/yinsh" style={{ textDecoration: "none" }}>
+          <Card shadow="md" radius="md" className={classes.card} p="xl">
+            <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
+              YINSH (N/A)
+            </Text>
+            <Text size="sm" color="dimmed" mt="sm">
+              A 2 player abstract strategy game. Part of the GIPF series
+              designed by Kris Burm.
+            </Text>
+          </Card>
+        </Link>
+
         <Link
           href="https://familyinc-client.vercel.app/"
           style={{ textDecoration: "none" }}
