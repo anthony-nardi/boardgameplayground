@@ -8,44 +8,28 @@ export const NUMBER_OF_TOTTS = 15;
 export const NUMBER_OF_TZARRAS = 9;
 export const NUMBER_OF_TZAARS = 6;
 export const PLAYABLE_VERTICES: ValidCoordinate[] = [
-  "0,0",
-  "0,1",
-  "1,0",
-  "2,0",
-  "3,0",
-  "1,1",
-  "2,1",
-  "0,2",
-  "1,2",
-  "0,3",
-  "7,5",
-  "7,6",
-  "6,7",
-  "6,6",
-  "5,7",
-  "6,7",
-  "4,3",
-  "3,4",
-  "7,7",
-  "4,0",
-  "5,0",
   "6,0",
   "7,0",
   "8,0",
-  "3,1",
+  "9,0",
+  "10,0",
   "4,1",
   "5,1",
   "6,1",
   "7,1",
   "8,1",
-  "2,2",
+  "9,1",
+  "10,1",
+  "11,1",
   "3,2",
   "4,2",
   "5,2",
   "6,2",
   "7,2",
   "8,2",
-  "1,3",
+  "9,2",
+  "10,2",
+  "11,2",
   "2,3",
   "3,3",
   "4,3",
@@ -53,15 +37,20 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "6,3",
   "7,3",
   "8,3",
-  "0,4",
+  "9,3",
+  "10,3",
+  "11,3",
   "1,4",
   "2,4",
   "3,4",
+  "4,4",
   "5,4",
   "6,4",
   "7,4",
   "8,4",
-  "0,5",
+  "9,4",
+  "10,4",
+  "11,4",
   "1,5",
   "2,5",
   "3,5",
@@ -69,6 +58,9 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "5,5",
   "6,5",
   "7,5",
+  "8,5",
+  "9,5",
+  "10,5",
   "0,6",
   "1,6",
   "2,6",
@@ -76,61 +68,50 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "4,6",
   "5,6",
   "6,6",
+  "7,6",
+  "8,6",
+  "9,6",
+  "10,6",
   "0,7",
   "1,7",
   "2,7",
   "3,7",
   "4,7",
   "5,7",
+  "6,7",
+  "7,7",
+  "8,7",
+  "9,7",
   "0,8",
   "1,8",
   "2,8",
   "3,8",
   "4,8",
+  "5,8",
+  "6,8",
+  "7,8",
+  "8,8",
+  "0,9",
+  "1,9",
+  "2,9",
+  "3,9",
+  "4,9",
+  "5,9",
+  "6,9",
+  "7,9",
+  "0,10",
+  "1,10",
+  "2,10",
+  "3,10",
+  "4,10",
+  "5,10",
+  "6,10",
+  "1,11",
+  "2,11",
+  "3,11",
+  "4,11",
 ];
 
-export const CORNER_COORDINATES = [
-  "4,0",
-  "8,0",
-  "8,4",
-  "4,8",
-  "0,8",
-  "0,4",
-] as const;
-export const EDGE_COORDINATES = [
-  "5,0",
-  "6,0",
-  "7,0",
-  "8,1",
-  "8,2",
-  "8,3",
-  "7,5",
-  "6,6",
-  "5,7",
-  "3,8",
-  "2,8",
-  "1,8",
-  "0,7",
-  "0,6",
-  "0,5",
-  "1,3",
-  "2,2",
-  "3,1",
-] as const;
-export const EDGE_COORDINATES_AS_MAP = EDGE_COORDINATES.reduce(
-  (map: any, coordinate) => {
-    map[coordinate] = true;
-    return map;
-  },
-  {}
-);
-export const CORNER_COORDINATES_AS_MAP = CORNER_COORDINATES.reduce(
-  (map: any, coordinate) => {
-    map[coordinate] = true;
-    return map;
-  },
-  {}
-);
 export const PLAYABLE_VERTICES_AS_MAP = PLAYABLE_VERTICES.reduce(
   (map: any, coordinate) => {
     map[coordinate] = true;
@@ -139,15 +120,14 @@ export const PLAYABLE_VERTICES_AS_MAP = PLAYABLE_VERTICES.reduce(
   {}
 );
 
-export const TZAAR = "TZAAR";
-export const TOTT = "TOTT";
-export const TZARRA = "TZARRA";
+export const RING = "RING";
+export const MARKER = "MARKER";
 
 export const PLAYER_ONE = "PLAYER_ONE" as const;
 export const PLAYER_TWO = "PLAYER_TWO" as const;
-export const CAPTURE = "CAPTURE" as const;
-export const STACK_OR_CAPTURE_OR_PASS = "STACK_OR_CAPTURE_OR_PASS" as const;
-export const TURN_PHASES = {
-  CAPTURE,
-  STACK_OR_CAPTURE_OR_PASS,
+export const RING_PLACEMENT = "RING_PLACEMENT" as const;
+export const RING_MOVEMENT = "RING_MOVEMENT" as const;
+export const PHASES = {
+  RING_PLACEMENT,
+  RING_MOVEMENT,
 };

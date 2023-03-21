@@ -59,7 +59,6 @@ const grid = getInitialGridState();
 function initCanvas() {
   CACHED_CANVAS.width = WindowHelper.width * WindowHelper.devicePixelRatio;
   CACHED_CANVAS.height = WindowHelper.height * WindowHelper.devicePixelRatio;
-
   CACHED_CANVAS.style.width = `${WindowHelper.width}px`;
   CACHED_CANVAS.style.height = `${WindowHelper.height}px`;
 
@@ -73,16 +72,27 @@ function initCanvas() {
     WindowHelper.height * WindowHelper.devicePixelRatio;
   window.GAME_STATE_BOARD_CANVAS.style.width = `${WindowHelper.width}px`;
   window.GAME_STATE_BOARD_CANVAS.style.height = `${WindowHelper.height}px`;
-
+  const gameStateCanvasContext = window.GAME_STATE_BOARD_CANVAS.getContext(
+    "2d",
+    { willReadFrequently: true }
+  );
   const cachedCanvasContext = CACHED_CANVAS.getContext("2d", {
     willReadFrequently: true,
   });
 
-  if (!cachedCanvasContext) {
+  if (!cachedCanvasContext || !gameStateCanvasContext) {
     throw new Error("context isnt ready");
   }
 
   cachedCanvasContext.setTransform(
+    WindowHelper.devicePixelRatio,
+    0,
+    0,
+    WindowHelper.devicePixelRatio,
+    0,
+    0
+  );
+  gameStateCanvasContext.setTransform(
     WindowHelper.devicePixelRatio,
     0,
     0,
@@ -120,11 +130,6 @@ function getImageData() {
     throw new Error("context isnt ready");
   }
 
-  console.log(
-    Math.floor(
-      8 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH * WindowHelper.devicePixelRatio
-    )
-  );
   cachedBoardImageData = context.getImageData(
     0,
     0,

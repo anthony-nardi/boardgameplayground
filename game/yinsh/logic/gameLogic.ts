@@ -5,7 +5,6 @@ import {
   drawGameBoardState,
   renderInitializingBoard,
 } from "../rendering/renderHelpers";
-import { setupSymmetricalBoard } from "./gameBoardHelpers";
 import GameState from "./GameState";
 import GameHistory from "../utils/GameHistory";
 import { showLoadingSpinner } from "../rendering/domHelpers";
@@ -47,30 +46,25 @@ export function checkGameStateAndStartNextTurn(
   shouldCheckWinner = false,
   maybeMoveAI?: Function
 ) {
-  let winner;
-  const gameBoardState = GameState.getGameBoardState();
-  const turnPhase = GameState.getTurnPhase();
-  const currentTurn = GameState.getCurrentTurn();
-
-  GameState.nextPhase();
-
-  if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
-    winner = getWinner(gameBoardState, true, currentTurn);
-  }
-
-  if (winner) {
-    const message = GameState.getWinnerMessage(winner);
-    console.log(
-      message,
-      `Number of turns taken: ${GameState.getNumberOfTurnsIntoGame()}`
-    );
-    const winnerElement = document.getElementById("winnerMessage");
-    if (winnerElement && message) {
-      winnerElement.innerHTML = message;
-    }
-  }
-
-  maybeMoveAI && setTimeout(maybeMoveAI);
+  // let winner;
+  // const gameBoardState = GameState.getGameBoardState();
+  // const turnPhase = GameState.getPhase();
+  // const currentTurn = GameState.getCurrentTurn();
+  // if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
+  //   winner = getWinner(gameBoardState, true, currentTurn);
+  // }
+  // if (winner) {
+  //   const message = GameState.getWinnerMessage(winner);
+  //   console.log(
+  //     message,
+  //     `Number of turns taken: ${GameState.getNumberOfTurnsIntoGame()}`
+  //   );
+  //   const winnerElement = document.getElementById("winnerMessage");
+  //   if (winnerElement && message) {
+  //     winnerElement.innerHTML = message;
+  //   }
+  // }
+  // maybeMoveAI && setTimeout(maybeMoveAI);
 }
 
 export function initGame(isHumanFirstPlayer: boolean) {
@@ -80,19 +74,21 @@ export function initGame(isHumanFirstPlayer: boolean) {
     GameState.setHasGameStarted();
   }
 
-  if (isHumanFirstPlayer) {
-    GameState.setIsFirstPlayerAI(false);
-    GameState.setIsSecondPlayerAI(true);
-  } else {
-    GameState.setIsFirstPlayerAI(true);
-    GameState.setIsSecondPlayerAI(false);
-  }
+  GameState.setIsFirstPlayerAI(false);
+  GameState.setIsSecondPlayerAI(true);
+  // if (isHumanFirstPlayer) {
+  //   GameState.setIsFirstPlayerAI(false);
+  //   GameState.setIsSecondPlayerAI(true);
+  // } else {
+  //   GameState.setIsFirstPlayerAI(true);
+  //   GameState.setIsSecondPlayerAI(false);
+  // }
 
   if (isDebugModeOn()) {
     GameHistory.setGameId(Date.now());
   }
 
-  const piecesToSetup = setupSymmetricalBoard();
+  // const piecesToSetup = setupSymmetricalBoard();
 
   drawInitialGrid();
   // drawGameBoardState();

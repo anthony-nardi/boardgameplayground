@@ -1,11 +1,10 @@
 import { getPixelCoordinatesFromBoardCoordinates } from "../logic/gameBoardHelpers";
 import {
   PLAYABLE_VERTICES,
-  TOTT,
-  TZAAR,
-  TZARRA,
   PLAYER_ONE,
   PLAYER_TWO,
+  RING,
+  MARKER,
 } from "../constants";
 import WindowHelper from "./WindowHelper";
 import { drawCachedBoard, getInitialGridState } from "./cachedBoard";
@@ -24,8 +23,8 @@ function getContext() {
 }
 
 export function drawCoordinates() {
-  const vertices = getInitialGridState();
-  vertices.map(drawCoordinate);
+  // const vertices = getInitialGridState();
+  // vertices.map(drawCoordinate);
 }
 
 export function drawCoordinate(coordinate: ValidCoordinate) {
@@ -49,42 +48,34 @@ export function drawCoordinate(coordinate: ValidCoordinate) {
     WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const offsetX =
-    +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH -
-    Math.max(4 - +y, 0) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
-
-  const xPos =
-    (Math.abs(4 - +y) * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 +
-    offsetX +
-    offsetXToCenter;
-
+    (+y * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 -
+    3 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH +
+    Math.floor(
+      (WindowHelper.width / 2 - GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 5) *
+        WindowHelper.devicePixelRatio
+    );
+  const xPos = +x * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + offsetX;
   const yPos = +y * GamePieceRenderer.TRIANGLE_HEIGHT + offsetYToCenter;
   context.font = "1rem Helvetica";
   context.fillStyle = "#ccc";
-
-  const centerX = (WindowHelper.width * WindowHelper.devicePixelRatio) / 2;
-  const centerY = (WindowHelper.height * WindowHelper.devicePixelRatio) / 2;
-  // context.save();
-  // context.translate(0, 0);
-  // context.rotate((30 * Math.PI) / 180);
 
   context.fillRect(xPos + 5, yPos - 5, 30, 20);
 
   context.fillStyle = "#000";
 
   context.fillText(coordinate, xPos + 10, yPos + 10);
-  // context.restore();
 }
 
 export function drawGameBoardState() {
   clearCanvas();
   drawCachedBoard();
   drawGamePieces();
-  if (
-    window.localStorage &&
-    window.localStorage.getItem("DEBUG_TZAAR") === "true"
-  ) {
-    // drawCoordinates();
-  }
+  // if (
+  //   window.localStorage &&
+  //   window.localStorage.getItem("DEBUG_TZAAR") === "true"
+  // ) {
+  drawCoordinates();
+  // }
 }
 
 export function drawStaticGamePiece(
@@ -124,32 +115,17 @@ export function drawGamePiece(gamePiece: any, xPos: number, yPos: number) {
     GamePieceRenderer.CANVAS_SIDE_LENGTH / WindowHelper.devicePixelRatio
   );
 
-  if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TOTT) {
+  if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === RING) {
     context.drawImage(GamePieceRenderer.PLAYER_ONE_TOTT, dx, dy, dw, dh);
   }
-  if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZARRA) {
+  if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === MARKER) {
     context.drawImage(GamePieceRenderer.PLAYER_ONE_TZARRA, dx, dy, dw, dh);
   }
-  if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === TZAAR) {
-    context.drawImage(GamePieceRenderer.PLAYER_ONE_TZAAR, dx, dy, dw, dh);
-  }
-  if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TOTT) {
+  if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === RING) {
     context.drawImage(GamePieceRenderer.PLAYER_TWO_TOTT, dx, dy, dw, dh);
   }
-  if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZARRA) {
+  if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === MARKER) {
     context.drawImage(GamePieceRenderer.PLAYER_TWO_TZARRA, dx, dy, dw, dh);
-  }
-  if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === TZAAR) {
-    context.drawImage(GamePieceRenderer.PLAYER_TWO_TZAAR, dx, dy, dw, dh);
-  }
-
-  if (gamePiece.stackSize > 1) {
-    const textPositionX = Math.floor(+xPos - 7);
-    const textPositionY = Math.floor(+yPos + 8);
-
-    context.font = "1.5rem Helvetica";
-    context.fillStyle = gamePiece.type === TZAAR ? "#fff" : "#000";
-    context.fillText(String(gamePiece.stackSize), textPositionX, textPositionY);
   }
 }
 
