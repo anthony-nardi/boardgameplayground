@@ -83,7 +83,7 @@ export function drawGameBoardState() {
     window.localStorage &&
     window.localStorage.getItem("DEBUG_TZAAR") === "true"
   ) {
-    drawCoordinates();
+    // drawCoordinates();
   }
 }
 

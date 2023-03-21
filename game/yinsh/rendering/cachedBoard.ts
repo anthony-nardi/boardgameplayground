@@ -54,13 +54,12 @@ const COORDS_TO_NOT_RENDER = [
   "6,10",
 ] as const;
 
-const OFFSET_X = 0;
-
 const grid = getInitialGridState();
 
 function initCanvas() {
   CACHED_CANVAS.width = WindowHelper.width * WindowHelper.devicePixelRatio;
   CACHED_CANVAS.height = WindowHelper.height * WindowHelper.devicePixelRatio;
+
   CACHED_CANVAS.style.width = `${WindowHelper.width}px`;
   CACHED_CANVAS.style.height = `${WindowHelper.height}px`;
 
@@ -117,12 +116,17 @@ function getImageData() {
   }
 
   const context = getContext();
-  if (!context) {
+  if (!context || !GamePieceRenderer.TRIANGLE_SIDE_LENGTH) {
     throw new Error("context isnt ready");
   }
 
+  console.log(
+    Math.floor(
+      8 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH * WindowHelper.devicePixelRatio
+    )
+  );
   cachedBoardImageData = context.getImageData(
-    OFFSET_X * WindowHelper.devicePixelRatio,
+    0,
     0,
     Math.floor(WindowHelper.devicePixelRatio * WindowHelper.width),
     Math.floor(WindowHelper.devicePixelRatio * WindowHelper.height)
@@ -148,19 +152,16 @@ export function drawCachedBoard() {
   ) {
     throw new Error("GamePieceRenderer not ready.");
   }
-
   context.putImageData(
     imageData,
-    0,
-    0
-    // Math.floor(
-    //   (WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) *
-    //     WindowHelper.devicePixelRatio
-    // ),
-    // Math.floor(
-    //   (WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) *
-    //     WindowHelper.devicePixelRatio
-    // )
+    Math.floor(
+      (WindowHelper.width / 2 - GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 5) *
+        WindowHelper.devicePixelRatio
+    ),
+    Math.floor(
+      (WindowHelper.height / 2 - 5.5 * GamePieceRenderer.TRIANGLE_HEIGHT) *
+        WindowHelper.devicePixelRatio
+    )
   );
 }
 
@@ -169,7 +170,7 @@ export function drawInitialGrid() {
   grid.map(renderTriangleFromVertex);
   // renderHexagonBorder();
   // renderInnerHexagonBorder();
-  // drawCachedBoard();
+  drawCachedBoard();
 }
 
 function renderTriangleFromVertex(coordinate: AllCoordinates) {
@@ -193,10 +194,10 @@ function renderTriangleFromVertex(coordinate: AllCoordinates) {
 
   const offsetX =
     (numY * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) / 2 -
-    GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 2 +
-    200;
+    3 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+  const offsetY = 0; // GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 1.5;
   const startX = numX * GamePieceRenderer.TRIANGLE_SIDE_LENGTH + offsetX;
-  const startY = numY * GamePieceRenderer.TRIANGLE_HEIGHT;
+  const startY = numY * GamePieceRenderer.TRIANGLE_HEIGHT + offsetY;
 
   context.beginPath();
   context.moveTo(Math.floor(startX), Math.floor(startY));
