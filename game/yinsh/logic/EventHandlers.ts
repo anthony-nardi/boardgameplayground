@@ -97,6 +97,8 @@ export function handleClickPiece(
   const gameBoardState = GameState.getGameBoardState();
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
 
+  console.log(boardCoordinate);
+
   if (!isCurrentPlayerPiece(boardCoordinate)) {
     return;
   }

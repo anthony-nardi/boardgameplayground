@@ -54,10 +54,10 @@ export function getBoardCoordinatesFromPixelCoordinates(
     throw new Error("GamePieceRenderer not ready.");
   }
   const offsetXToCenter =
-    (WindowHelper.width / 2 - 4 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) /
+    (WindowHelper.width / 2 - 6 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) /
     GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
   const offsetYToCenter =
-    (WindowHelper.height / 2 - 4 * GamePieceRenderer.TRIANGLE_HEIGHT) /
+    (WindowHelper.height / 2 - 5.5 * GamePieceRenderer.TRIANGLE_HEIGHT) /
     GamePieceRenderer.TRIANGLE_HEIGHT;
 
   const yPos = y / GamePieceRenderer.TRIANGLE_HEIGHT - offsetYToCenter;
