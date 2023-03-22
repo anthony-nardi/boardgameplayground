@@ -52,6 +52,7 @@ export function handleClickPiece(
       GameState.setPhase(RING_MOVEMENT);
     }
     drawGameBoardState();
+    return;
   }
 
   console.log(boardCoordinate);
@@ -68,9 +69,9 @@ export function handleClickPiece(
     return;
   }
 
-  if (getWinner(gameBoardState, true, currentTurn)) {
-    return;
-  }
+  // if (getWinner(gameBoardState, true, currentTurn)) {
+  //   return;
+  // }
 
   const piece = gameBoardState[boardCoordinate];
 
@@ -135,7 +136,10 @@ export function handleDropPiece(
   }
 
   if (!gameBoardState[toCoordinates]) {
+    GameState.setCoordinateValue(toCoordinates, piece);
+    GameState.setCoordinateValue(movingPiece, false);
     GameState.setMovingPiece(null);
+
     drawGameBoardState();
     return;
   }

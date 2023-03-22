@@ -1,6 +1,6 @@
-import { PLAYABLE_VERTICES_AS_MAP } from "../constants";
+import { PLAYABLE_VERTICES_AS_MAP, RING } from "../constants";
 import WindowHelper from "../rendering/WindowHelper";
-import { ValidCoordinate } from "../types/types";
+import { ValidCoordinate, Direction } from "../types/types";
 import GamePieceRenderer from "../rendering/gamePieceRenderer";
 import { GameBoardState } from "./GameState";
 
@@ -122,6 +122,64 @@ export function isValidEmptyCoordinate(
   gameState: GameBoardState
 ) {
   return !!(PLAYABLE_VERTICES_AS_MAP[coordinate] && !gameState[coordinate]);
+}
+
+export function getValidMoves(
+  fromCoordinate: ValidCoordinate,
+  direction: Direction,
+  gameState: GameBoardState
+) {
+  let coordinateToCheck = fromCoordinate;
+  const directionFunction = nextPiece[direction];
+  const validMoves: ValidCoordinate[] = [];
+  let hasJumped = false;
+
+  for (let i = 0; i < 10; i++) {
+    coordinateToCheck = directionFunction(coordinateToCheck);
+
+    // Not a space that we can play on
+    if (!PLAYABLE_VERTICES_AS_MAP[coordinateToCheck]) {
+      return validMoves;
+    }
+
+    // This space is empty so we can continue
+    if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
+      validMoves.push(coordinateToCheck);
+      if (hasJumped) {
+        return validMoves;
+      }
+    }
+
+    // First piece we encounter can't be stacked
+    if (gameState[coordinateToCheck]) {
+      if (gameState[coordinateToCheck].type === RING) {
+        return validMoves;
+      } else {
+        hasJumped = true;
+      }
+    }
+  }
+  return validMoves;
+}
+
+export function isValidRingMovement(
+  fromCoordinate: ValidCoordinate,
+  toCoordinate: ValidCoordinate,
+  gameState: GameBoardState
+) {}
+
+export function getValidRingMoves(
+  fromCoordinate: ValidCoordinate,
+  gameState: GameBoardState
+) {
+  return [
+    getValidMoves(fromCoordinate, "w", gameState),
+    getValidMoves(fromCoordinate, "e", gameState),
+    getValidMoves(fromCoordinate, "nw", gameState),
+    getValidMoves(fromCoordinate, "ne", gameState),
+    getValidMoves(fromCoordinate, "sw", gameState),
+    getValidMoves(fromCoordinate, "se", gameState),
+  ].filter(isTruthy) as ValidCoordinate[][];
 }
 
 export const nextPiece = {

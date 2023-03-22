@@ -211,6 +211,12 @@ class GameState {
   public setIsSecondPlayerAI(isSecondPlayerAI: boolean) {
     this.isSecondPlayerAI = isSecondPlayerAI;
   }
+  public setCoordinateValue(
+    coordinate: ValidCoordinate,
+    piece: PieceState | false
+  ) {
+    this.gameBoardState[coordinate] = piece;
+  }
   public getBoardGameStateCopy(gamestate: GameBoardState): GameBoardState {
     return {
       "6,0": gamestate["6,0"],
