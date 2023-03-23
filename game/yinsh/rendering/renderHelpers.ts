@@ -116,16 +116,16 @@ export function drawGamePiece(gamePiece: any, xPos: number, yPos: number) {
   );
 
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === RING) {
-    context.drawImage(GamePieceRenderer.PLAYER_ONE_TOTT, dx, dy, dw, dh);
+    context.drawImage(GamePieceRenderer.PLAYER_ONE_RING, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_ONE && gamePiece.type === MARKER) {
-    context.drawImage(GamePieceRenderer.PLAYER_ONE_TZARRA, dx, dy, dw, dh);
+    context.drawImage(GamePieceRenderer.PLAYER_ONE_MARKER, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === RING) {
-    context.drawImage(GamePieceRenderer.PLAYER_TWO_TOTT, dx, dy, dw, dh);
+    context.drawImage(GamePieceRenderer.PLAYER_TWO_RING, dx, dy, dw, dh);
   }
   if (gamePiece.ownedBy === PLAYER_TWO && gamePiece.type === MARKER) {
-    context.drawImage(GamePieceRenderer.PLAYER_TWO_TZARRA, dx, dy, dw, dh);
+    context.drawImage(GamePieceRenderer.PLAYER_TWO_MARKER, dx, dy, dw, dh);
   }
 }
 

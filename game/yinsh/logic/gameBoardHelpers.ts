@@ -1,4 +1,9 @@
-import { PLAYABLE_VERTICES_AS_MAP, RING } from "../constants";
+import {
+  PLAYABLE_VERTICES_AS_MAP,
+  PLAYER_ONE,
+  PLAYER_TWO,
+  RING,
+} from "../constants";
 import WindowHelper from "../rendering/WindowHelper";
 import { ValidCoordinate, Direction } from "../types/types";
 import GamePieceRenderer from "../rendering/gamePieceRenderer";
@@ -19,7 +24,7 @@ export function getPixelCoordinatesFromBoardCoordinates(
   }
 
   const offsetXToCenter =
-    WindowHelper.width / 2 - 6 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
+    WindowHelper.width / 2 - 5 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
   const offsetYToCenter =
     WindowHelper.height / 2 - 5.5 * GamePieceRenderer.TRIANGLE_HEIGHT;
 
@@ -47,7 +52,7 @@ export function getBoardCoordinatesFromPixelCoordinates(
     throw new Error("GamePieceRenderer not ready.");
   }
   const offsetXToCenter =
-    (WindowHelper.width / 2 - 6 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) /
+    (WindowHelper.width / 2 - 5 * GamePieceRenderer.TRIANGLE_SIDE_LENGTH) /
     GamePieceRenderer.TRIANGLE_SIDE_LENGTH;
   const offsetYToCenter =
     (WindowHelper.height / 2 - 5.5 * GamePieceRenderer.TRIANGLE_HEIGHT) /
@@ -81,6 +86,42 @@ function memoize(f: Function) {
     }
     return cache[coordinate];
   };
+}
+
+export function getFromToDirectionFunction(
+  fromCoordinate: ValidCoordinate,
+  toCoordinate: ValidCoordinate
+) {
+  let [x1, y1] = fromCoordinate.split(",");
+  let [x2, y2] = toCoordinate.split(",");
+  // @ts-expect-error fix
+  x1 = +x1;
+  // @ts-expect-error fix
+  x2 = +x2;
+  // @ts-expect-error fix
+  y1 = +y1;
+  // @ts-expect-error fix
+  y2 = +y2;
+
+  if (x2 > x1 && y1 === y2) {
+    return goEast;
+  }
+  if (x2 < x1 && y1 === y2) {
+    return goWest;
+  }
+
+  if (x1 === x2 && y2 > y1) {
+    return goSouthEast;
+  }
+  if (x1 === x2 && y2 < y1) {
+    return goNorthWest;
+  }
+  if (x2 > x1 && y2 < y1) {
+    return goNorthEast;
+  }
+  if (x2 < x1 && y2 > y1) {
+    return goSouthWest;
+  }
 }
 
 export function goWest(coordinate: ValidCoordinate) {
@@ -126,39 +167,42 @@ export function isValidEmptyCoordinate(
 
 export function getValidMoves(
   fromCoordinate: ValidCoordinate,
-  direction: Direction,
   gameState: GameBoardState
 ) {
-  let coordinateToCheck = fromCoordinate;
-  const directionFunction = nextPiece[direction];
   const validMoves: ValidCoordinate[] = [];
-  let hasJumped = false;
+  for (let j = 0; j < directions.length; j++) {
+    let coordinateToCheck = fromCoordinate;
+    let hasJumped = false;
 
-  for (let i = 0; i < 10; i++) {
-    coordinateToCheck = directionFunction(coordinateToCheck);
+    // @ts-expect-error fix
+    const directionFunction = nextPiece[directions[j]];
+    for (let i = 0; i < 10; i++) {
+      coordinateToCheck = directionFunction(coordinateToCheck);
 
-    // Not a space that we can play on
-    if (!PLAYABLE_VERTICES_AS_MAP[coordinateToCheck]) {
-      return validMoves;
-    }
-
-    // This space is empty so we can continue
-    if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
-      validMoves.push(coordinateToCheck);
-      if (hasJumped) {
-        return validMoves;
+      // Not a space that we can play on
+      if (!PLAYABLE_VERTICES_AS_MAP[coordinateToCheck]) {
+        break;
       }
-    }
 
-    // First piece we encounter can't be stacked
-    if (gameState[coordinateToCheck]) {
-      if (gameState[coordinateToCheck].type === RING) {
-        return validMoves;
-      } else {
-        hasJumped = true;
+      // This space is empty so we can continue
+      if (isValidEmptyCoordinate(coordinateToCheck, gameState)) {
+        validMoves.push(coordinateToCheck);
+        if (hasJumped) {
+          break;
+        }
+      }
+
+      // First piece we encounter can't be stacked
+      if (gameState[coordinateToCheck]) {
+        if (gameState[coordinateToCheck].type === RING) {
+          break;
+        } else {
+          hasJumped = true;
+        }
       }
     }
   }
+
   return validMoves;
 }
 
@@ -172,15 +216,55 @@ export function getValidRingMoves(
   fromCoordinate: ValidCoordinate,
   gameState: GameBoardState
 ) {
-  return [
-    getValidMoves(fromCoordinate, "w", gameState),
-    getValidMoves(fromCoordinate, "e", gameState),
-    getValidMoves(fromCoordinate, "nw", gameState),
-    getValidMoves(fromCoordinate, "ne", gameState),
-    getValidMoves(fromCoordinate, "sw", gameState),
-    getValidMoves(fromCoordinate, "se", gameState),
-  ].filter(isTruthy) as ValidCoordinate[][];
+  return getValidMoves(fromCoordinate, gameState) as ValidCoordinate[];
 }
+
+const directions = ["w", "e", "nw", "ne", "sw", "se"];
+
+export function getJumpedPieces(
+  fromCoordinate: ValidCoordinate,
+  toCoordinate: ValidCoordinate,
+  gameState: GameBoardState
+) {
+  const dirFunction = getFromToDirectionFunction(fromCoordinate, toCoordinate);
+  const piecesJumped: ValidCoordinate[] = [];
+  let coordinate = fromCoordinate;
+
+  while (coordinate !== toCoordinate) {
+    // @ts-expect-error fix
+    coordinate = dirFunction(coordinate);
+    if (coordinate !== toCoordinate) {
+      piecesJumped.push(coordinate);
+    }
+  }
+  return piecesJumped;
+}
+
+const linesToCheck = [
+  // W <-> E
+  ["4,1", "5,1", "6,1", "7,1", "8,1", "9,1", "10,1"],
+  ["3,2", "4,2", "5,2", "6,2", "7,2", "8,2", "9,2", "10,2"],
+  ["2,3", "3,3", "4,3", "5,3", "6,3", "7,3", "8,3", "9,3", "10,3"],
+  ["1,4", "2,4", "3,4", "4,4", "5,4", "6,4", "7,4", "8,4", "9,4", "10,4"],
+  ["1,5", "2,5", "3,5", "4,5", "5,5", "6,5", "7,5", "8,5", "9,5"],
+  ["0,6", "1,6", "2,6", "3,6", "4,6", "5,6", "6,6", "7,6", "8,6", "9,6"],
+  ["0,7", "1,7", "2,7", "3,7", "4,7", "5,7", "6,7", "7,7", "8,7"],
+  ["0,8", "1,8", "2,8", "3,8", "4,8", "5,8", "6,8", "7,8"],
+  ["0,9", "1,9", "2,9", "3,9", "4,9", "5,9", "6,9"],
+  // NW <-> SE
+  ["1,4", "1,5", "1,6", "1,7", "1,8", "1,9", "1,10"],
+  ["2,3", "2,4", "2,5", "2,6", "2,7", "2,8", "2,9", "2,10"],
+  ["3,2", "3,3", "3,4", "3,5", "3,6", "3,7", "3,8", "3,9", "3,10"],
+  ["4,1", "4,2", "4,3", "4,4", "4,5", "4,6", "4,7", "4,8", "4,9", "4,10"],
+  ["5,1", "5,2", "5,3", "5,4", "5,5", "5,6", "5,7", "5,8", "5,9"],
+  ["6,0", "6,1", "6,2", "6,3", "6,4", "6,5", "6,6", "6,7", "6,8", "6,9"],
+  ["7,0", "7,1", "7,2", "7,3", "7,4", "7,5", "7,6", "7,7", "7,8"],
+  ["8,0", "8,1", "8,2", "8,3", "8,4", "8,5", "8,6", "8,7"],
+  ["9,0", "9,1", "9,2", "9,3", "9,4", "9,5", "9,6"],
+  // SW <-> NE
+];
+
+export function getMarkerRowsOf5() {}
 
 export const nextPiece = {
   w: memoize(goWest),

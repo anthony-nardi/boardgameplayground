@@ -33,6 +33,7 @@ const COORDS_TO_NOT_RENDER = [
   // "10,4",
   "10,5",
   "10,6",
+  "9,0",
   "10,7",
   "10,8",
   "10,9",
@@ -52,6 +53,22 @@ const COORDS_TO_NOT_RENDER = [
   "7,10",
   // "6,9",
   "6,10",
+  "10,1",
+  "10,0",
+  "10,2",
+  "10,3",
+  "10,4",
+  "9,5",
+  "9,6",
+  "8,7",
+  "7,8",
+  "6,9",
+  "5,9",
+  "4,10",
+  "3,10",
+  "2,10",
+  "1,10",
+  "0,9",
 ] as const;
 
 const grid = getInitialGridState();
@@ -160,7 +177,7 @@ export function drawCachedBoard() {
   context.putImageData(
     imageData,
     Math.floor(
-      (WindowHelper.width / 2 - GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 5) *
+      (WindowHelper.width / 2 - GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 4) *
         WindowHelper.devicePixelRatio
     ),
     Math.floor(
@@ -172,8 +189,9 @@ export function drawCachedBoard() {
 
 export function drawInitialGrid() {
   initCanvas();
+  const ONE_LINE_HORIZONTAL_RIGHT = "0,9";
   grid.map(renderTriangleFromVertex);
-  ["1,4", "0,6", "5,1", "0,10", "1,11", "5,10", "10,5", "10,0", "11,1"].map(
+  ["1,4", "0,6", "5,1", "0,9", "1,10", "9,0", "5,9", "9,5", "10,1"].map(
     renderCleanBorder
   );
 
@@ -227,7 +245,7 @@ function renderCleanBorder(coordinate: string) {
     context.stroke();
   }
 
-  if (coordinate === "0,10" || coordinate === "5,10") {
+  if (coordinate === "0,9" || coordinate === "5,9") {
     context.beginPath();
 
     context.moveTo(Math.floor(startX), Math.floor(startY));
@@ -237,7 +255,7 @@ function renderCleanBorder(coordinate: string) {
     );
     context.stroke();
   }
-  if (coordinate === "1,11") {
+  if (coordinate === "1,10") {
     context.beginPath();
 
     context.moveTo(Math.floor(startX), Math.floor(startY));
@@ -247,7 +265,7 @@ function renderCleanBorder(coordinate: string) {
     );
     context.stroke();
   }
-  if (coordinate === "10,0" || coordinate === "10,5") {
+  if (coordinate === "9,0" || coordinate === "9,5") {
     context.moveTo(Math.floor(startX), Math.floor(startY));
     context.lineTo(
       Math.floor(startX + GamePieceRenderer.TRIANGLE_SIDE_LENGTH / 2),
@@ -255,7 +273,7 @@ function renderCleanBorder(coordinate: string) {
     );
     context.stroke();
   }
-  if (coordinate === "11,1") {
+  if (coordinate === "10,1") {
     context.moveTo(Math.floor(startX), Math.floor(startY));
     context.lineTo(
       Math.floor(startX + GamePieceRenderer.TRIANGLE_SIDE_LENGTH * 1.5),

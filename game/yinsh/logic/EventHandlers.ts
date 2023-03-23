@@ -4,6 +4,8 @@ import {
   RING_PLACEMENT,
   PLAYABLE_VERTICES,
   RING_MOVEMENT,
+  MARKER,
+  RING,
 } from "../constants";
 import { drawGameBoardState, drawGamePiece } from "../rendering/renderHelpers";
 import GameState from "./GameState";
@@ -14,7 +16,11 @@ import {
   getBoardCoordinatesFromUserInteraction,
 } from "../rendering/coordinateHelpers";
 import { getWinner } from "./evaluationHelpers";
-import { isValidEmptyCoordinate } from "./gameBoardHelpers";
+import {
+  getJumpedPieces,
+  getValidRingMoves,
+  isValidEmptyCoordinate,
+} from "./gameBoardHelpers";
 
 function isCurrentPlayerPiece(boardCoordinate: ValidCoordinate) {
   const piece = GameState.getGameBoardState()[boardCoordinate];
@@ -30,7 +36,7 @@ export function handleClickPiece(
   const gameBoardState = GameState.getGameBoardState();
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
   const phase = GameState.getPhase();
-
+  console.log(boardCoordinate);
   if (phase === RING_PLACEMENT) {
     if (!isValidEmptyCoordinate(boardCoordinate, gameBoardState)) {
       return;
@@ -75,11 +81,10 @@ export function handleClickPiece(
 
   const piece = gameBoardState[boardCoordinate];
 
-  if (piece) {
+  if (piece && piece.type === RING) {
     piece.isDragging = true;
+    GameState.setMovingPiece(boardCoordinate);
   }
-
-  GameState.setMovingPiece(boardCoordinate);
 }
 
 export function handleMovePiece(
@@ -135,9 +140,35 @@ export function handleDropPiece(
     piece.isDragging = false;
   }
 
-  if (!gameBoardState[toCoordinates]) {
+  const validRingMovements = getValidRingMoves(movingPiece, gameBoardState);
+
+  if (validRingMovements.includes(toCoordinates)) {
     GameState.setCoordinateValue(toCoordinates, piece);
-    GameState.setCoordinateValue(movingPiece, false);
+    GameState.setCoordinateValue(movingPiece, {
+      type: MARKER,
+      // @ts-expect-error fix
+      ownedBy: piece.ownedBy,
+      isDragging: false,
+    });
+    const gameState = GameState.getBoardGameStateCopy(
+      GameState.getGameBoardState()
+    );
+    const piecesJumped = getJumpedPieces(movingPiece, toCoordinates, gameState);
+    console.log(piecesJumped);
+
+    for (let i = 0; i < piecesJumped.length; i++) {
+      const jumpedPiece = gameState[piecesJumped[i]];
+      if (jumpedPiece) {
+        jumpedPiece.ownedBy =
+          jumpedPiece.ownedBy === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+        gameState[piecesJumped[i]] = jumpedPiece;
+      }
+      GameState.setGameBoardState(gameState);
+    }
+    // remove jumped pieces if all the same color. Then remove a ring
+    if (piecesJumped.length >= 5) {
+    }
+
     GameState.setMovingPiece(null);
 
     drawGameBoardState();
