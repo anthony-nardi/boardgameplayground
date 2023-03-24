@@ -6,6 +6,7 @@ import {
   RING_MOVEMENT,
   MARKER,
   RING,
+  REMOVE_RING,
 } from "../constants";
 import { drawGameBoardState, drawGamePiece } from "../rendering/renderHelpers";
 import GameState from "./GameState";
@@ -18,6 +19,7 @@ import {
 import { getWinner } from "./evaluationHelpers";
 import {
   getJumpedPieces,
+  getMarkerRowsOf5,
   getValidRingMoves,
   isValidEmptyCoordinate,
 } from "./gameBoardHelpers";
@@ -36,7 +38,6 @@ export function handleClickPiece(
   const gameBoardState = GameState.getGameBoardState();
   const boardCoordinate = getBoardCoordinatesFromUserInteraction(event);
   const phase = GameState.getPhase();
-  console.log(boardCoordinate);
   if (phase === RING_PLACEMENT) {
     if (!isValidEmptyCoordinate(boardCoordinate, gameBoardState)) {
       return;
@@ -61,29 +62,41 @@ export function handleClickPiece(
     return;
   }
 
-  console.log(boardCoordinate);
-
   if (!isCurrentPlayerPiece(boardCoordinate)) {
     return;
   }
 
   if (currentTurn === PLAYER_TWO && GameState.getIsSecondPlayerAI()) {
+    debugger;
     return;
   }
 
   if (currentTurn === PLAYER_ONE && GameState.getIsFirstPlayerAI()) {
+    debugger;
     return;
   }
-
-  // if (getWinner(gameBoardState, true, currentTurn)) {
-  //   return;
-  // }
 
   const piece = gameBoardState[boardCoordinate];
 
   if (piece && piece.type === RING) {
-    piece.isDragging = true;
-    GameState.setMovingPiece(boardCoordinate);
+    if (GameState.getCurrentTurnPhase() === REMOVE_RING) {
+      const gameCopy = GameState.getBoardGameStateCopy(
+        GameState.getGameBoardState()
+      );
+      gameCopy[boardCoordinate] = false;
+      GameState.setCurrentTurn(
+        GameState.getCurrentTurn() === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE
+      );
+      GameState.setCurrentTurnPhase(RING_MOVEMENT);
+      GameState.setGameBoardState(gameCopy);
+      drawGameBoardState();
+      if (getWinner(gameCopy)) {
+        alert(`winner is :${getWinner(gameCopy)}`);
+      }
+    } else {
+      piece.isDragging = true;
+      GameState.setMovingPiece(boardCoordinate);
+    }
   }
 }
 
@@ -154,7 +167,6 @@ export function handleDropPiece(
       GameState.getGameBoardState()
     );
     const piecesJumped = getJumpedPieces(movingPiece, toCoordinates, gameState);
-    console.log(piecesJumped);
 
     for (let i = 0; i < piecesJumped.length; i++) {
       const jumpedPiece = gameState[piecesJumped[i]];
@@ -165,8 +177,26 @@ export function handleDropPiece(
       }
       GameState.setGameBoardState(gameState);
     }
-    // remove jumped pieces if all the same color. Then remove a ring
-    if (piecesJumped.length >= 5) {
+
+    const rowsOf5 = getMarkerRowsOf5(GameState.getGameBoardState());
+
+    if (rowsOf5.length) {
+      // How do we remove the markers (can have more than 1 row at once)
+      // for now lets just remove the first we see.... deal wiht the issue later lol
+      const gameStateCopy = GameState.getBoardGameStateCopy(
+        GameState.getGameBoardState()
+      );
+
+      for (let i = 0; i < 5; i++) {
+        // @ts-expect-error fix
+        gameStateCopy[rowsOf5[0][i]] = false;
+      }
+      GameState.setGameBoardState(gameStateCopy);
+      GameState.setCurrentTurnPhase(REMOVE_RING);
+    } else {
+      GameState.setCurrentTurn(
+        GameState.getCurrentTurn() === PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE
+      );
     }
 
     GameState.setMovingPiece(null);

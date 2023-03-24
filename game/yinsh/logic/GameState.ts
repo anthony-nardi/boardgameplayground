@@ -1,19 +1,12 @@
 import {
   PLAYER_ONE,
   PLAYER_TWO,
-  AI_ANIMATION_DURATION,
   RING_PLACEMENT,
   RING_MOVEMENT,
+  REMOVE_MARKERS,
+  REMOVE_RING,
 } from "../constants";
 import { Player, PlayerPieces, ValidCoordinate } from "../types/types";
-import { checkGameStateAndStartNextTurn } from "./gameLogic";
-import {
-  drawGameBoardState,
-  renderMovingPiece,
-} from "../rendering/renderHelpers";
-import GameHistory from "../utils/GameHistory";
-import { getPixelCoordinatesFromBoardCoordinates } from "./gameBoardHelpers";
-import { isDebugModeOn } from "./utils";
 
 export type Phase = typeof RING_PLACEMENT | typeof RING_MOVEMENT;
 
@@ -23,6 +16,11 @@ export type PieceState = {
   type: PlayerPieces;
 };
 
+export type TurnPhase =
+  | typeof RING_MOVEMENT
+  | typeof REMOVE_MARKERS
+  | typeof REMOVE_RING;
+
 export type GameBoardState = {
   [K in ValidCoordinate]: false | PieceState;
 };
@@ -31,8 +29,9 @@ class GameState {
   private gameStarted = false;
   private currentTurn: Player = PLAYER_ONE;
   private phase: Phase = "RING_PLACEMENT";
+  private turnPhase: TurnPhase = "MOVE_RING";
   private numberOfTurnsIntoGame = 0;
-  private isFirstPlayerAI = true;
+  private isFirstPlayerAI = false;
   private isSecondPlayerAI = false;
   private movingPiece: null | ValidCoordinate = null;
   private playerOneRingsPlaced = 0;
@@ -186,6 +185,12 @@ class GameState {
   }
   public setCurrentTurn(currentTurn: Player) {
     this.currentTurn = currentTurn;
+  }
+  public getCurrentTurnPhase() {
+    return this.turnPhase;
+  }
+  public setCurrentTurnPhase(turnPhase: TurnPhase) {
+    this.turnPhase = turnPhase;
   }
   public getPhase() {
     return this.phase;

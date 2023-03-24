@@ -1,4 +1,5 @@
 import {
+  MARKER,
   PLAYABLE_VERTICES_AS_MAP,
   PLAYER_ONE,
   PLAYER_TWO,
@@ -273,7 +274,50 @@ const linesToCheck = [
   ["4,10", "5,9", "6,8", "7,7", "8,6", "9,5", "10,4"],
 ];
 
-export function getMarkerRowsOf5() {}
+export function getMarkerRowsOf5(gameState: GameBoardState) {
+  let fiveInARow = [];
+  for (
+    let linesToCheckIndex = 0;
+    linesToCheckIndex < linesToCheck.length;
+    linesToCheckIndex++
+  ) {
+    const line = linesToCheck[linesToCheckIndex];
+    let previousResult = false;
+    let sameMarkerInARow = 0;
+
+    for (let lineIndex = 0; lineIndex < line.length; lineIndex++) {
+      // @ts-expect-error fix
+      const boardCoordinateValue = gameState[line[lineIndex]];
+      if (!boardCoordinateValue || boardCoordinateValue.type === RING) {
+        sameMarkerInARow = 0;
+        previousResult = false;
+      } else if (
+        boardCoordinateValue.type === MARKER &&
+        previousResult !== boardCoordinateValue.ownedBy
+      ) {
+        previousResult = boardCoordinateValue.ownedBy;
+        sameMarkerInARow = 1;
+      } else {
+        sameMarkerInARow++;
+      }
+
+      // We encounter 5 in a row. Since 6 in a row is essentially two 5 in a rows,
+      // we can decrement the sameMarkerInRow by 1 to hit this logic again.
+      // Essentially, we need just 1 more marker in a row to trigger this condition.
+      if (sameMarkerInARow === 5) {
+        fiveInARow.push([
+          line[lineIndex],
+          line[lineIndex - 1],
+          line[lineIndex - 2],
+          line[lineIndex - 3],
+          line[lineIndex - 4],
+        ]);
+        sameMarkerInARow = 4;
+      }
+    }
+  }
+  return fiveInARow;
+}
 
 export const nextPiece = {
   w: memoize(goWest),

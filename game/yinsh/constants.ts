@@ -13,10 +13,6 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "8,0",
   "9,0",
   "4,1",
-
-  "7,8",
-  "5,9",
-  "9,6",
   "5,1",
   "6,1",
   "7,1",
@@ -59,7 +55,6 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "7,5",
   "8,5",
   "9,5",
-  "10,5",
   "0,6",
   "1,6",
   "2,6",
@@ -69,6 +64,7 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "6,6",
   "7,6",
   "8,6",
+  "9,6",
   "0,7",
   "1,7",
   "2,7",
@@ -77,7 +73,7 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "5,7",
   "6,7",
   "7,7",
-  "9,7",
+  "8,7",
   "0,8",
   "1,8",
   "2,8",
@@ -85,7 +81,7 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "4,8",
   "5,8",
   "6,8",
-  "8,8",
+  "7,8",
   "0,9",
   "1,9",
   "2,9",
@@ -93,13 +89,10 @@ export const PLAYABLE_VERTICES: ValidCoordinate[] = [
   "4,9",
   "5,9",
   "6,9",
-  "8,7",
-  "0,10",
   "1,10",
   "2,10",
   "3,10",
   "4,10",
-  "6,10",
 ];
 
 export const PLAYABLE_VERTICES_AS_MAP = PLAYABLE_VERTICES.reduce(
@@ -117,6 +110,13 @@ export const PLAYER_ONE = "PLAYER_ONE" as const;
 export const PLAYER_TWO = "PLAYER_TWO" as const;
 export const RING_PLACEMENT = "RING_PLACEMENT" as const;
 export const RING_MOVEMENT = "RING_MOVEMENT" as const;
+export const REMOVE_MARKERS = "REMOVE_MARKERS" as const;
+export const REMOVE_RING = "REMOVE_RING" as const;
+export const TURN_PHASES = {
+  RING_MOVEMENT,
+  REMOVE_MARKERS,
+  REMOVE_RING,
+};
 export const PHASES = {
   RING_PLACEMENT,
   RING_MOVEMENT,

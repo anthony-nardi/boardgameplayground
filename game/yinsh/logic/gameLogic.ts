@@ -75,7 +75,7 @@ export function initGame(isHumanFirstPlayer: boolean) {
   }
 
   GameState.setIsFirstPlayerAI(false);
-  GameState.setIsSecondPlayerAI(true);
+  GameState.setIsSecondPlayerAI(false);
   // if (isHumanFirstPlayer) {
   //   GameState.setIsFirstPlayerAI(false);
   //   GameState.setIsSecondPlayerAI(true);
