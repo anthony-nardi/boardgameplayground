@@ -9,14 +9,14 @@ export default function App(props: AppProps) {
   return (
     <>
       <Head>
-        <title>Board Game Playground | Play against AI</title>
+        <title>Board Game Playground | Play Online</title>
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
         <meta
           name="description"
-          content="Play TZAAR and Family Inc against the computer."
+          content="Play TZAAR and Family Inc online."
           key="desc"
         />
       </Head>

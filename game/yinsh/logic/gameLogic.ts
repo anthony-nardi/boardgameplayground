@@ -1,4 +1,9 @@
-import { PLAYER_TWO, PLAYER_ONE, TURN_PHASES } from "../constants";
+import {
+  PLAYER_TWO,
+  PLAYER_ONE,
+  TURN_PHASES,
+  RING_PLACEMENT,
+} from "../constants";
 import { drawInitialGrid } from "../rendering/cachedBoard";
 import {
   drawCoordinates,
@@ -17,55 +22,28 @@ let botTwo: BotFactory = new BotFactory();
 
 export function moveAI() {
   const currentTurn = GameState.getCurrentTurn();
+  const currentPhase = GameState.getPhase();
   const isPlayerOneTurn = currentTurn === PLAYER_ONE;
   const isPlayerTwoTurn = currentTurn === PLAYER_TWO;
   const shouldMoveAI =
     (isPlayerOneTurn && GameState.getIsFirstPlayerAI()) ||
     (isPlayerTwoTurn && GameState.getIsSecondPlayerAI());
 
-  const isGameOver = getWinner(
-    GameState.getGameBoardState(),
-    true,
-    currentTurn
-  );
-
-  if (!shouldMoveAI || isGameOver) {
-    return;
-  }
-
-  showLoadingSpinner();
-
   const botMakingMove = isPlayerOneTurn ? botOne : botTwo;
 
-  setTimeout(() => {
-    botMakingMove.moveAI(moveAI);
-  }, 200);
+  if (shouldMoveAI) {
+    if (currentPhase === RING_PLACEMENT) {
+      botMakingMove.moveAIRingPlacement();
+    } else {
+      botMakingMove.moveAIRingMovement();
+    }
+  }
 }
 
 export function checkGameStateAndStartNextTurn(
   shouldCheckWinner = false,
   maybeMoveAI?: Function
-) {
-  // let winner;
-  // const gameBoardState = GameState.getGameBoardState();
-  // const turnPhase = GameState.getPhase();
-  // const currentTurn = GameState.getCurrentTurn();
-  // if (turnPhase === TURN_PHASES.CAPTURE || shouldCheckWinner) {
-  //   winner = getWinner(gameBoardState, true, currentTurn);
-  // }
-  // if (winner) {
-  //   const message = GameState.getWinnerMessage(winner);
-  //   console.log(
-  //     message,
-  //     `Number of turns taken: ${GameState.getNumberOfTurnsIntoGame()}`
-  //   );
-  //   const winnerElement = document.getElementById("winnerMessage");
-  //   if (winnerElement && message) {
-  //     winnerElement.innerHTML = message;
-  //   }
-  // }
-  // maybeMoveAI && setTimeout(maybeMoveAI);
-}
+) {}
 
 export function initGame(isHumanFirstPlayer: boolean) {
   if (GameState.getHasGameStarted()) {
@@ -75,32 +53,11 @@ export function initGame(isHumanFirstPlayer: boolean) {
   }
 
   GameState.setIsFirstPlayerAI(false);
-  GameState.setIsSecondPlayerAI(false);
-  // if (isHumanFirstPlayer) {
-  //   GameState.setIsFirstPlayerAI(false);
-  //   GameState.setIsSecondPlayerAI(true);
-  // } else {
-  //   GameState.setIsFirstPlayerAI(true);
-  //   GameState.setIsSecondPlayerAI(false);
-  // }
+  GameState.setIsSecondPlayerAI(true);
 
   if (isDebugModeOn()) {
     GameHistory.setGameId(Date.now());
   }
 
-  // const piecesToSetup = setupSymmetricalBoard();
-
   drawInitialGrid();
-  // drawGameBoardState();
-  // drawCoordinates();
-
-  // renderInitializingBoard(piecesToSetup, () => {
-  // drawGameBoardState();
-
-  // setTimeout(moveAI);
-
-  //   if (isDebugModeOn()) {
-  //     drawCoordinates();
-  //   }
-  // });
 }

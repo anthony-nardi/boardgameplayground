@@ -29,13 +29,14 @@ class GameState {
   private gameStarted = false;
   private currentTurn: Player = PLAYER_ONE;
   private phase: Phase = "RING_PLACEMENT";
-  private turnPhase: TurnPhase = "MOVE_RING";
+  private turnPhase: TurnPhase = "RING_MOVEMENT";
   private numberOfTurnsIntoGame = 0;
   private isFirstPlayerAI = false;
-  private isSecondPlayerAI = false;
+  private isSecondPlayerAI = true;
   private movingPiece: null | ValidCoordinate = null;
   private playerOneRingsPlaced = 0;
   private playerTwoRingsPlaced = 0;
+  private playerRingToRemove: Player | null = null;
   private gameBoardState: GameBoardState = {
     "6,0": false,
     "7,0": false,
@@ -160,6 +161,12 @@ class GameState {
   }
   public getPlayerOneRingsPlaced() {
     return this.playerOneRingsPlaced;
+  }
+  public setPlayerRingToRemove(player: Player) {
+    this.playerRingToRemove = player;
+  }
+  public getPlayerRingToRemove() {
+    return this.playerRingToRemove;
   }
   public setPlayerOneRing(coordinate: ValidCoordinate) {
     this.playerOneRingsPlaced++;
