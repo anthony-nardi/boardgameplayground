@@ -33,6 +33,12 @@ const games = [
     description:
       "No Thanks! is a card game designed to be as simple as it is engaging. For 3-7 players. Designed by Thorsten Gimmler.",
   },
+  {
+    href: `${HIGH_SOCIETY_URL}/razzia`,
+    title: "Razzia!",
+    description:
+      "Gangsters bid for loot and dodge police raids over three rounds. A card game version of Ra for 3-5 players, designed by Reiner Knizia.",
+  },
 ];
 
 export function FeaturesCards() {
