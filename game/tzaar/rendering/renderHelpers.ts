@@ -176,7 +176,7 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
 
   let coordinates = Object.keys(piecesToDraw);
   shuffleArray(coordinates);
-  let reversed = [...circlePatternInsideOut];
+  const reversed = [...circlePatternInsideOut];
   reversed.reverse();
   if (Math.random() < 0.5) {
     coordinates = circlePatternInsideOut;
@@ -185,7 +185,7 @@ export function renderInitializingBoard(piecesToDraw: any, callback: Function) {
     coordinates = reversed;
   }
 
-  for (let index in coordinates) {
+  for (const index in coordinates) {
     const coordinate = coordinates[index];
     const piece = piecesToDraw[coordinate];
     const to = getPixelCoordinatesFromBoardCoordinates(
@@ -266,10 +266,11 @@ function renderMovingPieces(
     }
   );
 
-  window &&
+  if (typeof window !== "undefined") {
     window.requestAnimationFrame(() => {
       renderMovingPieces(piecesToRenderList, duration, startTime, callback);
     });
+  }
 }
 
 export function renderMovingPiece(
@@ -308,8 +309,9 @@ export function renderMovingPiece(
   drawGamePieces();
   drawGamePiece(piece, renderX, renderY);
 
-  window &&
+  if (typeof window !== "undefined") {
     window.requestAnimationFrame(() => {
       renderMovingPiece(piece, from, to, duration, startTime, callback);
     });
+  }
 }

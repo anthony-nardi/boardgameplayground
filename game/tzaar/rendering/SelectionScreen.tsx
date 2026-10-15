@@ -1,27 +1,17 @@
 import { useState, useCallback } from "react";
-import { Button, Container, Group } from "@mantine/core";
-import { createStyles, Title, Flex, Radio } from "@mantine/core";
+import { Button, Container, Flex, Group, Radio, Title } from "@mantine/core";
+import classes from "./SelectionScreen.module.css";
 
-const useStyles = createStyles((theme) => ({
-  title: {
-    fontSize: 34,
-    fontWeight: 900,
-    [theme.fn.smallerThan("sm")]: {
-      fontSize: 24,
-    },
-  },
-}));
 export default function SelectionScreen({ onPlay }: { onPlay: Function }) {
-  const { classes } = useStyles();
   const [value, setValue] = useState<string>("first");
 
   const handleClick = useCallback(() => {
     onPlay(value);
-  }, [value]);
+  }, [onPlay, value]);
 
   return (
     <Container size="lg" py="xl">
-      <Title order={2} className={classes.title} align="center" mt="sm">
+      <Title order={2} className={classes.title} ta="center" mt="sm">
         Game options
       </Title>
       <Flex
@@ -32,8 +22,8 @@ export default function SelectionScreen({ onPlay }: { onPlay: Function }) {
         <Radio.Group
           value={value}
           onChange={setValue}
-          pt={"lg"}
-          mt={"lg"}
+          pt="lg"
+          mt="lg"
           mb="lg"
           name="firstPlayerOrSecondPlayer"
           label="Choose if you want to go first or second."
@@ -49,7 +39,7 @@ export default function SelectionScreen({ onPlay }: { onPlay: Function }) {
         gap={{ base: "sm", sm: "lg" }}
         justify={{ sm: "center" }}
       >
-        <Button onClick={handleClick} mt={"lg"} size="xl" uppercase>
+        <Button onClick={handleClick} mt="lg" size="xl" tt="uppercase">
           Play
         </Button>
       </Flex>

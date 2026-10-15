@@ -11,7 +11,7 @@ import gamePieceRenderer, { promiseArray } from "./gamePieceRenderer";
 import { Button, Badge } from "@mantine/core";
 import SelectionScreen from "./SelectionScreen";
 
-export default function () {
+export default function TzaarGame() {
   const Canvas = useRef<HTMLCanvasElement | null>(null);
   const isGameInitializedRef = useRef(false);
   const [showSelectionScreen, setShowSelectionScreen] = useState(true);
@@ -44,7 +44,7 @@ export default function () {
         initGame(isHumanFirstPlayer);
       });
     }
-  }, [Canvas, showSelectionScreen]);
+  }, [Canvas, showSelectionScreen, isHumanFirstPlayer]);
 
   const handleTouchStart = useCallback(
     (evt: React.SyntheticEvent<HTMLCanvasElement>) => {
@@ -147,7 +147,7 @@ export default function () {
         </Badge>
         <Badge id="winnerMessage" ml="xs"></Badge>
         <Button
-          compact
+          size="compact-sm"
           ml="xs"
           color="gray"
           className="hidden"

@@ -518,4 +518,6 @@ class GameState {
   }
 }
 
-export default new GameState();
+const gameState = new GameState();
+
+export default gameState;

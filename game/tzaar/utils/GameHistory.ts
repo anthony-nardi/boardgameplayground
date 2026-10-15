@@ -48,7 +48,7 @@ class GameHistory {
     const tzaarGames = localStorage.getItem(this._local_storage_key);
 
     if (tzaarGames) {
-      let existingGames = JSON.parse(tzaarGames);
+      const existingGames = JSON.parse(tzaarGames);
       if (!existingGames || !existingGames[this._game_id]) {
         throw new Error("Game doesnt exist");
       }
@@ -64,7 +64,7 @@ class GameHistory {
     const tzaarGames = localStorage.getItem(this._local_storage_key);
 
     if (tzaarGames) {
-      let existingGames = JSON.parse(tzaarGames);
+      const existingGames = JSON.parse(tzaarGames);
       if (!existingGames || !existingGames[this._game_id]) {
         throw new Error("Game doesnt exist");
       }
@@ -81,7 +81,7 @@ class GameHistory {
     const tzaarGames = localStorage.getItem(this._local_storage_key);
 
     if (tzaarGames) {
-      let existingGames = JSON.parse(tzaarGames);
+      const existingGames = JSON.parse(tzaarGames);
       if (!existingGames || !existingGames[this._game_id]) {
         throw new Error("Game doesnt exist");
       }
@@ -126,4 +126,6 @@ class GameHistory {
   }
 }
 
-export default new GameHistory();
+const gameHistory = new GameHistory();
+
+export default gameHistory;

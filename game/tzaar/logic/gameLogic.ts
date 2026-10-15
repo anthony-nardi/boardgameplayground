@@ -13,8 +13,8 @@ import BotFactory from "./BotFactory";
 import { getWinner } from "./evaluationHelpers";
 import { isDebugModeOn } from "./utils";
 
-let botOne: BotFactory = new BotFactory();
-let botTwo: BotFactory = new BotFactory();
+const botOne: BotFactory = new BotFactory();
+const botTwo: BotFactory = new BotFactory();
 
 export function moveAI() {
   const currentTurn = GameState.getCurrentTurn();
@@ -70,7 +70,9 @@ export function checkGameStateAndStartNextTurn(
     }
   }
 
-  maybeMoveAI && setTimeout(maybeMoveAI);
+  if (maybeMoveAI) {
+    setTimeout(maybeMoveAI);
+  }
 }
 
 export function initGame(isHumanFirstPlayer: boolean) {

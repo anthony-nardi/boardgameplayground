@@ -1,138 +1,70 @@
-import {
-  createStyles,
-  Title,
-  Text,
-  Card,
-  SimpleGrid,
-  Container,
-} from "@mantine/core";
+import { Card, Container, SimpleGrid, Text, Title } from "@mantine/core";
 import Link from "next/link";
+import classes from "./Main.module.css";
 
-const useStyles = createStyles((theme) => ({
-  title: {
-    fontSize: 34,
-    fontWeight: 900,
-    [theme.fn.smallerThan("sm")]: {
-      fontSize: 24,
-    },
+// The other games live in their own apps. In development they can be pointed
+// at local checkouts via .env.development; production uses the deployed URLs.
+const FAMILY_INC_URL =
+  process.env.NEXT_PUBLIC_FAMILYINC_URL ?? "https://familyinc-client.vercel.app/";
+const HIGH_SOCIETY_URL =
+  process.env.NEXT_PUBLIC_HIGH_SOCIETY_URL ?? "https://high-society-c4ff4.web.app";
+
+const games = [
+  {
+    href: "/tzaar",
+    title: "TZAAR",
+    description:
+      "A 2 player abstract strategy game. Part of the GIPF series designed by Kris Burm.",
   },
-
-  description: {
-    maxWidth: 600,
-    margin: "auto",
-
-    "&::after": {
-      content: '""',
-      display: "block",
-      backgroundColor: theme.fn.primaryColor(),
-      width: 45,
-      height: 2,
-      marginTop: theme.spacing.sm,
-      marginLeft: "auto",
-      marginRight: "auto",
-    },
+  {
+    href: FAMILY_INC_URL,
+    title: "Family Inc.",
+    description:
+      "A push your luck game for 2-7 players designed by Reiner Knizia.",
   },
-
-  card: {
-    border: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-    }`,
+  {
+    href: `${HIGH_SOCIETY_URL}/high-society`,
+    title: "High Society",
+    description: "A bidding game for 3-5 players designed by Reiner Knizia.",
   },
-
-  cardTitle: {
-    "&::after": {
-      content: '""',
-      display: "block",
-      backgroundColor: theme.fn.primaryColor(),
-      width: 45,
-      height: 2,
-      marginTop: theme.spacing.sm,
-    },
+  {
+    href: `${HIGH_SOCIETY_URL}/no-thanks`,
+    title: "No Thanks!",
+    description:
+      "No Thanks! is a card game designed to be as simple as it is engaging. For 3-7 players. Designed by Thorsten Gimmler.",
   },
-}));
+];
 
 export function FeaturesCards() {
-  const { classes } = useStyles();
-
   return (
     <Container size="lg" py="xl">
-      <Title order={2} className={classes.title} align="center" mt="sm">
+      <Title order={2} className={classes.title} ta="center" mt="sm">
         A collection of board games with AI opponents.
       </Title>
 
-      <Text
-        color="dimmed"
-        className={classes.description}
-        align="center"
-        mt="md"
-      >
+      <Text c="dimmed" className={classes.description} ta="center" mt="md">
         Practice against the computer.
       </Text>
-      <Text
-        color="dimmed"
-        className={classes.description}
-        align="center"
-        mt="md"
-      >
+      <Text c="dimmed" className={classes.description} ta="center" mt="md">
         {`Some games may allow for human opponents, but I'm not paying for a server to support real time communication. (Therefore it may be slow!)`}
       </Text>
-      <SimpleGrid
-        cols={3}
-        spacing="xl"
-        mt={50}
-        breakpoints={[{ maxWidth: "md", cols: 1 }]}
-      >
-        <Link href="/tzaar" style={{ textDecoration: "none" }}>
-          <Card shadow="md" radius="md" className={classes.card} p="xl">
-            <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
-              TZAAR
-            </Text>
-            <Text size="sm" color="dimmed" mt="sm">
-              A 2 player abstract strategy game. Part of the GIPF series
-              designed by Kris Burm.
-            </Text>
-          </Card>
-        </Link>
-        <Link
-          href="https://familyinc-client.vercel.app/"
-          style={{ textDecoration: "none" }}
-        >
-          <Card shadow="md" radius="md" className={classes.card} p="xl">
-            <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
-              Family Inc.
-            </Text>
-            <Text size="sm" color="dimmed" mt="sm">
-              A push your luck game for 2-7 players designed by Reiner Knizia.
-            </Text>
-          </Card>
-        </Link>
-        <Link
-          href="https://high-society-c4ff4.web.app/high-society"
-          style={{ textDecoration: "none" }}
-        >
-          <Card shadow="md" radius="md" className={classes.card} p="xl">
-            <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
-              High Society
-            </Text>
-            <Text size="sm" color="dimmed" mt="sm">
-              A bidding game for 3-5 players designed by Reiner Knizia.
-            </Text>
-          </Card>
-        </Link>
-        <Link
-          href="https://high-society-c4ff4.web.app/no-thanks"
-          style={{ textDecoration: "none" }}
-        >
-          <Card shadow="md" radius="md" className={classes.card} p="xl">
-            <Text size="lg" weight={500} className={classes.cardTitle} mt="md">
-              No Thanks!
-            </Text>
-            <Text size="sm" color="dimmed" mt="sm">
-              No Thanks! is a card game designed to be as simple as it is
-              engaging. For 3-7 players. Designed by Thorsten Gimmler.
-            </Text>
-          </Card>
-        </Link>
+      <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl" mt={50}>
+        {games.map((game) => (
+          <Link
+            key={game.title}
+            href={game.href}
+            style={{ textDecoration: "none" }}
+          >
+            <Card shadow="md" radius="md" className={classes.card} p="xl">
+              <Text size="lg" fw={500} className={classes.cardTitle} mt="md">
+                {game.title}
+              </Text>
+              <Text size="sm" c="dimmed" mt="sm">
+                {game.description}
+              </Text>
+            </Card>
+          </Link>
+        ))}
       </SimpleGrid>
     </Container>
   );

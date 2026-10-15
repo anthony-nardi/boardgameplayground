@@ -71,7 +71,7 @@ class Evolution {
       STACK_VALUE_BONUS_MULTIPLIER: 1,
     });
 
-    console.log(`${botOneName} VERSUS ${botTwoName}`);
+    console.log(`${botOneName} VERSUS ${botTwoName}`, botOne, botTwo);
     console.log(`Bot one weights: `, botOneParameters);
     console.log(`Bot two weights`, botTwoParameters);
   }
@@ -81,4 +81,6 @@ function randomNumber(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-export default new Evolution();
+const evolution = new Evolution();
+
+export default evolution;

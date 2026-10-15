@@ -119,7 +119,9 @@ export default class BotFactory {
     // Probably best to play around with options at different points
     // in the game.
     opts.depth = depth;
-    opts.method = 3;
+    // SearchMethod.TIME: iterative deepening bounded by both depth and timeout.
+    // (minimaxer ships SearchMethod as a const enum, which isolatedModules cannot inline.)
+    opts.method = 2 as minimaxer.SearchMethod;
     opts.presort = true;
     opts.pruning = 1;
     opts.sortMethod = 2;

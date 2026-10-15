@@ -23,4 +23,6 @@ class WindowHelper {
   }
 }
 
-export default new WindowHelper();
+const windowHelper = new WindowHelper();
+
+export default windowHelper;

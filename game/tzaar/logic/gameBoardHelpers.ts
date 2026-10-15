@@ -91,32 +91,32 @@ function memoize(f: Function) {
 }
 
 export function goWest(coordinate: ValidCoordinate) {
-  let [x, y] = coordinate.split(",");
+  const [x, y] = coordinate.split(",");
   return `${+x - 1},${y}` as ValidCoordinate;
 }
 
 export function goEast(coordinate: ValidCoordinate) {
-  let [x, y] = coordinate.split(",");
+  const [x, y] = coordinate.split(",");
   return `${+x + 1},${y}` as ValidCoordinate;
 }
 
 export function goNorthWest(coordinate: ValidCoordinate) {
-  let [x, y] = coordinate.split(",");
+  const [x, y] = coordinate.split(",");
   return `${x},${+y - 1}` as ValidCoordinate;
 }
 
 export function goNorthEast(coordinate: ValidCoordinate) {
-  let [x, y] = coordinate.split(",");
+  const [x, y] = coordinate.split(",");
   return `${+x + 1},${+y - 1}` as ValidCoordinate;
 }
 
 export function goSouthWest(coordinate: ValidCoordinate) {
-  let [x, y] = coordinate.split(",");
+  const [x, y] = coordinate.split(",");
   return `${+x - 1},${+y + 1}` as ValidCoordinate;
 }
 
 export function goSouthEast(coordinate: ValidCoordinate) {
-  let [x, y] = coordinate.split(",");
+  const [x, y] = coordinate.split(",");
   return `${x},${+y + 1}` as ValidCoordinate;
 }
 
@@ -125,7 +125,7 @@ export function isPlayableSpace(coordinate: ValidCoordinate) {
 }
 
 export function setupSymmetricalBoard() {
-  let piecesToDraw: {
+  const piecesToDraw: {
     [key in ValidCoordinate]: any;
   } = {
     "0,4": {

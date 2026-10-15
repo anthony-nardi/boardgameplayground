@@ -230,7 +230,7 @@ export function getAllPlayerPieceCoordinates(
   gameState: GameBoardState,
   player: Player
 ) {
-  let coordinates: ValidCoordinate[] = [];
+  const coordinates: ValidCoordinate[] = [];
 
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
     const coordinate = PLAYABLE_VERTICES[i];
@@ -249,7 +249,7 @@ export function getAllPlayerPieceCoordinatesByType(
   type: PlayerPieces,
   stackSize: number = 1
 ) {
-  let coordinates: ValidCoordinate[] = [];
+  const coordinates: ValidCoordinate[] = [];
 
   for (let i = 0; i < PLAYABLE_VERTICES.length; i++) {
     const coordinate = PLAYABLE_VERTICES[i];

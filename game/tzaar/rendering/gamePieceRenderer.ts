@@ -28,8 +28,8 @@ const P2_TZAAR = "gold_tzaar.png";
 
 const loadedImages: any = {};
 export const promiseArray = images.map(function (imgurl) {
-  var prom = new Promise(function (resolve, reject) {
-    var img = new Image();
+  const prom = new Promise(function (resolve) {
+    const img = new Image();
     img.onload = function () {
       loadedImages[imgurl] = img;
       resolve(null);
@@ -213,14 +213,14 @@ class GamePieceRenderer {
     ctx: CanvasRenderingContext2D,
     centerColor: string
   ) {
-    var rot = (Math.PI / 2) * 3;
-    var x = cx;
-    var y = cy;
-    var step = Math.PI / spikes;
+    let rot = (Math.PI / 2) * 3;
+    let x = cx;
+    let y = cy;
+    const step = Math.PI / spikes;
 
     ctx.beginPath();
     ctx.moveTo(cx, cy - outerRadius);
-    for (var i = 0; i < spikes; i++) {
+    for (let i = 0; i < spikes; i++) {
       x = cx + Math.cos(rot) * outerRadius;
       y = cy + Math.sin(rot) * outerRadius;
       ctx.lineTo(x, y);
@@ -291,4 +291,6 @@ class GamePieceRenderer {
   }
 }
 
-export default new GamePieceRenderer();
+const gamePieceRenderer = new GamePieceRenderer();
+
+export default gamePieceRenderer;
