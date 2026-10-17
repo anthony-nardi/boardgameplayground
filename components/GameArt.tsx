@@ -16,7 +16,8 @@ export type GameKey =
   | "lyngk"
   | "for-sale"
   | "shangri-la"
-  | "acquire";
+  | "acquire"
+  | "condottiere";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1392,6 +1393,105 @@ function Acquire() {
   );
 }
 
+function Condottiere() {
+  // A fan of mercenary cards over a sketch of Italy with a few city markers.
+  const italy =
+    "M80 40 L120 30 L170 44 L200 70 L190 100 L214 120 L250 150 L262 176 L236 178 L218 150 L186 136 L160 112 L130 96 L96 86 L74 64 Z";
+  const cities: [number, number, string][] = [
+    [110, 52, "#d9342b"],
+    [150, 60, "#f1e4c6"],
+    [142, 90, "#2f6fd6"],
+    [178, 118, "#f1e4c6"],
+    [222, 150, "#e8c23a"],
+  ];
+  const card = (
+    x: number,
+    y: number,
+    rot: number,
+    value: string,
+    special?: string,
+  ) => (
+    <g key={`${x}-${y}`} transform={`translate(${x} ${y}) rotate(${rot})`}>
+      <rect
+        x="2"
+        y="3"
+        width="44"
+        height="64"
+        rx="5"
+        fill="#000"
+        opacity="0.4"
+      />
+      <rect
+        width="44"
+        height="64"
+        rx="5"
+        fill={special ? special : "#f3e9d2"}
+        stroke="#2a2a2a"
+        strokeWidth="1.2"
+      />
+      {special ? (
+        <text x="22" y="40" textAnchor="middle" fontSize="20" fill="#fff">
+          {value}
+        </text>
+      ) : (
+        <g>
+          <path
+            d="M22 12 L34 17 L32 36 L22 46 L12 36 L10 17 Z"
+            fill="#8c2f2f"
+            stroke="#4a1414"
+          />
+          <text
+            x="22"
+            y="33"
+            textAnchor="middle"
+            fontSize="14"
+            fontWeight="800"
+            fill="#fff"
+          >
+            {value}
+          </text>
+        </g>
+      )}
+    </g>
+  );
+  return (
+    <Frame accent="#8c2f2f">
+      <path
+        d={italy}
+        fill="rgba(255,255,255,0.07)"
+        stroke="rgba(255,255,255,0.3)"
+        strokeWidth="1.5"
+      />
+      {cities.map(([x, y, c], i) => (
+        <circle
+          key={i}
+          cx={x}
+          cy={y}
+          r="6"
+          fill={c}
+          stroke="#222"
+          strokeWidth="1"
+        />
+      ))}
+      {card(20, 120, -12, "6")}
+      {card(60, 112, -4, "10")}
+      {card(100, 110, 4, "❄", "#4a7fb5")}
+      {card(140, 116, 12, "♫", "#8a4b2f")}
+      <text
+        x="160"
+        y="28"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#ffd86b"
+        letterSpacing="2"
+      >
+        TO ARMS
+      </text>
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1420,5 +1520,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <ShangriLa />;
     case "acquire":
       return <Acquire />;
+    case "condottiere":
+      return <Condottiere />;
   }
 }

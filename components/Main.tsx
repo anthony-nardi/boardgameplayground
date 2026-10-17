@@ -191,6 +191,19 @@ const games: Game[] = [
     accent: "#1fb6c9",
     href: `${HIGH_SOCIETY_URL}/acquire`,
   },
+  {
+    key: "condottiere",
+    title: "Condottiere",
+    tagline: "Hire mercenaries. Take Italy.",
+    description:
+      "Dominique Ehrhard's card battles for the cities of Renaissance Italy. Play mercenaries into your line, turn the fight with winter, drummers and bishops, and know when to pass. Five regions, or three that touch, and you rule.",
+    players: "2–6 players",
+    designer: "Dominique Ehrhard",
+    length: "45 min",
+    tags: ["Card battles", "Judgement bot", "Online"],
+    accent: "#8c2f2f",
+    href: `${HIGH_SOCIETY_URL}/condottiere`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -203,7 +216,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Thirteen board games.
+          Fourteen board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -227,7 +240,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>13</strong> games
+            <strong>14</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
