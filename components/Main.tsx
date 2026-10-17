@@ -5,7 +5,8 @@ import classes from "./Main.module.css";
 // The card games live in their own app. In development it can be pointed
 // at a local checkout via .env.development; production uses the deployed URL.
 const HIGH_SOCIETY_URL =
-  process.env.NEXT_PUBLIC_HIGH_SOCIETY_URL ?? "https://high-society-c4ff4.web.app";
+  process.env.NEXT_PUBLIC_HIGH_SOCIETY_URL ??
+  "https://high-society-c4ff4.web.app";
 
 type Game = {
   key: GameKey;
@@ -99,6 +100,19 @@ const games: Game[] = [
     accent: "#9b59b6",
     href: `${HIGH_SOCIETY_URL}/zertz`,
   },
+  {
+    key: "yinsh",
+    title: "YINSH",
+    tagline: "Rings move. Markers flip.",
+    description:
+      "Every move leaves a marker behind and flips whatever the ring jumps. Line up five of your colour to score a ring, but each ring you score is one fewer to play with. Three wins.",
+    players: "2 players",
+    designer: "Kris Burm",
+    length: "30 min",
+    tags: ["Abstract", "Negamax bot", "Online"],
+    accent: "#4f8fdc",
+    href: `${HIGH_SOCIETY_URL}/yinsh`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -111,7 +125,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Six board games.
+          Seven board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -135,7 +149,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>6</strong> games
+            <strong>7</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
@@ -188,14 +202,14 @@ export function FeaturesCards() {
 
       <footer className={classes.footer}>
         <p>
-          Bots use minimax-family searches over exactly the information a
-          player at the table has. Online games run on a tiny Firebase backend,
-          so the first move after a quiet spell can take a moment to wake it up.
+          Bots use minimax-family searches over exactly the information a player
+          at the table has. Online games run on a tiny Firebase backend, so the
+          first move after a quiet spell can take a moment to wake it up.
         </p>
         <p className={classes.credits}>
-          TZAAR and ZÈRTZ are part of the GIPF project by Kris Burm. Family Inc., High
-          Society and Razzia! are by Reiner Knizia. No Thanks! is by Thorsten
-          Gimmler. This is a fan project for practice and play.
+          TZAAR, ZÈRTZ and YINSH are part of the GIPF project by Kris Burm.
+          Family Inc., High Society and Razzia! are by Reiner Knizia. No Thanks!
+          is by Thorsten Gimmler. This is a fan project for practice and play.
         </p>
       </footer>
     </main>

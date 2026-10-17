@@ -9,7 +9,8 @@ export type GameKey =
   | "high-society"
   | "no-thanks"
   | "razzia"
-  | "zertz";
+  | "zertz"
+  | "yinsh";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -30,13 +31,22 @@ function Frame({
       style={{ display: "block" }}
     >
       <defs>
-        <radialGradient id={`glow-${accent.replace("#", "")}`} cx="30%" cy="20%" r="80%">
+        <radialGradient
+          id={`glow-${accent.replace("#", "")}`}
+          cx="30%"
+          cy="20%"
+          r="80%"
+        >
           <stop offset="0%" stopColor={accent} stopOpacity="0.45" />
           <stop offset="100%" stopColor={accent} stopOpacity="0" />
         </radialGradient>
       </defs>
       <rect width="320" height="200" fill={INK} />
-      <rect width="320" height="200" fill={`url(#glow-${accent.replace("#", "")})`} />
+      <rect
+        width="320"
+        height="200"
+        fill={`url(#glow-${accent.replace("#", "")})`}
+      />
       {children}
     </svg>
   );
@@ -60,8 +70,26 @@ function PlayingCard({
 }) {
   return (
     <g transform={`translate(${x} ${y}) rotate(${rotate})`}>
-      <rect x="-40" y="-58" width="80" height="116" rx="8" fill="#000" opacity="0.35" transform="translate(4 6)" />
-      <rect x="-40" y="-58" width="80" height="116" rx="8" fill={fill} stroke={stroke} strokeWidth="4" />
+      <rect
+        x="-40"
+        y="-58"
+        width="80"
+        height="116"
+        rx="8"
+        fill="#000"
+        opacity="0.35"
+        transform="translate(4 6)"
+      />
+      <rect
+        x="-40"
+        y="-58"
+        width="80"
+        height="116"
+        rx="8"
+        fill={fill}
+        stroke={stroke}
+        strokeWidth="4"
+      />
       {children}
     </g>
   );
@@ -79,10 +107,14 @@ function Tzaar() {
     <Frame accent="#4f8fdc">
       <g stroke="#2a3340" strokeWidth="1.5">
         {dots.map(([x, y], i) =>
-          i % 8 < 7 ? <line key={`h${i}`} x1={x} y1={y} x2={x + 36} y2={y} /> : null
+          i % 8 < 7 ? (
+            <line key={`h${i}`} x1={x} y1={y} x2={x + 36} y2={y} />
+          ) : null,
         )}
         {dots.map(([x, y], i) =>
-          i < 40 ? <line key={`d${i}`} x1={x} y1={y} x2={x + 18} y2={y + 31} /> : null
+          i < 40 ? (
+            <line key={`d${i}`} x1={x} y1={y} x2={x + 18} y2={y + 31} />
+          ) : null,
         )}
       </g>
       {dots.map(([x, y], i) => (
@@ -97,13 +129,36 @@ function Tzaar() {
   );
 }
 
-function Chip({ x, y, colour, value }: { x: number; y: number; colour: string; value: string }) {
+function Chip({
+  x,
+  y,
+  colour,
+  value,
+}: {
+  x: number;
+  y: number;
+  colour: string;
+  value: string;
+}) {
   return (
     <g transform={`translate(${x} ${y})`}>
       <circle r="30" fill="#000" opacity="0.35" transform="translate(3 5)" />
-      <circle r="30" fill={colour} stroke="#fff" strokeWidth="4" strokeDasharray="12 10" />
+      <circle
+        r="30"
+        fill={colour}
+        stroke="#fff"
+        strokeWidth="4"
+        strokeDasharray="12 10"
+      />
       <circle r="19" fill="#fff" opacity="0.92" />
-      <text y="7" textAnchor="middle" fontSize="20" fontWeight="800" fill={colour} fontFamily="Georgia, serif">
+      <text
+        y="7"
+        textAnchor="middle"
+        fontSize="20"
+        fontWeight="800"
+        fill={colour}
+        fontFamily="Georgia, serif"
+      >
         {value}
       </text>
     </g>
@@ -119,14 +174,47 @@ function FamilyInc() {
       <Chip x={235} y={92} colour="#8e44ad" value="5" />
       {/* Diamond */}
       <g transform="translate(262 52)">
-        <path d="M-26 -6 L-12 -22 L12 -22 L26 -6 L0 26 Z" fill="#000" opacity="0.35" transform="translate(3 5)" />
-        <path d="M-26 -6 L-12 -22 L12 -22 L26 -6 L0 26 Z" fill="#7fe6ff" stroke="#e8fbff" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M-26 -6 L26 -6 M-12 -22 L0 26 L12 -22 M-12 -22 L-6 -6 M12 -22 L6 -6" stroke="#e8fbff" strokeWidth="2" fill="none" opacity="0.8" />
+        <path
+          d="M-26 -6 L-12 -22 L12 -22 L26 -6 L0 26 Z"
+          fill="#000"
+          opacity="0.35"
+          transform="translate(3 5)"
+        />
+        <path
+          d="M-26 -6 L-12 -22 L12 -22 L26 -6 L0 26 Z"
+          fill="#7fe6ff"
+          stroke="#e8fbff"
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M-26 -6 L26 -6 M-12 -22 L0 26 L12 -22 M-12 -22 L-6 -6 M12 -22 L6 -6"
+          stroke="#e8fbff"
+          strokeWidth="2"
+          fill="none"
+          opacity="0.8"
+        />
       </g>
-      <text x="40" y="52" fontSize="28" fontWeight="900" fill={CREAM} fontFamily="Georgia, serif" opacity="0.9">
+      <text
+        x="40"
+        y="52"
+        fontSize="28"
+        fontWeight="900"
+        fill={CREAM}
+        fontFamily="Georgia, serif"
+        opacity="0.9"
+      >
         100
       </text>
-      <text x="40" y="70" fontSize="11" fill={CREAM} opacity="0.6" fontFamily="sans-serif" letterSpacing="2">
+      <text
+        x="40"
+        y="70"
+        fontSize="11"
+        fill={CREAM}
+        opacity="0.6"
+        fontFamily="sans-serif"
+        letterSpacing="2"
+      >
         TO WIN
       </text>
     </Frame>
@@ -137,20 +225,48 @@ function HighSociety() {
   return (
     <Frame accent="#d9b44a">
       <PlayingCard x={96} y={116} rotate={-14} fill="#2f6b4f" stroke="#d9b44a">
-        <text y="12" textAnchor="middle" fontSize="36" fontWeight="800" fill="#f3e6b0" fontFamily="Georgia, serif">
+        <text
+          y="12"
+          textAnchor="middle"
+          fontSize="36"
+          fontWeight="800"
+          fill="#f3e6b0"
+          fontFamily="Georgia, serif"
+        >
           25
         </text>
       </PlayingCard>
       <PlayingCard x={160} y={104} rotate={0} fill="#d9b44a" stroke="#6b4226">
-        <text y="14" textAnchor="middle" fontSize="40" fontWeight="800" fill="#6b4226" fontFamily="Georgia, serif">
+        <text
+          y="14"
+          textAnchor="middle"
+          fontSize="40"
+          fontWeight="800"
+          fill="#6b4226"
+          fontFamily="Georgia, serif"
+        >
           10
         </text>
-        <text y="-34" textAnchor="middle" fontSize="10" fill="#6b4226" fontFamily="sans-serif" letterSpacing="2">
+        <text
+          y="-34"
+          textAnchor="middle"
+          fontSize="10"
+          fill="#6b4226"
+          fontFamily="sans-serif"
+          letterSpacing="2"
+        >
           LUXURY
         </text>
       </PlayingCard>
       <PlayingCard x={226} y={116} rotate={14} fill="#3b5752" stroke="#b4a166">
-        <text y="12" textAnchor="middle" fontSize="34" fontWeight="800" fill="#b4a166" fontFamily="Georgia, serif">
+        <text
+          y="12"
+          textAnchor="middle"
+          fontSize="34"
+          fontWeight="800"
+          fill="#b4a166"
+          fontFamily="Georgia, serif"
+        >
           2x
         </text>
       </PlayingCard>
@@ -163,17 +279,38 @@ function NoThanks() {
   return (
     <Frame accent="#e74c3c">
       <PlayingCard x={88} y={112} rotate={-12} fill={hue(3)} stroke="#fff">
-        <text y="14" textAnchor="middle" fontSize="40" fontWeight="800" fill="#000" fontFamily="Georgia, serif">
+        <text
+          y="14"
+          textAnchor="middle"
+          fontSize="40"
+          fontWeight="800"
+          fill="#000"
+          fontFamily="Georgia, serif"
+        >
           3
         </text>
       </PlayingCard>
       <PlayingCard x={160} y={100} rotate={0} fill={hue(22)} stroke="#fff">
-        <text y="14" textAnchor="middle" fontSize="40" fontWeight="800" fill="#000" fontFamily="Georgia, serif">
+        <text
+          y="14"
+          textAnchor="middle"
+          fontSize="40"
+          fontWeight="800"
+          fill="#000"
+          fontFamily="Georgia, serif"
+        >
           22
         </text>
       </PlayingCard>
       <PlayingCard x={232} y={112} rotate={12} fill={hue(35)} stroke="#fff">
-        <text y="14" textAnchor="middle" fontSize="40" fontWeight="800" fill="#000" fontFamily="Georgia, serif">
+        <text
+          y="14"
+          textAnchor="middle"
+          fontSize="40"
+          fontWeight="800"
+          fill="#000"
+          fontFamily="Georgia, serif"
+        >
           35
         </text>
       </PlayingCard>
@@ -181,7 +318,14 @@ function NoThanks() {
       {[0, 1, 2, 3].map((i) => (
         <g key={i} transform={`translate(40 ${168 - i * 7})`}>
           <ellipse rx="22" ry="8" fill="#b71c1c" />
-          <ellipse rx="22" ry="8" fill="none" stroke="#fff" strokeWidth="2" strokeDasharray="6 6" />
+          <ellipse
+            rx="22"
+            ry="8"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2"
+            strokeDasharray="6 6"
+          />
         </g>
       ))}
     </Frame>
@@ -194,35 +338,99 @@ function Razzia() {
       {/* Jewel card */}
       <PlayingCard x={92} y={112} rotate={-12} fill="#1c1f24" stroke="#c0392b">
         <circle r="22" cy="-6" fill="none" stroke={CREAM} strokeWidth="9" />
-        <circle r="7" cx="-16" cy="-20" fill="#c0392b" stroke={INK} strokeWidth="2" />
-        <circle r="7" cx="16" cy="-20" fill="#c0392b" stroke={INK} strokeWidth="2" />
+        <circle
+          r="7"
+          cx="-16"
+          cy="-20"
+          fill="#c0392b"
+          stroke={INK}
+          strokeWidth="2"
+        />
+        <circle
+          r="7"
+          cx="16"
+          cy="-20"
+          fill="#c0392b"
+          stroke={INK}
+          strokeWidth="2"
+        />
         <rect x="-40" y="30" width="80" height="28" rx="6" fill="#c0392b" />
-        <text y="50" textAnchor="middle" fontSize="13" fontWeight="700" fill={CREAM} fontFamily="Georgia, serif">
+        <text
+          y="50"
+          textAnchor="middle"
+          fontSize="13"
+          fontWeight="700"
+          fill={CREAM}
+          fontFamily="Georgia, serif"
+        >
           Bracelet
         </text>
       </PlayingCard>
       {/* Police raid card */}
       <PlayingCard x={160} y={100} rotate={0} fill="#1c1f24" stroke="#e67e22">
-        <path d="M0 -40 L24 -30 L22 -2 C20 14 10 24 0 28 C-10 24 -20 14 -22 -2 L-24 -30 Z" fill={CREAM} />
-        <path d="M0 -24 L5 -12 L18 -11 L8 -3 L11 10 L0 3 L-11 10 L-8 -3 L-18 -11 L-5 -12 Z" fill={INK} />
+        <path
+          d="M0 -40 L24 -30 L22 -2 C20 14 10 24 0 28 C-10 24 -20 14 -22 -2 L-24 -30 Z"
+          fill={CREAM}
+        />
+        <path
+          d="M0 -24 L5 -12 L18 -11 L8 -3 L11 10 L0 3 L-11 10 L-8 -3 L-18 -11 L-5 -12 Z"
+          fill={INK}
+        />
         <rect x="-40" y="30" width="80" height="28" rx="6" fill="#e67e22" />
-        <text y="50" textAnchor="middle" fontSize="12" fontWeight="700" fill={CREAM} fontFamily="Georgia, serif">
+        <text
+          y="50"
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="700"
+          fill={CREAM}
+          fontFamily="Georgia, serif"
+        >
           Police raid
         </text>
       </PlayingCard>
       {/* Money bundle */}
       <g transform="translate(240 118) rotate(10)">
-        <rect x="-44" y="-16" width="88" height="44" rx="6" fill="#1b5634" transform="translate(6 10)" />
-        <rect x="-44" y="-16" width="88" height="44" rx="6" fill="#2e8b57" stroke="#0f2e1c" strokeWidth="2" />
-        <rect x="-44" y="-4" width="88" height="20" fill={CREAM} opacity="0.95" />
-        <text y="11" textAnchor="middle" fontSize="15" fontWeight="800" fill={INK} fontFamily="Georgia, serif">
+        <rect
+          x="-44"
+          y="-16"
+          width="88"
+          height="44"
+          rx="6"
+          fill="#1b5634"
+          transform="translate(6 10)"
+        />
+        <rect
+          x="-44"
+          y="-16"
+          width="88"
+          height="44"
+          rx="6"
+          fill="#2e8b57"
+          stroke="#0f2e1c"
+          strokeWidth="2"
+        />
+        <rect
+          x="-44"
+          y="-4"
+          width="88"
+          height="20"
+          fill={CREAM}
+          opacity="0.95"
+        />
+        <text
+          y="11"
+          textAnchor="middle"
+          fontSize="15"
+          fontWeight="800"
+          fill={INK}
+          fontFamily="Georgia, serif"
+        >
           16,000
         </text>
       </g>
     </Frame>
   );
 }
-
 
 function Zertz() {
   // A shrinking hex of rings with three marbles mid-jump.
@@ -259,15 +467,140 @@ function Zertz() {
       </defs>
       {rings.map(([x, y], i) =>
         i === 2 || i === 18 ? null : (
-          <circle key={i} cx={x} cy={y} r="13" fill="none" stroke="#8d6e63" strokeWidth="5" />
-        )
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r="13"
+            fill="none"
+            stroke="#8d6e63"
+            strokeWidth="5"
+          />
+        ),
       )}
       {marble(160, 103, "w", "#fff")}
       {marble(126, 103, "b", "#777")}
       {marble(194, 103, "g", "#ddd")}
       {marble(143, 73, "b", "#777")}
-      <path d="M126 92 Q143 60 160 92" fill="none" stroke="#ffd86b" strokeWidth="3" strokeDasharray="5 4" />
-      <path d="M160 92 L156 86 M160 92 L166 88" stroke="#ffd86b" strokeWidth="3" />
+      <path
+        d="M126 92 Q143 60 160 92"
+        fill="none"
+        stroke="#ffd86b"
+        strokeWidth="3"
+        strokeDasharray="5 4"
+      />
+      <path
+        d="M160 92 L156 86 M160 92 L166 88"
+        stroke="#ffd86b"
+        strokeWidth="3"
+      />
+    </Frame>
+  );
+}
+
+function Yinsh() {
+  // A patch of the lined board: rings, a row of five markers, one ring mid-move.
+  const S = 36;
+  const H = S * 0.866;
+  const pt = (x: number, y: number): [number, number] => [
+    160 + S * (x + y / 2) - S * 2.5,
+    44 + H * y,
+  ];
+  const lines: [number, number, number, number][] = [];
+  for (let y = 0; y <= 3; y++) {
+    const [ax, ay] = pt(0, y);
+    const [bx, by] = pt(5, y);
+    lines.push([ax, ay, bx, by]);
+  }
+  for (let x = 0; x <= 5; x++) {
+    const [ax, ay] = pt(x, 0);
+    const [bx, by] = pt(x - 1, 3);
+    lines.push([ax, ay, bx, by]);
+    const [cx, cy] = pt(x, 0);
+    const [dx, dy] = pt(x + 1, 3);
+    lines.push([cx, cy, dx, dy]);
+  }
+  const marker = (x: number, y: number, white: boolean) => {
+    const [px, py] = pt(x, y);
+    return (
+      <g key={`m${x}-${y}`}>
+        <circle cx={px + 1} cy={py + 2} r="9" fill="#000" opacity="0.4" />
+        <circle
+          cx={px}
+          cy={py}
+          r="9"
+          fill={white ? "#f1f1f1" : "#1a1a1a"}
+          stroke={white ? "#999" : "#000"}
+        />
+      </g>
+    );
+  };
+  const ring = (x: number, y: number, white: boolean, glow = false) => {
+    const [px, py] = pt(x, y);
+    return (
+      <g key={`r${x}-${y}`}>
+        <circle
+          cx={px + 1}
+          cy={py + 3}
+          r="14"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          opacity="0.4"
+        />
+        <circle
+          cx={px}
+          cy={py}
+          r="14"
+          fill="none"
+          stroke={glow ? "#ffd86b" : white ? "#f1f1f1" : "#1a1a1a"}
+          strokeWidth="6"
+        />
+        <circle
+          cx={px}
+          cy={py}
+          r="14"
+          fill="none"
+          stroke="#777"
+          strokeWidth="1"
+          opacity="0.6"
+        />
+      </g>
+    );
+  };
+  return (
+    <Frame accent="#4f8fdc">
+      {lines.map(([x1, y1, x2, y2], i) => (
+        <line
+          key={i}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
+          stroke="#5b5f6a"
+          strokeWidth="1.5"
+        />
+      ))}
+      {[0, 1, 2, 3, 4].map((x) => marker(x, 2, true))}
+      {marker(2, 1, false)}
+      {marker(4, 0, false)}
+      {marker(1, 3, false)}
+      {ring(5, 1, false)}
+      {ring(0, 1, false)}
+      {ring(3, 0, true)}
+      {ring(5, 2, true, true)}
+      <path
+        d={`M${pt(5, 2)[0] - 16} ${pt(5, 2)[1]} L${pt(1, 2)[0] + 14} ${pt(1, 2)[1]}`}
+        fill="none"
+        stroke="#ffd86b"
+        strokeWidth="3"
+        strokeDasharray="5 4"
+      />
+      <path
+        d={`M${pt(5, 2)[0] - 16} ${pt(5, 2)[1]} l-8 -5 M${pt(5, 2)[0] - 16} ${pt(5, 2)[1]} l-8 5`}
+        stroke="#ffd86b"
+        strokeWidth="3"
+      />
     </Frame>
   );
 }
@@ -286,5 +619,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Razzia />;
     case "zertz":
       return <Zertz />;
+    case "yinsh":
+      return <Yinsh />;
   }
 }
