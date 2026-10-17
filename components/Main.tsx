@@ -4,8 +4,6 @@ import classes from "./Main.module.css";
 
 // The other games live in their own apps. In development they can be pointed
 // at local checkouts via .env.development; production uses the deployed URLs.
-const FAMILY_INC_URL =
-  process.env.NEXT_PUBLIC_FAMILYINC_URL ?? "https://familyinc-client.vercel.app/";
 const HIGH_SOCIETY_URL =
   process.env.NEXT_PUBLIC_HIGH_SOCIETY_URL ?? "https://high-society-c4ff4.web.app";
 
@@ -17,7 +15,7 @@ const games = [
       "A 2 player abstract strategy game. Part of the GIPF series designed by Kris Burm.",
   },
   {
-    href: FAMILY_INC_URL,
+    href: `${HIGH_SOCIETY_URL}/family-inc`,
     title: "Family Inc.",
     description:
       "A push your luck game for 2-7 players designed by Reiner Knizia.",
