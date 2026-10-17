@@ -10,7 +10,8 @@ export type GameKey =
   | "no-thanks"
   | "razzia"
   | "zertz"
-  | "yinsh";
+  | "yinsh"
+  | "dvonn";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -605,6 +606,98 @@ function Yinsh() {
   );
 }
 
+function Dvonn() {
+  // A strip of hex cells with stacks of discs, one red DVONN piece, and a stack mid-jump.
+  const S = 40;
+  const cell = (cx: number, cy: number) =>
+    Array.from({ length: 6 }, (_, i) => {
+      const a = (Math.PI / 180) * (60 * i - 30);
+      return `${(cx + S * 0.55 * Math.cos(a)).toFixed(1)},${(cy + S * 0.55 * Math.sin(a)).toFixed(1)}`;
+    }).join(" ");
+  const rows: [number, number, number][] = [
+    [0, 2, 6],
+    [1, 1, 6],
+    [2, 1, 5],
+  ];
+  const pt = (x: number, y: number): [number, number] => [
+    40 + S * (x + y / 2),
+    52 + S * 0.866 * y,
+  ];
+  const cells: [number, number][] = [];
+  for (const [y, from, to] of rows)
+    for (let x = from; x <= to; x++) cells.push(pt(x, y));
+  const stack = (x: number, y: number, colours: string[], glow = false) => (
+    <g key={`${x}-${y}`}>
+      <circle cx={x + 2} cy={y + 3} r="13" fill="#000" opacity="0.45" />
+      {colours.map((c, i) => (
+        <circle
+          key={i}
+          cx={x}
+          cy={y - i * 3}
+          r="13"
+          fill={c}
+          stroke={
+            glow && i === colours.length - 1
+              ? "#ffd86b"
+              : c === "#f1f1f1"
+                ? "#8a8a8a"
+                : "#000"
+          }
+          strokeWidth={glow && i === colours.length - 1 ? 3 : 1.5}
+        />
+      ))}
+      {colours.length > 1 && (
+        <text
+          x={x}
+          y={y - (colours.length - 1) * 3 + 4}
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="700"
+          fill={colours[colours.length - 1] === "#f1f1f1" ? "#222" : "#fff"}
+        >
+          {colours.length}
+        </text>
+      )}
+    </g>
+  );
+  const W = "#f1f1f1";
+  const B = "#1a1a1a";
+  const R = "#d9342b";
+  return (
+    <Frame accent="#e0583f">
+      {cells.map(([x, y], i) => (
+        <polygon
+          key={i}
+          points={cell(x, y)}
+          fill="rgba(255,255,255,0.05)"
+          stroke="rgba(255,255,255,0.22)"
+          strokeWidth="1.5"
+        />
+      ))}
+      {stack(...pt(3, 0), [W])}
+      {stack(...pt(5, 0), [B, B])}
+      {stack(...pt(2, 1), [R])}
+      {stack(...pt(3, 1), [W, B, W], true)}
+      {stack(...pt(5, 1), [B])}
+      {stack(...pt(6, 1), [W])}
+      {stack(...pt(2, 2), [B])}
+      {stack(...pt(4, 2), [R, W])}
+      <path
+        d={`M${pt(3, 1)[0] + 14} ${pt(3, 1)[1] - 14} Q${pt(4.5, 1)[0]} ${pt(4, 1)[1] - 50} ${pt(6, 1)[0] - 12} ${pt(6, 1)[1] - 14}`}
+        fill="none"
+        stroke="#ffd86b"
+        strokeWidth="3"
+        strokeDasharray="5 4"
+      />
+      <path
+        d={`M${pt(6, 1)[0] - 12} ${pt(6, 1)[1] - 14} l-9 -3 M${pt(6, 1)[0] - 12} ${pt(6, 1)[1] - 14} l-1 9`}
+        stroke="#ffd86b"
+        strokeWidth="3"
+      />
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -621,5 +714,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Zertz />;
     case "yinsh":
       return <Yinsh />;
+    case "dvonn":
+      return <Dvonn />;
   }
 }

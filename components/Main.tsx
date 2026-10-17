@@ -113,6 +113,19 @@ const games: Game[] = [
     accent: "#4f8fdc",
     href: `${HIGH_SOCIETY_URL}/yinsh`,
   },
+  {
+    key: "dvonn",
+    title: "DVONN",
+    tagline: "Stack up. Cut off. Collapse.",
+    description:
+      "Fill the board, then jump stacks onto each other: a stack moves exactly as far as it is tall. Anything that loses touch with the three red DVONN pieces falls away. Control the most pieces when nobody can move.",
+    players: "2 players",
+    designer: "Kris Burm",
+    length: "30 min",
+    tags: ["Abstract", "Negamax bot", "Online"],
+    accent: "#e0583f",
+    href: `${HIGH_SOCIETY_URL}/dvonn`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -125,7 +138,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Seven board games.
+          Eight board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -149,7 +162,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>7</strong> games
+            <strong>8</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
@@ -207,9 +220,10 @@ export function FeaturesCards() {
           first move after a quiet spell can take a moment to wake it up.
         </p>
         <p className={classes.credits}>
-          TZAAR, ZÈRTZ and YINSH are part of the GIPF project by Kris Burm.
-          Family Inc., High Society and Razzia! are by Reiner Knizia. No Thanks!
-          is by Thorsten Gimmler. This is a fan project for practice and play.
+          TZAAR, ZÈRTZ, YINSH and DVONN are part of the GIPF project by Kris
+          Burm. Family Inc., High Society and Razzia! are by Reiner Knizia. No
+          Thanks! is by Thorsten Gimmler. This is a fan project for practice and
+          play.
         </p>
       </footer>
     </main>
