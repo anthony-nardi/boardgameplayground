@@ -17,7 +17,8 @@ export type GameKey =
   | "for-sale"
   | "shangri-la"
   | "acquire"
-  | "condottiere";
+  | "condottiere"
+  | "ride-the-rails";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1492,6 +1493,88 @@ function Condottiere() {
   );
 }
 
+function RideTheRails() {
+  // A hex map of America with coloured rails fanning out from the east, and a passenger waiting.
+  const hexes: [number, number][] = [];
+  for (let row = 0; row < 7; row++)
+    for (let col = 0; col < 10; col++) {
+      if (row === 0 && col > 7) continue;
+      if (row > 4 && (col < 2 || col > 7)) continue;
+      if (row === 6 && col > 5) continue;
+      hexes.push([32 + col * 28 + (row % 2 ? 14 : 0), 30 + row * 24]);
+    }
+  const hex = (x: number, y: number) =>
+    Array.from({ length: 6 }, (_, i) => {
+      const a = (Math.PI / 180) * (60 * i - 30);
+      return `${(x + Math.cos(a) * 15.5).toFixed(1)},${(y + Math.sin(a) * 15.5).toFixed(1)}`;
+    }).join(" ");
+  const rails: [string, string][] = [
+    ["#d64545", "M284 78 L256 78 L228 102 L200 102 L172 126"],
+    ["#3b7dd8", "M284 126 L256 126 L228 150 L200 150"],
+    ["#ef8f2a", "M172 126 L144 126 L116 102 L88 102"],
+    ["#e9c832", "M172 126 L144 150 L116 150"],
+    ["#8e5bc7", "M46 54 L60 78 L88 78 L116 102"],
+  ];
+  return (
+    <Frame accent="#2e8b57">
+      {hexes.map(([x, y], i) => (
+        <polygon
+          key={i}
+          points={hex(x, y)}
+          fill={
+            i % 11 === 3 || i % 13 === 5
+              ? "rgba(255,255,255,0.14)"
+              : "rgba(255,255,255,0.07)"
+          }
+          stroke="rgba(255,255,255,0.22)"
+          strokeWidth="1"
+        />
+      ))}
+      {rails.map(([c, d]) => (
+        <path
+          key={c}
+          d={d}
+          fill="none"
+          stroke={c}
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+      {[
+        [284, 78],
+        [284, 126],
+        [172, 126],
+        [88, 102],
+        [46, 54],
+      ].map(([x, y], i) => (
+        <circle
+          key={i}
+          cx={x}
+          cy={y}
+          r="7"
+          fill={CREAM}
+          stroke="#222"
+          strokeWidth="1.5"
+        />
+      ))}
+      <circle cx="172" cy="108" r="5" fill="#fff" stroke="#222" />
+      <path d="M163 122 Q172 104 181 122 Z" fill="#fff" stroke="#222" />
+      <text
+        x="160"
+        y="188"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#9ee2b8"
+        letterSpacing="2"
+      >
+        ALL ABOARD
+      </text>
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1522,5 +1605,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Acquire />;
     case "condottiere":
       return <Condottiere />;
+    case "ride-the-rails":
+      return <RideTheRails />;
   }
 }

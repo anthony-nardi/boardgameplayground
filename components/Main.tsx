@@ -204,6 +204,19 @@ const games: Game[] = [
     accent: "#8c2f2f",
     href: `${HIGH_SOCIETY_URL}/condottiere`,
   },
+  {
+    key: "ride-the-rails",
+    title: "Ride the Rails",
+    tagline: "Buy the share. Lay the track. Sell the ticket.",
+    description:
+      "John Bohrer's hour-long train game. Six railroads open across a hex map of America. Each round take a share, lay track, and carry a passenger city to city; every railroad it rides pays its shareholders. Richest after six rounds wins.",
+    players: "3–5 players",
+    designer: "John Bohrer",
+    length: "60 min",
+    tags: ["Trains", "Economic", "Online"],
+    accent: "#2e8b57",
+    href: `${HIGH_SOCIETY_URL}/ride-the-rails`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -216,7 +229,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Fourteen board games.
+          Fifteen board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -240,7 +253,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>14</strong> games
+            <strong>15</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
@@ -301,7 +314,8 @@ export function FeaturesCards() {
           GIPF, TZAAR, ZÈRTZ, YINSH, DVONN and LYNGK are part of the GIPF
           project by Kris Burm. Family Inc., High Society and Razzia! are by
           Reiner Knizia. No Thanks! is by Thorsten Gimmler and For Sale by
-          Stefan Dorra. This is a fan project for practice and play.
+          Stefan Dorra, Ride the Rails by John Bohrer. This is a fan project for
+          practice and play.
         </p>
       </footer>
     </main>
