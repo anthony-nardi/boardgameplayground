@@ -12,7 +12,8 @@ export type GameKey =
   | "zertz"
   | "yinsh"
   | "dvonn"
-  | "gipf";
+  | "gipf"
+  | "lyngk";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -804,6 +805,120 @@ function Gipf() {
   );
 }
 
+function Lyngk() {
+  // Five colours and a joker on a lined board, one stack of five mid-build.
+  const S = 36;
+  const pt = (x: number, y: number): [number, number] => [
+    160 + S * (x - 3 + (y - 2) / 2),
+    100 + S * 0.866 * (y - 2),
+  ];
+  const rows: [number, number, number][] = [
+    [0, 2, 5],
+    [1, 1, 5],
+    [2, 0, 6],
+    [3, 0, 5],
+    [4, 0, 4],
+  ];
+  const spots: [number, number][] = [];
+  for (const [y, from, to] of rows)
+    for (let x = from; x <= to; x++) spots.push([x, y]);
+  const C = {
+    R: "#d9342b",
+    B: "#2f6fd6",
+    G: "#2e9e5b",
+    K: "#1a1a1a",
+    I: "#f3e9d2",
+    J: "#ffffff",
+  };
+  const stack = (x: number, y: number, colours: string[], glow = false) => {
+    const [px, py] = pt(x, y);
+    return (
+      <g key={`${x}-${y}`}>
+        <circle cx={px + 2} cy={py + 3} r="12" fill="#000" opacity="0.45" />
+        {colours.map((c, i) => (
+          <circle
+            key={i}
+            cx={px}
+            cy={py - i * 3}
+            r="12"
+            fill={c}
+            stroke={
+              glow && i === colours.length - 1 ? "#ffd86b" : "rgba(0,0,0,0.6)"
+            }
+            strokeWidth={glow && i === colours.length - 1 ? 3 : 1}
+          />
+        ))}
+        {colours.length > 1 && (
+          <text
+            x={px}
+            y={py - (colours.length - 1) * 3 + 4}
+            textAnchor="middle"
+            fontSize="11"
+            fontWeight="700"
+            fill={
+              colours[colours.length - 1] === C.I ||
+              colours[colours.length - 1] === C.J
+                ? "#222"
+                : "#fff"
+            }
+          >
+            {colours.length}
+          </text>
+        )}
+      </g>
+    );
+  };
+  return (
+    <Frame accent="#2e9e5b">
+      {spots.map(([x, y], i) => {
+        const [px, py] = pt(x, y);
+        return (
+          <circle key={i} cx={px} cy={py} r="3" fill="rgba(255,255,255,0.35)" />
+        );
+      })}
+      {[0, 1, 2, 3, 4].map((y) => {
+        const row = rows[y];
+        const [ax, ay] = pt(row[1], y);
+        const [bx, by] = pt(row[2], y);
+        return (
+          <line
+            key={y}
+            x1={ax}
+            y1={ay}
+            x2={bx}
+            y2={by}
+            stroke="rgba(255,255,255,0.22)"
+            strokeWidth="1.5"
+          />
+        );
+      })}
+      {stack(2, 0, [C.B])}
+      {stack(4, 0, [C.J])}
+      {stack(1, 1, [C.G, C.R])}
+      {stack(5, 1, [C.K])}
+      {stack(0, 2, [C.I])}
+      {stack(3, 2, [C.K, C.I, C.B, C.G], true)}
+      {stack(6, 2, [C.R])}
+      {stack(1, 3, [C.R, C.G], true)}
+      {stack(4, 3, [C.B])}
+      {stack(2, 4, [C.G])}
+      {stack(4, 4, [C.I, C.K])}
+      <path
+        d={`M${pt(1, 3)[0] + 12} ${pt(1, 3)[1] - 10} Q${pt(2, 2.5)[0]} ${pt(2, 2)[1] - 40} ${pt(3, 2)[0] - 10} ${pt(3, 2)[1] - 22}`}
+        fill="none"
+        stroke="#ffd86b"
+        strokeWidth="3"
+        strokeDasharray="5 4"
+      />
+      <path
+        d={`M${pt(3, 2)[0] - 10} ${pt(3, 2)[1] - 22} l-9 -2 M${pt(3, 2)[0] - 10} ${pt(3, 2)[1] - 22} l-3 9`}
+        stroke="#ffd86b"
+        strokeWidth="3"
+      />
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -824,5 +939,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Dvonn />;
     case "gipf":
       return <Gipf />;
+    case "lyngk":
+      return <Lyngk />;
   }
 }
