@@ -165,6 +165,19 @@ const games: Game[] = [
     accent: "#e8a33d",
     href: `${HIGH_SOCIETY_URL}/for-sale`,
   },
+  {
+    key: "shangri-la",
+    title: "The Bridges of Shangri-La",
+    tagline: "Masters, students, crumbling bridges.",
+    description:
+      "Seed the villages with masters, train students, then send every student in a village over a bridge that breaks behind them. Arrive from the stronger village and rivals are sent home. When the last bridge falls, the most masters wins.",
+    players: "3–4 players",
+    designer: "Leo Colovini",
+    length: "45 min",
+    tags: ["Area control", "Maxn bot", "Online"],
+    accent: "#c9a46b",
+    href: `${HIGH_SOCIETY_URL}/shangri-la`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -177,7 +190,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Eleven board games.
+          Twelve board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -201,7 +214,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>11</strong> games
+            <strong>12</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one

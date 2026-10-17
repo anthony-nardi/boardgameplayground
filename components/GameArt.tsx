@@ -14,7 +14,8 @@ export type GameKey =
   | "dvonn"
   | "gipf"
   | "lyngk"
-  | "for-sale";
+  | "for-sale"
+  | "shangri-la";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1141,6 +1142,132 @@ function ForSale() {
   );
 }
 
+function ShangriLa() {
+  // Mountain villages joined by rope bridges, one of them just broken.
+  const villages: [number, number][] = [
+    [160, 36],
+    [96, 76],
+    [224, 76],
+    [60, 130],
+    [136, 118],
+    [196, 124],
+    [260, 132],
+    [110, 170],
+    [210, 172],
+  ];
+  const bridges: [number, number, boolean][] = [
+    [0, 1, true],
+    [0, 2, true],
+    [1, 3, true],
+    [1, 4, true],
+    [2, 5, true],
+    [2, 6, true],
+    [3, 4, false],
+    [4, 5, true],
+    [5, 6, true],
+    [3, 7, true],
+    [4, 7, true],
+    [5, 8, true],
+    [6, 8, true],
+    [7, 8, false],
+  ];
+  const clans = ["#d9342b", "#2f6fd6", "#e8c23a", "#8e5ad6"];
+  return (
+    <Frame accent="#c9a46b">
+      <path
+        d="M0 200 L60 120 L110 170 L160 90 L220 160 L270 110 L320 200 Z"
+        fill="rgba(255,255,255,0.05)"
+      />
+      {bridges.map(([p, q, standing], i) => {
+        const [ax, ay] = villages[p];
+        const [bx, by] = villages[q];
+        return (
+          <line
+            key={i}
+            x1={ax}
+            y1={ay}
+            x2={bx}
+            y2={by}
+            stroke={standing ? "#c9a46b" : "rgba(255,255,255,0.18)"}
+            strokeWidth={standing ? 3 : 1.5}
+            strokeDasharray={standing ? "5 3" : "2 4"}
+            strokeLinecap="round"
+          />
+        );
+      })}
+      {villages.map(([x, y], i) => (
+        <g key={i}>
+          <rect
+            x={x - 17}
+            y={y - 11}
+            width="34"
+            height="22"
+            rx="4"
+            fill="#000"
+            opacity="0.4"
+            transform="translate(1.5 2)"
+          />
+          <rect
+            x={x - 17}
+            y={y - 11}
+            width="34"
+            height="22"
+            rx="4"
+            fill={i === 3 ? "#6f6a60" : "#f1e4c6"}
+            stroke="#3a2a1a"
+            strokeWidth="1.2"
+          />
+          {[0, 1, 2, 3].map((k) => (
+            <circle
+              key={k}
+              cx={x - 12 + k * 8}
+              cy={y - 4}
+              r="3"
+              fill={(i + k) % 3 === 0 ? clans[(i + k) % 4] : "rgba(0,0,0,0.12)"}
+              stroke="#222"
+              strokeWidth="0.6"
+            />
+          ))}
+          {[0, 1, 2].map((k) => (
+            <circle
+              key={k}
+              cx={x - 8 + k * 8}
+              cy={y + 5}
+              r="3"
+              fill={
+                (i + k) % 2 === 0 ? clans[(i + k + 1) % 4] : "rgba(0,0,0,0.12)"
+              }
+              stroke="#222"
+              strokeWidth="0.6"
+            />
+          ))}
+          {i === 3 && (
+            <circle
+              cx={x + 13}
+              cy={y - 8}
+              r="3.5"
+              fill="#9fb8c8"
+              stroke="#2c3e50"
+            />
+          )}
+        </g>
+      ))}
+      <path
+        d="M118 128 Q140 100 162 118"
+        fill="none"
+        stroke="#ffd86b"
+        strokeWidth="3"
+        strokeDasharray="5 4"
+      />
+      <path
+        d="M162 118 l-8 -2 M162 118 l-2 8"
+        stroke="#ffd86b"
+        strokeWidth="3"
+      />
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1165,5 +1292,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Lyngk />;
     case "for-sale":
       return <ForSale />;
+    case "shangri-la":
+      return <ShangriLa />;
   }
 }
