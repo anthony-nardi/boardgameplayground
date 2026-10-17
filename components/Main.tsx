@@ -86,6 +86,19 @@ const games: Game[] = [
     accent: "#e67e22",
     href: `${HIGH_SOCIETY_URL}/razzia`,
   },
+  {
+    key: "zertz",
+    title: "ZÈRTZ",
+    tagline: "The board shrinks. The marbles jump.",
+    description:
+      "Place a marble, remove a ring, and the hexagon closes in. Captures are compulsory and chain together. Collect three of each colour, or four white, five gray or six black.",
+    players: "2 players",
+    designer: "Kris Burm",
+    length: "20 min",
+    tags: ["Abstract", "Negamax bot", "Online"],
+    accent: "#9b59b6",
+    href: `${HIGH_SOCIETY_URL}/zertz`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -98,7 +111,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Five board games.
+          Six board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -122,7 +135,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>5</strong> games
+            <strong>6</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
@@ -180,7 +193,7 @@ export function FeaturesCards() {
           so the first move after a quiet spell can take a moment to wake it up.
         </p>
         <p className={classes.credits}>
-          TZAAR is part of the GIPF project by Kris Burm. Family Inc., High
+          TZAAR and ZÈRTZ are part of the GIPF project by Kris Burm. Family Inc., High
           Society and Razzia! are by Reiner Knizia. No Thanks! is by Thorsten
           Gimmler. This is a fan project for practice and play.
         </p>

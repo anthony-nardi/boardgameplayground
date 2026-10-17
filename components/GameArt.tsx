@@ -8,7 +8,8 @@ export type GameKey =
   | "family-inc"
   | "high-society"
   | "no-thanks"
-  | "razzia";
+  | "razzia"
+  | "zertz";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -222,6 +223,55 @@ function Razzia() {
   );
 }
 
+
+function Zertz() {
+  // A shrinking hex of rings with three marbles mid-jump.
+  const S = 34;
+  const rings: [number, number][] = [];
+  const rows = [3, 4, 5, 4, 3];
+  rows.forEach((n, row) => {
+    for (let i = 0; i < n; i++) {
+      rings.push([160 + (i - (n - 1) / 2) * S, 44 + row * S * 0.866]);
+    }
+  });
+  const marble = (x: number, y: number, a: string, b: string) => (
+    <g key={`${x}-${y}`}>
+      <circle cx={x + 2} cy={y + 3} r="11" fill="#000" opacity="0.45" />
+      <circle cx={x} cy={y} r="11" fill={`url(#zertz-${a})`} stroke="#111" />
+      <circle cx={x - 4} cy={y - 4} r="3" fill={b} opacity="0.8" />
+    </g>
+  );
+  return (
+    <Frame accent="#9b59b6">
+      <defs>
+        <radialGradient id="zertz-w" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#b9b9b9" />
+        </radialGradient>
+        <radialGradient id="zertz-g" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#b0b0b0" />
+          <stop offset="100%" stopColor="#4f4f4f" />
+        </radialGradient>
+        <radialGradient id="zertz-b" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#5a5a5a" />
+          <stop offset="100%" stopColor="#050505" />
+        </radialGradient>
+      </defs>
+      {rings.map(([x, y], i) =>
+        i === 2 || i === 18 ? null : (
+          <circle key={i} cx={x} cy={y} r="13" fill="none" stroke="#8d6e63" strokeWidth="5" />
+        )
+      )}
+      {marble(160, 103, "w", "#fff")}
+      {marble(126, 103, "b", "#777")}
+      {marble(194, 103, "g", "#ddd")}
+      {marble(143, 73, "b", "#777")}
+      <path d="M126 92 Q143 60 160 92" fill="none" stroke="#ffd86b" strokeWidth="3" strokeDasharray="5 4" />
+      <path d="M160 92 L156 86 M160 92 L166 88" stroke="#ffd86b" strokeWidth="3" />
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -234,5 +284,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <NoThanks />;
     case "razzia":
       return <Razzia />;
+    case "zertz":
+      return <Zertz />;
   }
 }
