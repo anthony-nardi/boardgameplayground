@@ -126,6 +126,19 @@ const games: Game[] = [
     accent: "#e0583f",
     href: `${HIGH_SOCIETY_URL}/dvonn`,
   },
+  {
+    key: "gipf",
+    title: "GIPF",
+    tagline: "Push in. Line up four. Take them back.",
+    description:
+      "The game that started the project, in its basic form. Push pieces onto the board from the edge, shoving whatever is in the way. Four in a row come back to you, and anything touching them of the other colour is captured. Run your opponent out of pieces.",
+    players: "2 players",
+    designer: "Kris Burm",
+    length: "30 min",
+    tags: ["Abstract", "Negamax bot", "Online"],
+    accent: "#f2c14e",
+    href: `${HIGH_SOCIETY_URL}/gipf`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -138,7 +151,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Eight board games.
+          Nine board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -162,7 +175,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>8</strong> games
+            <strong>9</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
@@ -220,10 +233,10 @@ export function FeaturesCards() {
           first move after a quiet spell can take a moment to wake it up.
         </p>
         <p className={classes.credits}>
-          TZAAR, ZÈRTZ, YINSH and DVONN are part of the GIPF project by Kris
-          Burm. Family Inc., High Society and Razzia! are by Reiner Knizia. No
-          Thanks! is by Thorsten Gimmler. This is a fan project for practice and
-          play.
+          GIPF, TZAAR, ZÈRTZ, YINSH and DVONN are part of the GIPF project by
+          Kris Burm. Family Inc., High Society and Razzia! are by Reiner Knizia.
+          No Thanks! is by Thorsten Gimmler. This is a fan project for practice
+          and play.
         </p>
       </footer>
     </main>

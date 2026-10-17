@@ -11,7 +11,8 @@ export type GameKey =
   | "razzia"
   | "zertz"
   | "yinsh"
-  | "dvonn";
+  | "dvonn"
+  | "gipf";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -698,6 +699,111 @@ function Dvonn() {
   );
 }
 
+function Gipf() {
+  // A hexagon of lines with dots around it, pieces on the lines and one being pushed in.
+  const S = 26;
+  const pt = (x: number, y: number): [number, number] => [
+    160 + S * (x - 4 + (y - 4) / 2),
+    100 + S * 0.866 * (y - 4),
+  ];
+  const ring = (x: number, y: number) =>
+    Math.max(Math.abs(x - 4), Math.abs(y - 4), Math.abs(x + y - 8));
+  const spots: [number, number][] = [];
+  const dots: [number, number][] = [];
+  for (let y = 0; y <= 8; y++) {
+    for (let x = 0; x <= 8; x++) {
+      const r = ring(x, y);
+      if (r <= 3) spots.push([x, y]);
+      else if (r === 4) dots.push([x, y]);
+    }
+  }
+  const axes: [number, number][] = [
+    [1, 0],
+    [0, 1],
+    [1, -1],
+  ];
+  const lines: [number, number, number, number][] = [];
+  for (const [dx, dy] of axes) {
+    for (const [x, y] of spots) {
+      if (ring(x - dx, y - dy) <= 3) continue;
+      let ex = x;
+      let ey = y;
+      while (ring(ex + dx, ey + dy) <= 3) {
+        ex += dx;
+        ey += dy;
+      }
+      const [ax, ay] = pt(x - dx, y - dy);
+      const [bx, by] = pt(ex + dx, ey + dy);
+      lines.push([ax, ay, bx, by]);
+    }
+  }
+  const piece = (x: number, y: number, white: boolean, glow = false) => {
+    const [px, py] = pt(x, y);
+    return (
+      <g key={`${x}-${y}`}>
+        <circle cx={px + 1.5} cy={py + 2} r="9" fill="#000" opacity="0.45" />
+        <circle
+          cx={px}
+          cy={py}
+          r="9"
+          fill={white ? "#f1f1f1" : "#1a1a1a"}
+          stroke={glow ? "#ffd86b" : white ? "#8a8a8a" : "#000"}
+          strokeWidth={glow ? 2.5 : 1}
+        />
+      </g>
+    );
+  };
+  return (
+    <Frame accent="#f2c14e">
+      {lines.map(([x1, y1, x2, y2], i) => (
+        <line
+          key={i}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
+          stroke="rgba(255,255,255,0.28)"
+          strokeWidth="1.5"
+        />
+      ))}
+      {dots.map(([x, y]) => {
+        const [px, py] = pt(x, y);
+        return (
+          <circle
+            key={`d${x}-${y}`}
+            cx={px}
+            cy={py}
+            r="3"
+            fill="#f6edd0"
+            opacity="0.8"
+          />
+        );
+      })}
+      {piece(7, 1, true)}
+      {piece(7, 4, false)}
+      {piece(4, 7, true)}
+      {piece(1, 7, false)}
+      {piece(1, 4, true)}
+      {piece(4, 1, false)}
+      {piece(2, 4, true)}
+      {piece(3, 4, true)}
+      {piece(4, 4, true, true)}
+      {piece(5, 4, false)}
+      {piece(0, 4, true, true)}
+      <path
+        d={`M${pt(0, 4)[0] + 11} ${pt(0, 4)[1]} L${pt(1, 4)[0] - 12} ${pt(1, 4)[1]}`}
+        stroke="#ffd86b"
+        strokeWidth="3"
+      />
+      <path
+        d={`M${pt(1, 4)[0] - 12} ${pt(1, 4)[1]} l-7 -4 M${pt(1, 4)[0] - 12} ${pt(1, 4)[1]} l-7 4`}
+        stroke="#ffd86b"
+        strokeWidth="3"
+      />
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -716,5 +822,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Yinsh />;
     case "dvonn":
       return <Dvonn />;
+    case "gipf":
+      return <Gipf />;
   }
 }
