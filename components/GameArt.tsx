@@ -13,7 +13,8 @@ export type GameKey =
   | "yinsh"
   | "dvonn"
   | "gipf"
-  | "lyngk";
+  | "lyngk"
+  | "for-sale";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -919,6 +920,227 @@ function Lyngk() {
   );
 }
 
+function ForSale() {
+  // A row of property cards rising from a cardboard box to a tower, and a cheque fanned beside them.
+  const card = (
+    x: number,
+    y: number,
+    n: number,
+    sky: string,
+    children: React.ReactNode,
+  ) => (
+    <g key={n} transform={`translate(${x} ${y})`}>
+      <rect
+        x="2"
+        y="3"
+        width="62"
+        height="86"
+        rx="6"
+        fill="#000"
+        opacity="0.4"
+      />
+      <rect
+        width="62"
+        height="86"
+        rx="6"
+        fill="#f6f1e6"
+        stroke="#3a3a3a"
+        strokeWidth="1.5"
+      />
+      <rect x="4" y="4" width="54" height="62" rx="4" fill={sky} />
+      <rect x="4" y="54" width="54" height="12" fill="#4f8f4a" />
+      {children}
+      <rect x="4" y="4" width="18" height="13" rx="3" fill="rgba(0,0,0,0.55)" />
+      <text
+        x="13"
+        y="14"
+        textAnchor="middle"
+        fontSize="9"
+        fontWeight="800"
+        fill="#fff"
+      >
+        {n}
+      </text>
+      <text
+        x="31"
+        y="79"
+        textAnchor="middle"
+        fontSize="7"
+        fontWeight="700"
+        fill="#3a3a3a"
+      >
+        No. {n}
+      </text>
+    </g>
+  );
+  return (
+    <Frame accent="#e8a33d">
+      {card(
+        22,
+        60,
+        3,
+        "#e5c89a",
+        <rect
+          x="18"
+          y="40"
+          width="26"
+          height="16"
+          fill="#c89b62"
+          stroke="#7a5a2e"
+        />,
+      )}
+      {card(
+        70,
+        48,
+        12,
+        "#d7ecff",
+        <g>
+          <rect
+            x="16"
+            y="36"
+            width="30"
+            height="20"
+            fill="#f1e2c6"
+            stroke="#6b4e2e"
+          />
+          <path d="M13 37 L31 22 L49 37 Z" fill="#b8482f" stroke="#6b4e2e" />
+          <rect x="28" y="44" width="7" height="12" fill="#6b4e2e" />
+        </g>,
+      )}
+      {card(
+        118,
+        36,
+        21,
+        "#9fb0e3",
+        <g>
+          <rect
+            x="10"
+            y="32"
+            width="42"
+            height="24"
+            fill="#f4efe4"
+            stroke="#3f3a52"
+          />
+          <path d="M8 33 L31 18 L54 33 Z" fill="#8c3b3b" stroke="#3f3a52" />
+          {[14, 22, 38, 46].map((x) => (
+            <rect
+              key={x}
+              x={x}
+              y="36"
+              width="4"
+              height="20"
+              fill="#e0d6c2"
+              stroke="#3f3a52"
+              strokeWidth="0.8"
+            />
+          ))}
+        </g>,
+      )}
+      {card(
+        166,
+        24,
+        30,
+        "#1b1f3b",
+        <g>
+          <rect
+            x="22"
+            y="14"
+            width="18"
+            height="42"
+            fill="#5d6b8f"
+            stroke="#1b1f3b"
+          />
+          <rect
+            x="14"
+            y="34"
+            width="8"
+            height="22"
+            fill="#46527a"
+            stroke="#1b1f3b"
+          />
+          <rect
+            x="40"
+            y="28"
+            width="8"
+            height="28"
+            fill="#46527a"
+            stroke="#1b1f3b"
+          />
+          {Array.from({ length: 5 }, (_, r) => (
+            <rect
+              key={r}
+              x="26"
+              y={18 + r * 7}
+              width="10"
+              height="3"
+              fill={r % 2 ? "#ffe9a3" : "#9fb6ff"}
+            />
+          ))}
+          <circle cx="12" cy="12" r="1.2" fill="#fff" />
+          <circle cx="50" cy="10" r="1" fill="#fff" />
+        </g>,
+      )}
+      <g transform="translate(228 70) rotate(8)">
+        <rect
+          x="2"
+          y="3"
+          width="62"
+          height="86"
+          rx="6"
+          fill="#000"
+          opacity="0.4"
+        />
+        <rect
+          width="62"
+          height="86"
+          rx="6"
+          fill="#dfeedd"
+          stroke="#3a3a3a"
+          strokeWidth="1.5"
+        />
+        <rect
+          x="5"
+          y="5"
+          width="52"
+          height="76"
+          rx="4"
+          fill="none"
+          stroke="#4f8a5a"
+          strokeWidth="1"
+          strokeDasharray="3 2"
+        />
+        <text
+          x="31"
+          y="46"
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="800"
+          fill="#2f5e3a"
+        >
+          $15,000
+        </text>
+        <path
+          d="M12 68 q6 -8 12 0 t12 0"
+          fill="none"
+          stroke="#2f5e3a"
+          strokeWidth="1.2"
+        />
+      </g>
+      <text
+        x="160"
+        y="178"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#ffd86b"
+        letterSpacing="2"
+      >
+        GOING ONCE
+      </text>
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -941,5 +1163,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Gipf />;
     case "lyngk":
       return <Lyngk />;
+    case "for-sale":
+      return <ForSale />;
   }
 }

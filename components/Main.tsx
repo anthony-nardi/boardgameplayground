@@ -152,6 +152,19 @@ const games: Game[] = [
     accent: "#2e9e5b",
     href: `${HIGH_SOCIETY_URL}/lyngk`,
   },
+  {
+    key: "for-sale",
+    title: "For Sale",
+    tagline: "Buy low. Sell high.",
+    description:
+      "Two quick halves. First bid for properties, from a cardboard box to a tower, paying half your bid to drop out. Then sell them for cheques: the best property on the table takes the biggest cheque. Richest player wins.",
+    players: "3–6 players",
+    designer: "Stefan Dorra",
+    length: "20 min",
+    tags: ["Auction", "Maxn bot", "Online"],
+    accent: "#e8a33d",
+    href: `${HIGH_SOCIETY_URL}/for-sale`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -164,7 +177,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Ten board games.
+          Eleven board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -188,7 +201,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>10</strong> games
+            <strong>11</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
@@ -248,8 +261,8 @@ export function FeaturesCards() {
         <p className={classes.credits}>
           GIPF, TZAAR, ZÈRTZ, YINSH, DVONN and LYNGK are part of the GIPF
           project by Kris Burm. Family Inc., High Society and Razzia! are by
-          Reiner Knizia. No Thanks! is by Thorsten Gimmler. This is a fan
-          project for practice and play.
+          Reiner Knizia. No Thanks! is by Thorsten Gimmler and For Sale by
+          Stefan Dorra. This is a fan project for practice and play.
         </p>
       </footer>
     </main>
