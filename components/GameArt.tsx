@@ -15,7 +15,8 @@ export type GameKey =
   | "gipf"
   | "lyngk"
   | "for-sale"
-  | "shangri-la";
+  | "shangri-la"
+  | "acquire";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1268,6 +1269,129 @@ function ShangriLa() {
   );
 }
 
+function Acquire() {
+  // A corner of the grid with two chains about to merge, and a share certificate.
+  const S = 22;
+  const ox = 34;
+  const oy = 40;
+  const cols = 9;
+  const rows = 6;
+  const chainA = new Set(["1,1", "2,1", "3,1", "3,2", "3,3", "2,3"]);
+  const chainB = new Set(["5,2", "6,2", "6,3", "7,3", "7,4", "6,4", "5,4"]);
+  const lone = new Set(["8,0", "0,5"]);
+  return (
+    <Frame accent="#1fb6c9">
+      {Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => {
+          const key = `${c},${r}`;
+          const fill = chainA.has(key)
+            ? "#d9342b"
+            : chainB.has(key)
+              ? "#2f6fd6"
+              : lone.has(key)
+                ? "#9aa0ad"
+                : "rgba(255,255,255,0.06)";
+          return (
+            <rect
+              key={key}
+              x={ox + c * (S + 3)}
+              y={oy + r * (S + 3)}
+              width={S}
+              height={S}
+              rx="4"
+              fill={fill}
+              stroke="rgba(0,0,0,0.45)"
+            />
+          );
+        }),
+      )}
+      <rect
+        x={ox + 4 * (S + 3)}
+        y={oy + 2 * (S + 3)}
+        width={S}
+        height={S}
+        rx="4"
+        fill="none"
+        stroke="#ffd86b"
+        strokeWidth="3"
+        strokeDasharray="4 3"
+      />
+      <text
+        x={ox + 4 * (S + 3) + S / 2}
+        y={oy + 2 * (S + 3) + S / 2 + 4}
+        textAnchor="middle"
+        fontSize="10"
+        fontWeight="800"
+        fill="#ffd86b"
+      >
+        5C
+      </text>
+      <g transform="translate(236 118) rotate(-8)">
+        <rect
+          x="2"
+          y="3"
+          width="70"
+          height="46"
+          rx="4"
+          fill="#000"
+          opacity="0.4"
+        />
+        <rect
+          width="70"
+          height="46"
+          rx="4"
+          fill="#f6edd0"
+          stroke="#3a2a1a"
+          strokeWidth="1.2"
+        />
+        <rect
+          x="4"
+          y="4"
+          width="62"
+          height="38"
+          rx="2"
+          fill="none"
+          stroke="#2f6fd6"
+          strokeWidth="1"
+          strokeDasharray="2 2"
+        />
+        <text
+          x="35"
+          y="20"
+          textAnchor="middle"
+          fontSize="8"
+          fontWeight="800"
+          fill="#2f6fd6"
+          letterSpacing="1"
+        >
+          AMERICAN
+        </text>
+        <text
+          x="35"
+          y="34"
+          textAnchor="middle"
+          fontSize="9"
+          fontWeight="700"
+          fill="#3a2a1a"
+        >
+          ONE SHARE
+        </text>
+      </g>
+      <text
+        x="160"
+        y="186"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#ffd86b"
+        letterSpacing="2"
+      >
+        MERGER
+      </text>
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1294,5 +1418,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <ForSale />;
     case "shangri-la":
       return <ShangriLa />;
+    case "acquire":
+      return <Acquire />;
   }
 }

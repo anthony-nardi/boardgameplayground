@@ -178,6 +178,19 @@ const games: Game[] = [
     accent: "#c9a46b",
     href: `${HIGH_SOCIETY_URL}/shangri-la`,
   },
+  {
+    key: "acquire",
+    title: "Acquire",
+    tagline: "Build chains. Buy shares. Cash in the merger.",
+    description:
+      "Sid Sackson's classic. Tiles grow hotel chains across the board, you buy their stock, and when a big chain swallows a small one the majority and minority holders collect. Call the end when a chain is huge, and the richest wins.",
+    players: "2–6 players",
+    designer: "Sid Sackson",
+    length: "60 min",
+    tags: ["Economic", "Planner bot", "Online"],
+    accent: "#1fb6c9",
+    href: `${HIGH_SOCIETY_URL}/acquire`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -190,7 +203,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Twelve board games.
+          Thirteen board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -214,7 +227,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>12</strong> games
+            <strong>13</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
