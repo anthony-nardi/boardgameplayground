@@ -17,7 +17,7 @@ export default function App(props: AppProps) {
         />
         <meta
           name="description"
-          content="Play TZAAR and Family Inc against the computer."
+          content="Five board games in the browser: TZAAR, Family Inc., High Society, No Thanks! and Razzia!, against clever bots or friends."
           key="desc"
         />
       </Head>

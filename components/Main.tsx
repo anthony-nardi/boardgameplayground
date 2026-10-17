@@ -1,75 +1,190 @@
-import { Card, Container, SimpleGrid, Text, Title } from "@mantine/core";
 import Link from "next/link";
+import GameArt, { GameKey } from "./GameArt";
 import classes from "./Main.module.css";
 
-// The other games live in their own apps. In development they can be pointed
-// at local checkouts via .env.development; production uses the deployed URLs.
+// The card games live in their own app. In development it can be pointed
+// at a local checkout via .env.development; production uses the deployed URL.
 const HIGH_SOCIETY_URL =
   process.env.NEXT_PUBLIC_HIGH_SOCIETY_URL ?? "https://high-society-c4ff4.web.app";
 
-const games = [
+type Game = {
+  key: GameKey;
+  title: string;
+  tagline: string;
+  description: string;
+  players: string;
+  designer: string;
+  length: string;
+  tags: string[];
+  accent: string;
+  href: string;
+};
+
+const games: Game[] = [
   {
-    href: "/tzaar",
+    key: "tzaar",
     title: "TZAAR",
+    tagline: "Capture, stack, outthink.",
     description:
-      "A 2 player abstract strategy game. Part of the GIPF series designed by Kris Burm.",
+      "An abstract duel on a hexagonal board. Every turn you must capture, then choose to capture again or strengthen a stack. Lose all of one piece type and you lose the game.",
+    players: "2 players",
+    designer: "Kris Burm",
+    length: "20 min",
+    tags: ["Abstract", "Minimax bot", "Local"],
+    accent: "#4f8fdc",
+    href: "/tzaar",
   },
   {
-    href: `${HIGH_SOCIETY_URL}/family-inc`,
+    key: "family-inc",
     title: "Family Inc.",
+    tagline: "Push your luck, rob the family.",
     description:
-      "A push your luck game for 2-7 players designed by Reiner Knizia.",
+      "Draw chips from the pile for as long as your nerve holds. Stop to keep them and steal matching chips from your rivals; bust and they're gone. First to 100 wins.",
+    players: "2–7 players",
+    designer: "Reiner Knizia",
+    length: "20 min",
+    tags: ["Push your luck", "Expectimax bots", "Online"],
+    accent: "#2ecc71",
+    href: `${HIGH_SOCIETY_URL}/family-inc`,
   },
   {
-    href: `${HIGH_SOCIETY_URL}/high-society`,
+    key: "high-society",
     title: "High Society",
-    description: "A bidding game for 3-5 players designed by Reiner Knizia.",
+    tagline: "Spend big. Just not the most.",
+    description:
+      "Bid your money cards on luxuries and dodge the misfortunes. The highest score wins, but whoever has the least money left at the end is out, no matter what they own.",
+    players: "3–5 players",
+    designer: "Reiner Knizia",
+    length: "25 min",
+    tags: ["Bidding", "Maxn bots", "Online"],
+    accent: "#d9b44a",
+    href: `${HIGH_SOCIETY_URL}/high-society`,
   },
   {
-    href: `${HIGH_SOCIETY_URL}/no-thanks`,
+    key: "no-thanks",
     title: "No Thanks!",
+    tagline: "Every card is a point. Points are bad.",
     description:
-      "No Thanks! is a card game designed to be as simple as it is engaging. For 3-7 players. Designed by Thorsten Gimmler.",
+      "Take the card and the chips on it, or pay a chip to pass it on. Runs of consecutive cards only count their lowest card, and every chip you keep is a point off.",
+    players: "3–7 players",
+    designer: "Thorsten Gimmler",
+    length: "15 min",
+    tags: ["Push your luck", "Maxn bots", "Online"],
+    accent: "#e74c3c",
+    href: `${HIGH_SOCIETY_URL}/no-thanks`,
   },
   {
-    href: `${HIGH_SOCIETY_URL}/razzia`,
+    key: "razzia",
     title: "Razzia!",
+    tagline: "Bid for loot. Watch the police.",
     description:
-      "Gangsters bid for loot and dodge police raids over three rounds. A card game version of Ra for 3-5 players, designed by Reiner Knizia.",
+      "Gangsters divide the city over three rounds of auctions. Reveal loot onto the table and call an auction when it's worth it, because the seventh police raid ends the round with everything still on the table lost.",
+    players: "3–5 players",
+    designer: "Reiner Knizia",
+    length: "45 min",
+    tags: ["Auction", "Maxn bots", "Online"],
+    accent: "#e67e22",
+    href: `${HIGH_SOCIETY_URL}/razzia`,
   },
 ];
 
 export function FeaturesCards() {
   return (
-    <Container size="lg" py="xl">
-      <Title order={2} className={classes.title} ta="center" mt="sm">
-        A collection of board games with AI opponents.
-      </Title>
+    <main className={classes.page}>
+      <div className={classes.blob1} aria-hidden="true" />
+      <div className={classes.blob2} aria-hidden="true" />
+      <div className={classes.blob3} aria-hidden="true" />
 
-      <Text c="dimmed" className={classes.description} ta="center" mt="md">
-        Practice against the computer.
-      </Text>
-      <Text c="dimmed" className={classes.description} ta="center" mt="md">
-        {`Some games may allow for human opponents, but I'm not paying for a server to support real time communication. (Therefore it may be slow!)`}
-      </Text>
-      <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl" mt={50}>
-        {games.map((game) => (
-          <Link
-            key={game.title}
-            href={game.href}
-            style={{ textDecoration: "none" }}
+      <section className={classes.hero}>
+        <p className={classes.eyebrow}>Board Game Playground</p>
+        <h1 className={classes.title}>
+          Five board games.
+          <br />
+          <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
+        </h1>
+        <p className={classes.lead}>
+          Play in the browser against bots that actually think, or invite
+          friends with a link. Sign in with Google, pick a game, and you are at
+          the table.
+        </p>
+        <div className={classes.heroActions}>
+          <a href="#games" className={classes.primary}>
+            Pick a game
+          </a>
+          <a
+            href="https://github.com/anthony-nardi"
+            className={classes.secondary}
+            target="_blank"
+            rel="noreferrer"
           >
-            <Card shadow="md" radius="md" className={classes.card} p="xl">
-              <Text size="lg" fw={500} className={classes.cardTitle} mt="md">
-                {game.title}
-              </Text>
-              <Text size="sm" c="dimmed" mt="sm">
-                {game.description}
-              </Text>
-            </Card>
+            Source on GitHub
+          </a>
+        </div>
+        <ul className={classes.facts}>
+          <li>
+            <strong>5</strong> games
+          </li>
+          <li>
+            <strong>Bots</strong> in every one
+          </li>
+          <li>
+            <strong>2–7</strong> players
+          </li>
+          <li>
+            <strong>Free</strong>, no downloads
+          </li>
+        </ul>
+      </section>
+
+      <section id="games" className={classes.grid}>
+        {games.map((game, index) => (
+          <Link
+            key={game.key}
+            href={game.href}
+            className={classes.card}
+            style={
+              {
+                "--accent": game.accent,
+                "--delay": `${index * 70}ms`,
+              } as React.CSSProperties
+            }
+          >
+            <div className={classes.art}>
+              <GameArt game={game.key} />
+              <span className={classes.players}>{game.players}</span>
+            </div>
+            <div className={classes.body}>
+              <h2 className={classes.cardTitle}>{game.title}</h2>
+              <p className={classes.tagline}>{game.tagline}</p>
+              <p className={classes.description}>{game.description}</p>
+              <ul className={classes.tags}>
+                {game.tags.map((tag) => (
+                  <li key={tag}>{tag}</li>
+                ))}
+              </ul>
+              <div className={classes.meta}>
+                <span>
+                  {game.designer} · {game.length}
+                </span>
+                <span className={classes.play}>Play →</span>
+              </div>
+            </div>
           </Link>
         ))}
-      </SimpleGrid>
-    </Container>
+      </section>
+
+      <footer className={classes.footer}>
+        <p>
+          Bots use minimax-family searches over exactly the information a
+          player at the table has. Online games run on a tiny Firebase backend,
+          so the first move after a quiet spell can take a moment to wake it up.
+        </p>
+        <p className={classes.credits}>
+          TZAAR is part of the GIPF project by Kris Burm. Family Inc., High
+          Society and Razzia! are by Reiner Knizia. No Thanks! is by Thorsten
+          Gimmler. This is a fan project for practice and play.
+        </p>
+      </footer>
+    </main>
   );
 }
