@@ -22,7 +22,8 @@ export type GameKey =
   | "clans"
   | "twixt"
   | "ecosystem"
-  | "fuji-flush";
+  | "fuji-flush"
+  | "tigris";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1881,6 +1882,94 @@ function FujiFlush() {
   );
 }
 
+function Tigris() {
+  // A corner of the two-river board: a kingdom of tiles around a temple, a leader, a treasure.
+  const tiles: [number, number, string][] = [
+    [96, 60, "#c94a3d"],
+    [136, 60, "#3b3f4a"],
+    [176, 60, "#4f9a4a"],
+    [136, 100, "#3b3f4a"],
+    [176, 100, "#3b3f4a"],
+    [216, 100, "#c94a3d"],
+    [56, 140, "#3f7fc6"],
+    [96, 140, "#3f7fc6"],
+  ];
+  return (
+    <Frame accent="#c9a24a">
+      <rect x="24" y="24" width="272" height="156" rx="8" fill="#e3d2a6" />
+      <path
+        d="M 24 150 h 60 q 20 0 20 -20 v -14 q 0 -20 20 -20 h 40"
+        fill="none"
+        stroke="#5f9bd1"
+        strokeWidth="34"
+        strokeLinecap="butt"
+      />
+      {Array.from({ length: 6 }, (_, r) =>
+        Array.from({ length: 7 }, (_, c) => (
+          <rect
+            key={`${r}-${c}`}
+            x={24 + c * 40}
+            y={24 + r * 40}
+            width="40"
+            height="40"
+            fill="none"
+            stroke="rgba(0,0,0,0.12)"
+          />
+        )),
+      )}
+      {tiles.map(([x, y, fill], i) => (
+        <rect
+          key={i}
+          x={x + 3}
+          y={y + 3}
+          width="34"
+          height="34"
+          rx="5"
+          fill={fill}
+          stroke="rgba(0,0,0,0.5)"
+          strokeWidth="1.5"
+        />
+      ))}
+      <path
+        d="M 93 60 h 44 v 40 h 40 v 40 h 40 v -40 h 24 v -40 h -24 v 0 M 93 60 v 40 h 44"
+        fill="none"
+        stroke="#f7d774"
+        strokeWidth="2.5"
+      />
+      <circle
+        cx="221"
+        cy="69"
+        r="6.5"
+        fill="#f3c33c"
+        stroke="#7a5a10"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="156"
+        cy="160"
+        r="15"
+        fill="#fbf3e2"
+        stroke="#3b3f4a"
+        strokeWidth="5"
+      />
+      <text x="156" y="166" textAnchor="middle" fontSize="16">
+        🦁
+      </text>
+      <text
+        x="160"
+        y="194"
+        textAnchor="middle"
+        fontSize="11"
+        fontWeight="700"
+        fill={CREAM}
+        letterSpacing="2"
+      >
+        THE LOWEST SPHERE WINS
+      </text>
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1921,5 +2010,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Ecosystem />;
     case "fuji-flush":
       return <FujiFlush />;
+    case "tigris":
+      return <Tigris />;
   }
 }

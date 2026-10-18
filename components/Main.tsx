@@ -269,6 +269,19 @@ const games: Game[] = [
     accent: "#4f78c2",
     href: `${HIGH_SOCIETY_URL}/fuji-flush`,
   },
+  {
+    key: "tigris",
+    title: "Tigris & Euphrates",
+    tagline: "Four spheres. The weakest counts.",
+    description:
+      "Reiner Knizia's civilisation classic. Seat your king, priest, farmer and trader beside temples, grow kingdoms along the two rivers, fight revolts with temples and wars with supporters, raise monuments and gather treasures. At the end only your lowest sphere counts.",
+    players: "2–4 players",
+    designer: "Reiner Knizia",
+    length: "90 min",
+    tags: ["Strategy", "Judgement bot", "Online"],
+    accent: "#c9a24a",
+    href: `${HIGH_SOCIETY_URL}/tigris`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -281,7 +294,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Nineteen board games.
+          Twenty board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -308,7 +321,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>19</strong> games
+            <strong>20</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
