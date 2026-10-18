@@ -230,6 +230,19 @@ const games: Game[] = [
     accent: "#6b8f3a",
     href: `${HIGH_SOCIETY_URL}/clans`,
   },
+  {
+    key: "twixt",
+    title: "TwixT",
+    tagline: "Knight's moves, border to border.",
+    description:
+      "Alex Randolph's connection classic. Peg holes on a 24 by 24 board; pegs a knight's move apart link up, and links never cross. Red joins top to bottom, Black left to right, with the swap rule to keep the first move honest.",
+    players: "2 players",
+    designer: "Alex Randolph",
+    length: "30 min",
+    tags: ["Connection", "Search bot", "Online"],
+    accent: "#d64545",
+    href: `${HIGH_SOCIETY_URL}/twixt`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -242,7 +255,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Sixteen board games.
+          Seventeen board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -269,7 +282,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>16</strong> games
+            <strong>17</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one

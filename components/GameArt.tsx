@@ -19,7 +19,8 @@ export type GameKey =
   | "acquire"
   | "condottiere"
   | "ride-the-rails"
-  | "clans";
+  | "clans"
+  | "twixt";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1639,6 +1640,95 @@ function Clans() {
   );
 }
 
+function Twixt() {
+  // A patch of the pegboard with a red chain of knight's moves crossing a black one.
+  const dots: [number, number][] = [];
+  for (let r = 0; r < 7; r++)
+    for (let c = 0; c < 11; c++) dots.push([48 + c * 22, 34 + r * 22]);
+  const at = (c: number, r: number): [number, number] => [
+    48 + c * 22,
+    34 + r * 22,
+  ];
+  const red = [at(1, 0), at(2, 2), at(4, 3), at(5, 5), at(7, 6)];
+  const black = [
+    at(0, 3),
+    at(2, 4),
+    at(3, 2),
+    at(5, 1),
+    at(7, 2),
+    at(9, 3),
+    at(10, 1),
+  ];
+  const chain = (pts: [number, number][], colour: string) => (
+    <g>
+      {pts.slice(1).map((p, i) => (
+        <line
+          key={i}
+          x1={pts[i][0]}
+          y1={pts[i][1]}
+          x2={p[0]}
+          y2={p[1]}
+          stroke={colour}
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+      ))}
+      {pts.map(([x, y], i) => (
+        <circle
+          key={`p${i}`}
+          cx={x}
+          cy={y}
+          r="6.5"
+          fill={colour}
+          stroke="#111"
+          strokeWidth="1.2"
+        />
+      ))}
+    </g>
+  );
+  return (
+    <Frame accent="#d64545">
+      <rect
+        x="30"
+        y="18"
+        width="260"
+        height="8"
+        fill="rgba(214,69,69,0.35)"
+        rx="3"
+      />
+      <rect
+        x="30"
+        y="174"
+        width="260"
+        height="8"
+        fill="rgba(214,69,69,0.35)"
+        rx="3"
+      />
+      <rect
+        x="18"
+        y="30"
+        width="8"
+        height="140"
+        fill="rgba(255,255,255,0.25)"
+        rx="3"
+      />
+      <rect
+        x="294"
+        y="30"
+        width="8"
+        height="140"
+        fill="rgba(255,255,255,0.25)"
+        rx="3"
+      />
+      {dots.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r="2.2" fill="rgba(255,255,255,0.35)" />
+      ))}
+      {chain(black, "#e8e8e8")}
+      {chain(red, "#d64545")}
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1673,5 +1763,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <RideTheRails />;
     case "clans":
       return <Clans />;
+    case "twixt":
+      return <Twixt />;
   }
 }
