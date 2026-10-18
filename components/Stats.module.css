@@ -1,0 +1,123 @@
+/* The statistics page: a picker of games and one table at a time. */
+.section {
+  position: relative;
+  max-width: 960px;
+  margin: 24px auto 0;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  margin: 18px 0 0;
+}
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 28px 0 18px;
+}
+
+.pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.pick:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.pickOn {
+  color: #0b0e14;
+  background: linear-gradient(90deg, #ffd86b, #ffb347);
+  border-color: transparent;
+}
+
+.pickCount {
+  font-size: 12px;
+  opacity: 0.75;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  background: var(--panel);
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 14.5px;
+}
+
+.caption {
+  caption-side: top;
+  text-align: left;
+  padding: 14px 16px 6px;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.table th,
+.table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-top: 1px solid var(--panel-border);
+  white-space: nowrap;
+}
+
+.table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.table tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table tbody tr:first-child .name::after {
+  content: " 🏆";
+}
+
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank {
+  color: var(--muted);
+  width: 36px;
+}
+
+.name {
+  font-weight: 700;
+}
+
+.places {
+  color: var(--muted);
+  font-size: 13px;
+}

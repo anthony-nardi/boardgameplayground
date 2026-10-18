@@ -242,6 +242,9 @@ export function FeaturesCards() {
           <a href="#games" className={classes.primary}>
             Pick a game
           </a>
+          <Link href="/stats" className={classes.secondary}>
+            Statistics
+          </Link>
           <a
             href="https://github.com/anthony-nardi"
             className={classes.secondary}
