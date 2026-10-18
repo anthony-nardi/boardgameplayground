@@ -21,7 +21,8 @@ export type GameKey =
   | "ride-the-rails"
   | "clans"
   | "twixt"
-  | "ecosystem";
+  | "ecosystem"
+  | "fuji-flush";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1812,6 +1813,74 @@ function Ecosystem() {
   );
 }
 
+function FujiFlush() {
+  // Three cards in front of three players: the pair of 7s pulls ahead of the 8.
+  const cards: [number, number, string, number, boolean][] = [
+    [66, 62, "7", -8, true],
+    [132, 46, "7", 0, true],
+    [204, 68, "8", 9, false],
+  ];
+  return (
+    <Frame accent="#4f78c2">
+      <path d="M 10 176 L 160 54 L 310 176 Z" fill="#2b3a67" />
+      <path
+        d="M 160 54 L 134 80 L 146 76 L 160 88 L 174 76 L 186 80 Z"
+        fill={CREAM}
+      />
+      {cards.map(([x, y, n, r, team], i) => (
+        <g key={i} transform={`translate(${x} ${y}) rotate(${r})`}>
+          <rect
+            x="0"
+            y="0"
+            width="54"
+            height="74"
+            rx="6"
+            fill={CREAM}
+            stroke={team ? "#ffd86b" : INK}
+            strokeWidth={team ? 3 : 2}
+          />
+          <rect
+            x="5"
+            y="5"
+            width="44"
+            height="52"
+            rx="4"
+            fill={team ? "#6fb3d6" : "#8fcf9a"}
+          />
+          <path
+            d="M 5 57 L 27 26 L 49 57 Z"
+            fill={team ? "#4a7c8c" : "#5f9452"}
+          />
+          <text
+            x="27"
+            y="47"
+            textAnchor="middle"
+            fontSize="26"
+            fontWeight="900"
+            fill="#fff"
+            stroke={INK}
+            strokeWidth="1.2"
+            paintOrder="stroke"
+          >
+            {n}
+          </text>
+        </g>
+      ))}
+      <text
+        x="160"
+        y="190"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#9fb6ff"
+        letterSpacing="2"
+      >
+        7 + 7 = 14 FLUSHES THE 8
+      </text>
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1850,5 +1919,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Twixt />;
     case "ecosystem":
       return <Ecosystem />;
+    case "fuji-flush":
+      return <FujiFlush />;
   }
 }

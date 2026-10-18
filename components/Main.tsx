@@ -256,6 +256,19 @@ const games: Game[] = [
     accent: "#6fb24f",
     href: `${HIGH_SOCIETY_URL}/ecosystem`,
   },
+  {
+    key: "fuji-flush",
+    title: "Fuji Flush",
+    tagline: "Push it through or flush it.",
+    description:
+      "Friedemann Friese's ten-minute card game. Lay a card in front of you: a higher number flushes it down the drain, an equal one joins forces with it. Survive a round and the card is gone for good. First to empty their hand wins, teams and all.",
+    players: "3–8 players",
+    designer: "Friedemann Friese",
+    length: "10 min",
+    tags: ["Cards", "Judgement bot", "Online"],
+    accent: "#4f78c2",
+    href: `${HIGH_SOCIETY_URL}/fuji-flush`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -268,7 +281,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Eighteen board games.
+          Nineteen board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -295,7 +308,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>18</strong> games
+            <strong>19</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
