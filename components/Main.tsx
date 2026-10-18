@@ -243,6 +243,19 @@ const games: Game[] = [
     accent: "#d64545",
     href: `${HIGH_SOCIETY_URL}/twixt`,
   },
+  {
+    key: "ecosystem",
+    title: "Ecosystem",
+    tagline: "Draft a habitat, four by five.",
+    description:
+      "Matt Simpson's card drafter. Keep one, place it, pass the rest: bees by meadows, trout by streams, foxes far from wolves. Twenty cards make your ecosystem, and the more kinds of life that score in it, the bigger the bonus.",
+    players: "2–6 players",
+    designer: "Matt Simpson",
+    length: "20 min",
+    tags: ["Drafting", "Judgement bot", "Online"],
+    accent: "#6fb24f",
+    href: `${HIGH_SOCIETY_URL}/ecosystem`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -255,7 +268,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Seventeen board games.
+          Eighteen board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -282,7 +295,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>17</strong> games
+            <strong>18</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one

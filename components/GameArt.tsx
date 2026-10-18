@@ -20,7 +20,8 @@ export type GameKey =
   | "condottiere"
   | "ride-the-rails"
   | "clans"
-  | "twixt";
+  | "twixt"
+  | "ecosystem";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1729,6 +1730,88 @@ function Twixt() {
   );
 }
 
+function Ecosystem() {
+  // A 4 by 5 tableau of tinted cards with a few creatures on them.
+  const tints = [
+    "#a7cf6b",
+    "#a7cf6b",
+    "#5b9bd5",
+    "#5b9bd5",
+    "#c48b5a",
+    "#e4b63a",
+    "#a7cf6b",
+    "#79a8b8",
+    "#5b9bd5",
+    "#6c6f73",
+    "#8d6e4a",
+    "#e07b39",
+    "#6fb7c9",
+    "#5b9bd5",
+    "#6c6f73",
+    "#d9c7b0",
+    "#7a6a8c",
+    "#c48b5a",
+    "#a7cf6b",
+    "#a7cf6b",
+  ];
+  const marks = [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ];
+  marks[5] = "🐝";
+  marks[10] = "🐻";
+  marks[7] = "🐟";
+  marks[9] = "🐺";
+  marks[11] = "🦊";
+  marks[16] = "🦅";
+  marks[4] = "🦌";
+  return (
+    <Frame accent="#6fb24f">
+      {tints.map((t, i) => {
+        const x = 52 + (i % 5) * 44;
+        const y = 24 + Math.floor(i / 5) * 40;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={y}
+              width="38"
+              height="34"
+              rx="5"
+              fill={t}
+              stroke="rgba(0,0,0,0.4)"
+              strokeWidth="1"
+            />
+            {marks[i] && (
+              <text x={x + 19} y={y + 24} textAnchor="middle" fontSize="18">
+                {marks[i]}
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1765,5 +1848,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Clans />;
     case "twixt":
       return <Twixt />;
+    case "ecosystem":
+      return <Ecosystem />;
   }
 }
