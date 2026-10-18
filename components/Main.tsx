@@ -217,6 +217,19 @@ const games: Game[] = [
     accent: "#2e8b57",
     href: `${HIGH_SOCIETY_URL}/ride-the-rails`,
   },
+  {
+    key: "clans",
+    title: "Clans",
+    tagline: "Herd the huts. Hide your colours.",
+    description:
+      "Leo Colovini's game of secret clans. Move whole groups of huts until a group stands alone and becomes a village; every clan in it scores its size, with bonuses and bans that shift each epoch. You lead one clan in secret, so help it quietly and starve the rest.",
+    players: "2–4 players",
+    designer: "Leo Colovini",
+    length: "30 min",
+    tags: ["Hidden roles", "Judgement bot", "Online"],
+    accent: "#6b8f3a",
+    href: `${HIGH_SOCIETY_URL}/clans`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -229,7 +242,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Fifteen board games.
+          Sixteen board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -256,7 +269,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>15</strong> games
+            <strong>16</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one

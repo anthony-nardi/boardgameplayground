@@ -18,7 +18,8 @@ export type GameKey =
   | "shangri-la"
   | "acquire"
   | "condottiere"
-  | "ride-the-rails";
+  | "ride-the-rails"
+  | "clans";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1575,6 +1576,69 @@ function RideTheRails() {
   );
 }
 
+function Clans() {
+  // A hex patch of four terrains with little huts of five colours gathering into a village.
+  const hexes: [number, number, string][] = [];
+  const fills = ["#b9d98a", "#5f8f52", "#b7aa9a", "#e2cf9a"];
+  let k = 0;
+  for (let row = 0; row < 5; row++)
+    for (let col = 0; col < 8; col++) {
+      if ((row === 0 || row === 4) && (col === 0 || col === 7)) continue;
+      hexes.push([
+        44 + col * 34 + (row % 2 ? 17 : 0),
+        32 + row * 30,
+        fills[(k++ * 7) % 4],
+      ]);
+    }
+  const hex = (x: number, y: number) =>
+    Array.from({ length: 6 }, (_, i) => {
+      const a = (Math.PI / 180) * (60 * i - 30);
+      return `${(x + Math.cos(a) * 19).toFixed(1)},${(y + Math.sin(a) * 19).toFixed(1)}`;
+    }).join(" ");
+  const hut = (x: number, y: number, c: string) => (
+    <path
+      key={`${x}-${y}`}
+      d={`M ${x - 7} ${y + 2} L ${x} ${y - 8} L ${x + 7} ${y + 2} L ${x + 7} ${y + 8} L ${x - 7} ${y + 8} Z`}
+      fill={c}
+      stroke="#222"
+      strokeWidth="1.2"
+      strokeLinejoin="round"
+    />
+  );
+  return (
+    <Frame accent="#6b8f3a">
+      {hexes.map(([x, y, f], i) => (
+        <polygon
+          key={i}
+          points={hex(x, y)}
+          fill={f}
+          stroke="rgba(0,0,0,0.35)"
+          strokeWidth="1"
+        />
+      ))}
+      {hut(146, 86, "#d64545")}
+      {hut(166, 96, "#3b7dd8")}
+      {hut(156, 108, "#e9c832")}
+      {hut(176, 116, "#3f9b4f")}
+      {hut(188, 92, "#2b2b2b")}
+      {hut(78, 62, "#d64545")}
+      {hut(248, 152, "#3b7dd8")}
+      {hut(112, 150, "#e9c832")}
+      <text
+        x="160"
+        y="188"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="700"
+        fill="#dcefb5"
+        letterSpacing="2"
+      >
+        KEEP YOUR CLAN SECRET
+      </text>
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -1607,5 +1671,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Condottiere />;
     case "ride-the-rails":
       return <RideTheRails />;
+    case "clans":
+      return <Clans />;
   }
 }
