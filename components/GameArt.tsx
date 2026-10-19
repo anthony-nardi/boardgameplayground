@@ -26,7 +26,8 @@ export type GameKey =
   | "tigris"
   | "coral-reef"
   | "savanna"
-  | "medici";
+  | "medici"
+  | "push";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -2169,6 +2170,68 @@ function Medici() {
   );
 }
 
+function Push() {
+  // Three columns of coloured number cards on the table, a dice card among them, and the die.
+  const cols: [string, string][][] = [
+    [
+      ["#d9342b", "6"],
+      ["#2f6fd6", "3"],
+      ["#e8c23a", "1"],
+    ],
+    [
+      ["#2e9e5b", "5"],
+      ["#8e5ad6", "2"],
+      ["#17181c", "⚄"],
+    ],
+    [
+      ["#e8c23a", "4"],
+      ["#d9342b", "2"],
+    ],
+  ];
+  return (
+    <Frame accent="#e8c23a">
+      <rect x="0" y="0" width="320" height="200" fill="#2a1838" opacity="0.6" />
+      {cols.map((col, c) =>
+        col.map(([fill, n], i) => (
+          <g key={`${c}-${i}`}>
+            <rect
+              x={70 + c * 70}
+              y={26 + i * 34}
+              width="46"
+              height="62"
+              rx="6"
+              fill={fill}
+              stroke="rgba(0,0,0,0.6)"
+              strokeWidth="2"
+            />
+            <text
+              x={93 + c * 70}
+              y={62 + i * 34}
+              textAnchor="middle"
+              fontSize="26"
+              fontWeight="900"
+              fill={fill === "#e8c23a" ? "#3a2a08" : "#fff"}
+            >
+              {n}
+            </text>
+          </g>
+        )),
+      )}
+      <rect
+        x="268"
+        y="138"
+        width="34"
+        height="34"
+        rx="8"
+        fill="#f3ead8"
+        stroke="#1d2230"
+        strokeWidth="2"
+      />
+      <rect x="277" y="147" width="16" height="16" rx="3" fill="#d9342b" />
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -2217,5 +2280,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Savanna />;
     case "medici":
       return <Medici />;
+    case "push":
+      return <Push />;
   }
 }

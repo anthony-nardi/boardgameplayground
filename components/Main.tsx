@@ -231,6 +231,19 @@ const games: Game[] = [
     href: `${HIGH_SOCIETY_URL}/no-thanks`,
   },
   {
+    key: "push",
+    title: "PUSH",
+    tagline: "One more card. Just one more.",
+    description:
+      "Turn cards over into three columns, never two of a number or a colour together, and stop before one fits nowhere. Take a column, let the others take the rest, and protect your colours before the die comes for them.",
+    players: "2–6 players",
+    designer: "Prospero Hall",
+    length: "20 min",
+    tags: ["Push your luck", "Judgement bot", "Online"],
+    accent: "#e8c23a",
+    href: `${HIGH_SOCIETY_URL}/push`,
+  },
+  {
     key: "razzia",
     title: "Razzia!",
     tagline: "Bid for loot. Watch the police.",
@@ -333,7 +346,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Twenty-three board games.
+          Twenty-four board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -360,7 +373,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>23</strong> games
+            <strong>24</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
