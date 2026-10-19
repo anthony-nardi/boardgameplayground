@@ -295,6 +295,19 @@ const games: Game[] = [
     accent: "#4fb3c9",
     href: `${HIGH_SOCIETY_URL}/coral-reef`,
   },
+  {
+    key: "savanna",
+    title: "Ecosystem: Savanna",
+    tagline: "Draft the Serengeti. Hunters flip their prey.",
+    description:
+      "The Serengeti edition of Ecosystem. Keep one, place it, pass the rest: giraffes by trees, zebras on grassland, gazelles in numbers, cheetahs and lions flipping prey at scoring time for the hyenas and vultures to feed on.",
+    players: "2–6 players",
+    designer: "Matt Simpson, Steve Schlepphorst & Daniel Dávalos",
+    length: "20 min",
+    tags: ["Drafting", "Judgement bot", "Online"],
+    accent: "#e8a04a",
+    href: `${HIGH_SOCIETY_URL}/savanna`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -307,7 +320,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Twenty-one board games.
+          Twenty-two board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -334,7 +347,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>21</strong> games
+            <strong>22</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one

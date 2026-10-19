@@ -24,7 +24,8 @@ export type GameKey =
   | "ecosystem"
   | "fuji-flush"
   | "tigris"
-  | "coral-reef";
+  | "coral-reef"
+  | "savanna";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -2042,6 +2043,78 @@ function CoralReef() {
   );
 }
 
+function Savanna() {
+  // A 4 by 5 savanna of tinted cards at sunset, with the herds and the hunters.
+  const tints = [
+    "#c9b35a",
+    "#c9b35a",
+    "#7fc4e0",
+    "#e0b070",
+    "#6fa85a",
+    "#d0d0d0",
+    "#c9b35a",
+    "#e0b070",
+    "#f2c25c",
+    "#6fa85a",
+    "#e8a04a",
+    "#c9b35a",
+    "#9a9aa8",
+    "#e0b070",
+    "#d9823b",
+    "#b08a62",
+    "#c9b35a",
+    "#8c7a6b",
+    "#e0b070",
+    "#c9b35a",
+  ];
+  const marks: { [i: number]: string } = {
+    2: "💧",
+    3: "🦌",
+    5: "🦓",
+    8: "🦒",
+    10: "🐆",
+    12: "🐘",
+    14: "🦁",
+    15: "🐕",
+    17: "🦅",
+  };
+  return (
+    <Frame accent="#e8a04a">
+      <rect
+        x="0"
+        y="0"
+        width="320"
+        height="200"
+        fill="#7a3a1a"
+        opacity="0.45"
+      />
+      {tints.map((t, i) => {
+        const x = 52 + (i % 5) * 44;
+        const y = 24 + Math.floor(i / 5) * 40;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={y}
+              width="38"
+              height="34"
+              rx="5"
+              fill={t}
+              stroke="rgba(0,0,0,0.4)"
+              strokeWidth="1"
+            />
+            {marks[i] && (
+              <text x={x + 19} y={y + 24} textAnchor="middle" fontSize="18">
+                {marks[i]}
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -2086,5 +2159,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <Tigris />;
     case "coral-reef":
       return <CoralReef />;
+    case "savanna":
+      return <Savanna />;
   }
 }
