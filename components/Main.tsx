@@ -282,6 +282,19 @@ const games: Game[] = [
     accent: "#c9a24a",
     href: `${HIGH_SOCIETY_URL}/tigris`,
   },
+  {
+    key: "coral-reef",
+    title: "Ecosystem: Coral Reef",
+    tagline: "Draft a reef, keep the food web fed.",
+    description:
+      "The Great Barrier Reef edition of Ecosystem. Keep one, place it, pass the rest: groupers by krill, clownfish by coral and plankton, eels lurking by coral, whales turning a neighbour facedown. Producers, prey and predators each score, and the weakest of the three is added again.",
+    players: "2–6 players",
+    designer: "Matt Simpson & Steve Schlepphorst",
+    length: "20 min",
+    tags: ["Drafting", "Judgement bot", "Online"],
+    accent: "#4fb3c9",
+    href: `${HIGH_SOCIETY_URL}/coral-reef`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -294,7 +307,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Twenty board games.
+          Twenty-one board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -321,7 +334,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>20</strong> games
+            <strong>21</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one

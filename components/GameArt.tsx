@@ -23,7 +23,8 @@ export type GameKey =
   | "twixt"
   | "ecosystem"
   | "fuji-flush"
-  | "tigris";
+  | "tigris"
+  | "coral-reef";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -1970,6 +1971,77 @@ function Tigris() {
   );
 }
 
+function CoralReef() {
+  // A 4 by 5 reef of tinted cards under the water, with a few creatures.
+  const tints = [
+    "#9fd8a8",
+    "#7fa6d9",
+    "#e8847a",
+    "#f0b27a",
+    "#9fd8a8",
+    "#f59e42",
+    "#8fbf5f",
+    "#e8847a",
+    "#f0b27a",
+    "#8a9bb0",
+    "#d9534f",
+    "#9fd8a8",
+    "#6fb3a0",
+    "#f0b27a",
+    "#5b7fb5",
+    "#e8847a",
+    "#e8847a",
+    "#b57fd1",
+    "#e8847a",
+    "#9fd8a8",
+  ];
+  const marks: { [i: number]: string } = {
+    1: "🐟",
+    5: "🐠",
+    6: "🐍",
+    9: "🦈",
+    10: "🦀",
+    12: "🐢",
+    14: "🐋",
+    17: "🐙",
+  };
+  return (
+    <Frame accent="#4fb3c9">
+      <rect
+        x="0"
+        y="0"
+        width="320"
+        height="200"
+        fill="#0e5a7a"
+        opacity="0.55"
+      />
+      {tints.map((t, i) => {
+        const x = 52 + (i % 5) * 44;
+        const y = 24 + Math.floor(i / 5) * 40;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={y}
+              width="38"
+              height="34"
+              rx="5"
+              fill={t}
+              stroke="rgba(0,0,0,0.4)"
+              strokeWidth="1"
+            />
+            {marks[i] && (
+              <text x={x + 19} y={y + 24} textAnchor="middle" fontSize="18">
+                {marks[i]}
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -2012,5 +2084,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <FujiFlush />;
     case "tigris":
       return <Tigris />;
+    case "coral-reef":
+      return <CoralReef />;
   }
 }
