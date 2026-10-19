@@ -25,7 +25,8 @@ export type GameKey =
   | "fuji-flush"
   | "tigris"
   | "coral-reef"
-  | "savanna";
+  | "savanna"
+  | "medici";
 
 const INK = "#0f131a";
 const CREAM = "#f6edd0";
@@ -2115,6 +2116,59 @@ function Savanna() {
   );
 }
 
+function Medici() {
+  // A merchant ship with a hold of commodity cards, under the five pyramids of the board.
+  const cargo = ["#4f78c2", "#d9823b", "#d8b14a", "#f2c25c", "#8a4fb0"];
+  const pyramids = ["#4f78c2", "#d9823b", "#d8b14a", "#8a4fb0", "#8c6a4a"];
+  return (
+    <Frame accent="#f2c25c">
+      <rect x="0" y="0" width="320" height="200" fill="#1d2a44" opacity="0.6" />
+      {pyramids.map((c, i) => (
+        <g key={i}>
+          {[0, 1, 2, 3, 4].map((lvl) => (
+            <rect
+              key={lvl}
+              x={40 + i * 52 + lvl * 3}
+              y={82 - lvl * 11}
+              width={40 - lvl * 6}
+              height="9"
+              rx="2"
+              fill={c}
+              opacity={0.35 + lvl * 0.15}
+            />
+          ))}
+        </g>
+      ))}
+      <path
+        d="M 40 150 Q 160 185 280 150 L 262 128 L 58 128 Z"
+        fill="#6b4a2b"
+        stroke="#2a1a0c"
+        strokeWidth="2"
+      />
+      <rect x="156" y="52" width="4" height="78" fill="#3b2a16" />
+      <path d="M 160 56 L 232 118 L 160 118 Z" fill="#f3ead8" opacity="0.95" />
+      {cargo.map((c, i) => (
+        <rect
+          key={i}
+          x={76 + i * 28}
+          y="104"
+          width="22"
+          height="28"
+          rx="3"
+          fill={c}
+          stroke="#111"
+          strokeWidth="1.5"
+        />
+      ))}
+      <path
+        d="M 0 165 Q 40 155 80 165 T 160 165 T 240 165 T 320 165 L 320 200 L 0 200 Z"
+        fill="#2a4a7a"
+        opacity="0.85"
+      />
+    </Frame>
+  );
+}
+
 export default function GameArt({ game }: { game: GameKey }) {
   switch (game) {
     case "tzaar":
@@ -2161,5 +2215,7 @@ export default function GameArt({ game }: { game: GameKey }) {
       return <CoralReef />;
     case "savanna":
       return <Savanna />;
+    case "medici":
+      return <Medici />;
   }
 }

@@ -308,6 +308,19 @@ const games: Game[] = [
     accent: "#e8a04a",
     href: `${HIGH_SOCIETY_URL}/savanna`,
   },
+  {
+    key: "medici",
+    title: "Medici",
+    tagline: "Three days of auctions on the Florentine docks.",
+    description:
+      "Knizia's classic: the auctioneer turns over one to three cards, everyone bids once with the auctioneer last, and the buyer loads the lot. Each evening the richest ships and the biggest buyers of each commodity are paid, and your florins are your score.",
+    players: "2–6 players",
+    designer: "Reiner Knizia",
+    length: "45 min",
+    tags: ["Auction", "Judgement bot", "Online"],
+    accent: "#f2c25c",
+    href: `${HIGH_SOCIETY_URL}/medici`,
+  },
 ];
 
 export function FeaturesCards() {
@@ -320,7 +333,7 @@ export function FeaturesCards() {
       <section className={classes.hero}>
         <p className={classes.eyebrow}>Board Game Playground</p>
         <h1 className={classes.title}>
-          Twenty-two board games.
+          Twenty-three board games.
           <br />
           <span className={classes.titleAccent}>Clever bots. Zero setup.</span>
         </h1>
@@ -347,7 +360,7 @@ export function FeaturesCards() {
         </div>
         <ul className={classes.facts}>
           <li>
-            <strong>22</strong> games
+            <strong>23</strong> games
           </li>
           <li>
             <strong>Bots</strong> in every one
